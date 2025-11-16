@@ -1,9 +1,9 @@
 local game = require("game")
--- local fsm = require("fsm")
+local fsm = require("fsm")
 local ui = require("ui")
 local character = require("character")
 local wallpaper = require("wallpaper")
--- local ep1 = require("ep1")
+local ep1 = require("ep1")
 
 local home = {
     name = "Home",
@@ -23,7 +23,7 @@ function home.enter()
         {
             "#1 Hajimari", function()
                 print("[home] Button ep1 clicked!")
-                -- fsm.push(ep1)
+                fsm.push(ep1)
             end
         },
         {

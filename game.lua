@@ -11,6 +11,7 @@ function game.init()
     game.font       = love.graphics.newFont(16, "mono")
     game.fontHeight = game.font:getHeight()
     game.font:setFilter("nearest")
+    love.graphics.setFont(game.font)
 
     game.screenPadding = 10
     game.padding       = 5   -- For button, dialogue box, etc.
