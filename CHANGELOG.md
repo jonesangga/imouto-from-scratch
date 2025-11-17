@@ -14,3 +14,9 @@ All notable changes to this project will be documented in this file.
 - Ep1: Hajimari.
 - Dialogue class.
 - Typing effect in dialogue box.
+- Pressing q to quit episode.
+- `fsm.keypressed()`.
+- `home.stopAudio()` and `home.playAudio()` to be used in fsm.
+- `fsm.push()` stops current state audio before changing state.
+- `fsm.pop()` plays the current state audio after changing state.
+- `Dialogue:reset()`.

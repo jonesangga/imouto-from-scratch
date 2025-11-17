@@ -8,6 +8,9 @@ local top = 0
 local current = nil
 
 function fsm.push(state)
+    if current and current.stopAudio then
+        current.stopAudio()
+    end
     top = top + 1
     states[top] = state
     current = state
@@ -19,6 +22,9 @@ function fsm.pop()
     current.exit()
     top = top - 1
     current = states[top]
+    if current.playAudio then
+        current.playAudio()
+    end
 end
 
 function fsm.update(dt)
@@ -35,6 +41,10 @@ end
 
 function fsm.mousereleased(x, y, button)
     current.mousereleased(x, y, button)
+end
+
+function fsm.keypressed(key, scancode, isrepeat)
+    current.keypressed(key, scancode, isrepeat)
 end
 
 return fsm

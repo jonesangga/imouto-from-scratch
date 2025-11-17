@@ -152,6 +152,14 @@ function Dialogue.new(lines)
     }, Dialogue)
 end
 
+function Dialogue:reset()
+    self.current   = 1
+    self.revealed  = 0
+    self.displayed = ""
+    self.elapsed   = 0
+    self.finished  = false
+end
+
 function Dialogue:update(dt)
     if self.finished then
         return

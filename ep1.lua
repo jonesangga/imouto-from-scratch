@@ -12,13 +12,20 @@ local imouto = nil
 local dialogue = nil
 local wall = nil
 local music = nil
+local initialized = false
 
 function ep1.enter()
     print("[ep1] enter")
-    wall = wallpaper.new("patterns/pastel64/blue3.png")
-    imouto = character.new("characters/kanbe-kotori.png")
 
-    dialogue = ui.Dialogue.new({
+    if not initialized then
+        initialized = true
+        wall = wallpaper.new("patterns/pastel64/blue3.png")
+        imouto = character.new("characters/kanbe-kotori.png")
+        music = love.audio.newSource("audio/ep1.mp3", "stream")
+        music:setLooping(true)
+        music:setVolume(1.0)
+
+        dialogue = ui.Dialogue.new({
 2, "Welcome, Ada. I created you as my imouto. Korekara mo yoroshiku onegaishimasu.",
 1, "That is a really bad introduction, nii-san.",
 2, "I am bad at communication.",
@@ -36,15 +43,15 @@ function ep1.enter()
 2, "I just do what idea I suddenly have. I don't want to overthink. I like to see the improvement through the time.",
 2, "I promise to show you many interesting things.",
 1, "Sasuga, nii-san (>_<).",
-    })
+        })
+    end
 
-    -- music = love.audio.newSource("audio/ep1.mp3", "stream")
-    -- music:setLooping(true)
-    -- music:setVolume(1.0)
-    -- music:play()
+    music:play()
 end
 
 function ep1.exit()
+    music:stop()
+    dialogue:reset()
     print("[ep1] exit")
 end
 
@@ -63,6 +70,13 @@ function ep1.mousepressed(x, y, button)
 end
 
 function ep1.mousereleased(x, y, button)
+end
+
+-- TODO: Add confirmation dialogue?
+function ep1.keypressed(key, scancode, isrepeat)
+    if key == "q" then
+        fsm.pop()
+    end
 end
 
 return ep1

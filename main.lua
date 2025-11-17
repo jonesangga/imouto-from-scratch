@@ -28,3 +28,7 @@ end
 function love.mousereleased(x, y, button)
     fsm.mousereleased(x, y, button)
 end
+
+function love.keypressed(key, scancode, isrepeat)
+    fsm.keypressed(key, scancode, isrepeat)
+end

@@ -44,6 +44,16 @@ function home.exit()
     print("[Home] exit")
 end
 
+-- Only called from fsm.pop().
+function home.playAudio()
+    music:play()
+end
+
+-- Only called from fsm.push().
+function home.stopAudio()
+    music:stop()
+end
+
 function home.update()
     menu:update()
 end
@@ -71,6 +81,9 @@ end
 
 function home.mousereleased(x, y, button)
     menu:mousereleased(x, y, button)
+end
+
+function home.keypressed(key, scancode, isrepeat)
 end
 
 return home
