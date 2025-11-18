@@ -20,3 +20,7 @@ All notable changes to this project will be documented in this file.
 - `fsm.push()` stops current state audio before changing state.
 - `fsm.pop()` plays the current state audio after changing state.
 - `Dialogue:reset()`.
+- New character: Kasugano Sora.
+- New audio: clannad-track-6.mp3.
+- Ep2: Nii-san new hobby.
+- More tiled patterns.
