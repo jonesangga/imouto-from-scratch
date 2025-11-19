@@ -1,3 +1,4 @@
+local fsm = require("fsm")
 local ui = require("ui")
 local util = require("util")
 
@@ -14,6 +15,7 @@ local wall = nil
 local initialized = false
 local full = false
 local selectedThumb = nil
+local linked = nil
 
 local viewport = {
     x = 55,  y = 85,
@@ -86,11 +88,13 @@ end
 
 
 local buttons = {}  -- For prev and next buttons.
+local apply = nil
 
 function pattern.enter()
     print("[Pattern] enter")
 
     if not initialized then
+        initialized = true
         local files = util.getFileNames("patterns/free", true)
         -- for i, f in ipairs(files) do
             -- print(i, f)
@@ -138,6 +142,12 @@ function pattern.enter()
             end
         end))
 
+        apply = ui.Button.new(185, 400, "apply", function()
+            linked.image = wall
+            linked.w, linked.h = wall:getDimensions()
+            fsm.pop()
+        end)
+
         -- Disable prev button initally.
         buttons[1].enabled = false
     end
@@ -146,6 +156,7 @@ end
 -- TODO: Reset some global variables.
 function pattern.exit()
     full = false
+    linked = nil
     print("[Pattern] exit")
 end
 
@@ -157,6 +168,7 @@ function pattern.update(dt)
         for _, btn in ipairs(buttons) do
             btn:update(dt)
         end
+        apply:update(dt)
     end
 end
 
@@ -191,7 +203,12 @@ function pattern.draw()
         for _, btn in ipairs(buttons) do
             btn:draw()
         end
+        apply:draw()
     end
+end
+
+function pattern.link(wall)
+    linked = wall
 end
 
 function pattern.mousepressed(x, y, button)
@@ -202,6 +219,7 @@ function pattern.mousepressed(x, y, button)
         for _, btn in ipairs(buttons) do
             btn:mousepressed(x, y, button)
         end
+        apply:mousepressed(x, y, button)
     end
 end
 
@@ -210,6 +228,7 @@ function pattern.mousereleased(x, y, button)
         for _, btn in ipairs(buttons) do
             btn:mousereleased(x, y, button)
         end
+        apply:mousereleased(x, y, button)
     end
 end
 

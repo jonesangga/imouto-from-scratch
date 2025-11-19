@@ -1,3 +1,6 @@
+local fsm = require("fsm")
+local pattern = require("pattern")
+
 local Wallpaper = {}
 Wallpaper.__index = Wallpaper
 
@@ -16,6 +19,11 @@ function Wallpaper:draw()
             love.graphics.draw(self.image, x, y)
         end
     end
+end
+
+function Wallpaper:browse()
+    pattern.link(self)
+    fsm.push(pattern)
 end
 
 return Wallpaper
