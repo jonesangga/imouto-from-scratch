@@ -41,7 +41,7 @@ end
 function Button:draw()
     local bg = {0.2, 0.2, 0.2}
     if not self.enabled then
-        bg = {0.15, 0.15, 0.15}
+        bg = {0.5, 0.5, 0.5}
     elseif self.pressed then
         bg = {0.05, 0.6, 0.9}
     elseif self.hovered then

@@ -24,3 +24,5 @@ All notable changes to this project will be documented in this file.
 - New audio: clannad-track-6.mp3.
 - Ep2: Nii-san new hobby.
 - More tiled patterns.
+- Pattern viewer.
+- util.lua.

@@ -5,6 +5,7 @@ local home = require("home")
 -- Uncomment to test the state immediately.
 -- local ep1 = require("ep1")
 -- local ep2 = require("ep2")
+-- local pattern = require("pattern")
 
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")  -- Nearest neighbor filtering for pixel art.
@@ -16,6 +17,7 @@ function love.load()
     -- Uncomment to test the state immediately.
     -- fsm.push(ep1)
     -- fsm.push(ep2)
+    -- fsm.push(pattern)
 end
 
 function love.update(dt)
