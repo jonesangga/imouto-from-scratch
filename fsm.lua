@@ -8,9 +8,6 @@ local top = 0
 local current = nil
 
 function fsm.push(state)
-    if current and current.stopAudio then
-        current.stopAudio()
-    end
     if current and current.pauseAudio then
         current.pauseAudio()
     end
@@ -25,9 +22,6 @@ function fsm.pop()
     current.exit()
     top = top - 1
     current = states[top]
-    if current.playAudio then
-        current.playAudio()
-    end
     if current.continueAudio then
         current.continueAudio()
     end

@@ -82,13 +82,13 @@ function home.exit()
 end
 
 -- Only called from fsm.pop().
-function home.playAudio()
+function home.continueAudio()
     music:play()
 end
 
 -- Only called from fsm.push().
-function home.stopAudio()
-    music:stop()
+function home.pauseAudio()
+    music:pause()
 end
 
 function home.update()

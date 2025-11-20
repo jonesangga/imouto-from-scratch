@@ -30,3 +30,4 @@ All notable changes to this project will be documented in this file.
 - Stories and Areas sub menu in home screen.
 - Hide apply button if pattern viewer opened from home.
 - Reset the necessary global variables when exiting pattern state.
+- Pause audio when pushing state and resume when popping state.
