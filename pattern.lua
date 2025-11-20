@@ -144,6 +144,9 @@ function pattern.enter()
 
         -- Disable prev button initally.
         buttons[1].enabled = false
+        if #images <= 12 then
+            buttons[2].enabled = false
+        end
 
         apply = ui.Button.new(185, 400, "apply", function()
             linked.image = wall
@@ -163,7 +166,7 @@ function pattern.exit()
     wall = images[1].img
     full = false
     buttons[1].enabled = false
-    buttons[2].enabled = true
+    buttons[2].enabled = #images > 12
     linked = nil
     print("[Pattern] exit")
 end
