@@ -51,6 +51,16 @@ function ep2.exit()
     print("[ep2] exit")
 end
 
+-- Only called from fsm.pop().
+function ep2.continueAudio()
+    music:play()
+end
+
+-- Only called from fsm.push().
+function ep2.pauseAudio()
+    music:pause()
+end
+
 function ep2.update(dt)
     dialogue:update(dt)
 end

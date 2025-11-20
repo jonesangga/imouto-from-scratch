@@ -11,6 +11,9 @@ function fsm.push(state)
     if current and current.stopAudio then
         current.stopAudio()
     end
+    if current and current.pauseAudio then
+        current.pauseAudio()
+    end
     top = top + 1
     states[top] = state
     current = state
@@ -24,6 +27,9 @@ function fsm.pop()
     current = states[top]
     if current.playAudio then
         current.playAudio()
+    end
+    if current.continueAudio then
+        current.continueAudio()
     end
 end
 
