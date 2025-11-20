@@ -156,7 +156,7 @@ function pattern.enter()
     end
 end
 
--- TODO: button[2] is not always enabled (in case #images <= 12)
+-- TODO: Clean up later.
 function pattern.exit()
     group = 1
     from = 1
