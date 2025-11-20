@@ -91,10 +91,17 @@ local Menu = {}
 Menu.__index = Menu
 ui.Menu = Menu
 
-function Menu.new(x, y, entries)
+-- TODO: For right align, it computes the width which also computed in Button.new().
+--       Should it just passed the width and height?
+function Menu.new(x, y, align, entries)
     local buttons = {}
+    local button = nil
     for i, entry in ipairs(entries) do
-        local button = Button.new(x, y, entry[1], entry[2])
+        if align == "left" then
+            button = Button.new(x, y, entry[1], entry[2])
+        elseif align == "right" then
+            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.padding, y, entry[1], entry[2])
+        end
         table.insert(buttons, button)
         y = button.y + button.h + 5 
     end

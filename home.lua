@@ -5,13 +5,17 @@ local character = require("character")
 local wallpaper = require("wallpaper")
 local ep1 = require("ep1")
 local ep2 = require("ep2")
+local pattern = require("pattern")
 
 local home = {
     name = "Home",
 }
 
 local imouto = nil
-local menu = nil
+local mainMenu = nil
+local stories = nil
+local areas = nil
+local current = nil
 local wall = nil
 local music = nil
 
@@ -20,7 +24,7 @@ function home.enter()
     wall = wallpaper.new("patterns/pastel64/blue1.png")
     imouto = character.new("characters/ichinose-kotomi.png")
 
-    menu = ui.Menu.new(10, 100, {
+    stories = ui.Menu.new(10, 100, "left", {
         {
             "#1 Hajimari", function()
                 print("[home] Button ep1 clicked!")
@@ -33,6 +37,30 @@ function home.enter()
                 fsm.push(ep2)
             end
         },
+    })
+
+    areas = ui.Menu.new(10, 100, "left", {
+        {
+            "Patterns", function()
+                print("[home] Button Patterns clicked!")
+                fsm.push(pattern)
+            end
+        },
+    })
+
+    mainMenu = ui.Menu.new(630, 100, "right", {
+        {
+            "Stories", function()
+                print("[home] Button Stories clicked!")
+                current = stories
+            end
+        },
+        {
+            "Areas", function()
+                print("[home] Button Areas clicked!")
+                current = areas
+            end
+        },
         {
             "Exit", function()
                 print("[home] Button Exit clicked!")
@@ -40,6 +68,8 @@ function home.enter()
             end
         },
     })
+
+    current = stories
 
     music = love.audio.newSource("audio/laur-you-are-my-irreplaceable-treasure.mp3", "stream")
     music:setLooping(true)
@@ -62,7 +92,8 @@ function home.stopAudio()
 end
 
 function home.update()
-    menu:update()
+    mainMenu:update()
+    current:update()
 end
 
 function home.draw()
@@ -79,15 +110,18 @@ function home.draw()
 
     imouto:draw()
     love.graphics.setFont(game.font)
-    menu:draw()
+    mainMenu:draw()
+    current:draw()
 end
 
 function home.mousepressed(x, y, button)
-    menu:mousepressed(x, y, button)
+    mainMenu:mousepressed(x, y, button)
+    current:mousepressed(x, y, button)
 end
 
 function home.mousereleased(x, y, button)
-    menu:mousereleased(x, y, button)
+    mainMenu:mousereleased(x, y, button)
+    current:mousereleased(x, y, button)
 end
 
 function home.keypressed(key, scancode, isrepeat)
