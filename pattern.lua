@@ -153,9 +153,17 @@ function pattern.enter()
     end
 end
 
--- TODO: Reset some global variables.
+-- TODO: button[2] is not always enabled (in case #images <= 12)
 function pattern.exit()
+    group = 1
+    from = 1
+    to = math.min(12, #images)
+    images[1].selected = true
+    selectedThumb = images[1]
+    wall = images[1].img
     full = false
+    buttons[1].enabled = false
+    buttons[2].enabled = true
     linked = nil
     print("[Pattern] exit")
 end
