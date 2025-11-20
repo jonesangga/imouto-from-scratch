@@ -1,4 +1,4 @@
--- Consists of Button and Menu class.
+-- Consists of Button, Menu, Radio, and Dialogue class.
 
 local game = require("game")
 
