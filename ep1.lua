@@ -55,6 +55,16 @@ function ep1.exit()
     print("[ep1] exit")
 end
 
+-- Only called from fsm.pop().
+function ep1.continueAudio()
+    music:play()
+end
+
+-- Only called from fsm.push().
+function ep1.pauseAudio()
+    music:pause()
+end
+
 function ep1.update(dt)
     dialogue:update(dt)
 end
@@ -74,6 +84,9 @@ end
 
 -- TODO: Add confirmation dialogue?
 function ep1.keypressed(key, scancode, isrepeat)
+    if key == "w" then
+        wall:browse()
+    end
     if key == "q" then
         fsm.pop()
     end
