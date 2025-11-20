@@ -48,7 +48,7 @@ function home.enter()
         },
     })
 
-    mainMenu = ui.Menu.new(630, 100, "right", {
+    mainMenu = ui.Radio.new(630, 100, "right", {
         {
             "Stories", function()
                 print("[home] Button Stories clicked!")
@@ -68,6 +68,7 @@ function home.enter()
             end
         },
     })
+    mainMenu:select(1)
 
     current = stories
 

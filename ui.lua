@@ -136,6 +136,78 @@ function Menu:mousereleased(x, y, button)
 end
 
 
+-- Radio class. Similar to Menu class. A wrapper for Button class.
+local Radio = {}
+Radio.__index = Radio
+ui.Radio = Radio
+
+-- TODO: For right align, it computes the width which also computed in Button.new().
+--       Should it just passed the width and height?
+function Radio.new(x, y, align, entries)
+    local buttons = {}
+    local button = nil
+    for i, entry in ipairs(entries) do
+        if align == "left" then
+            button = Button.new(x, y, entry[1], entry[2])
+        elseif align == "right" then
+            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.padding, y, entry[1], entry[2])
+        end
+        table.insert(buttons, button)
+        y = button.y + button.h + 5
+    end
+
+    return setmetatable({
+        buttons = buttons,
+        selected = 1,
+    }, Radio)
+end
+
+function Radio:select(n)
+    self.selected = n
+end
+
+function Radio:update()
+    for _, button in ipairs(self.buttons) do
+        button:update()
+    end
+end
+
+function Radio:draw()
+    for i, btn in ipairs(self.buttons) do
+        local bg = {0.2, 0.2, 0.2}
+        if not btn.enabled then
+            bg = {0.5, 0.5, 0.5}
+        elseif btn.hovered then
+            bg = {0.1, 0.5, 0.8}
+        end
+        if i == self.selected then
+            bg = {0.1, 0.1, 0.9}
+        end
+
+        love.graphics.setColor(bg)
+        love.graphics.rectangle("fill", btn.x, btn.y, btn.w, btn.h)
+
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print(btn.text, btn.x + btn.padding, btn.y + btn.padding)
+    end
+end
+
+function Radio:mousepressed(x, y, button)
+    for i, btn in ipairs(self.buttons) do
+        if not btn.enabled then
+            return
+        end
+        if button == 1 and btn:contains(x, y) then
+            btn.onClick()
+            self.selected = i
+        end
+    end
+end
+
+function Radio:mousereleased(x, y, button)
+end
+
+
 -- Dialogue class.
 -- TODO: Add sound effect when clicking dialogue box.
 
