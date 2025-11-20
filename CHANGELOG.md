@@ -28,3 +28,4 @@ All notable changes to this project will be documented in this file.
 - util.lua.
 - Option for right aligned menu UI.
 - Stories and Areas sub menu in home screen.
+- Hide apply button if pattern viewer opened from home.

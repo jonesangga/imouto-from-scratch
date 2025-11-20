@@ -142,14 +142,14 @@ function pattern.enter()
             end
         end))
 
+        -- Disable prev button initally.
+        buttons[1].enabled = false
+
         apply = ui.Button.new(185, 400, "apply", function()
             linked.image = wall
             linked.w, linked.h = wall:getDimensions()
             fsm.pop()
         end)
-
-        -- Disable prev button initally.
-        buttons[1].enabled = false
     end
 end
 
@@ -168,7 +168,9 @@ function pattern.update(dt)
         for _, btn in ipairs(buttons) do
             btn:update(dt)
         end
-        apply:update(dt)
+        if linked then
+            apply:update(dt)
+        end
     end
 end
 
@@ -203,7 +205,9 @@ function pattern.draw()
         for _, btn in ipairs(buttons) do
             btn:draw()
         end
-        apply:draw()
+        if linked then
+            apply:draw()
+        end
     end
 end
 
@@ -219,7 +223,9 @@ function pattern.mousepressed(x, y, button)
         for _, btn in ipairs(buttons) do
             btn:mousepressed(x, y, button)
         end
-        apply:mousepressed(x, y, button)
+        if linked then
+            apply:mousepressed(x, y, button)
+        end
     end
 end
 
@@ -228,7 +234,9 @@ function pattern.mousereleased(x, y, button)
         for _, btn in ipairs(buttons) do
             btn:mousereleased(x, y, button)
         end
-        apply:mousereleased(x, y, button)
+        if linked then
+            apply:mousereleased(x, y, button)
+        end
     end
 end
 
