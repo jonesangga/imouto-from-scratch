@@ -1,6 +1,7 @@
 local game = require("game")
 local fsm = require("fsm")
 local ui = require("ui")
+local audio = require("audio")
 local character = require("character")
 local wallpaper = require("wallpaper")
 local ep1 = require("ep1")
@@ -72,9 +73,7 @@ function home.enter()
 
     current = stories
 
-    music = love.audio.newSource("audio/laur-you-are-my-irreplaceable-treasure.mp3", "stream")
-    music:setLooping(true)
-    music:setVolume(1.0)
+    music = audio.new("audio/laur-you-are-my-irreplaceable-treasure.mp3", "stream")
     music:play()
 end
 

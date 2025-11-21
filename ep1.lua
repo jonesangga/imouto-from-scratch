@@ -1,6 +1,7 @@
 local game = require("game")
 local fsm = require("fsm")
 local ui = require("ui")
+local audio = require("audio")
 local character = require("character")
 local wallpaper = require("wallpaper")
 
@@ -21,9 +22,7 @@ function ep1.enter()
         initialized = true
         wall = wallpaper.new("patterns/pastel64/blue3.png")
         imouto = character.new("characters/kanbe-kotori.png")
-        music = love.audio.newSource("audio/ep1.mp3", "stream")
-        music:setLooping(true)
-        music:setVolume(1.0)
+        music = audio.new("audio/ep1.mp3", "stream")
 
         dialogue = ui.Dialogue.new({
 2, "Welcome, Ada. I created you as my imouto. Korekara mo yoroshiku onegaishimasu.",

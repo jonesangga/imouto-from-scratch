@@ -32,3 +32,5 @@ All notable changes to this project will be documented in this file.
 - Reset the necessary global variables when exiting pattern state.
 - Pause audio when pushing state and resume when popping state.
 - Radio UI.
+- Audio class: wrapper for love audio.
+- Warn if audio doesn''t exits.

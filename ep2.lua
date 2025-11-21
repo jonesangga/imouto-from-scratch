@@ -1,6 +1,7 @@
 local game = require("game")
 local fsm = require("fsm")
 local ui = require("ui")
+local audio = require("audio")
 local character = require("character")
 local wallpaper = require("wallpaper")
 
@@ -21,9 +22,7 @@ function ep2.enter()
         initialized = true
         wall = wallpaper.new("patterns/neocities/pattern33.png")
         imouto = character.new("characters/kasugano-sora.png")
-        music = love.audio.newSource("audio/clannad-track-6.mp3", "stream")
-        music:setLooping(true)
-        music:setVolume(1.0)
+        music = audio.new("audio/clannad-track-6.mp3", "stream")
 
         dialogue = ui.Dialogue.new({
 1, "Nii-san, nani shiteru no?",
