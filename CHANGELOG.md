@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.1] - 2025-11-21
+
 ### Added
 
 - Stack-based singleton FSM.
@@ -34,3 +36,4 @@ All notable changes to this project will be documented in this file.
 - Radio UI.
 - Audio class: wrapper for love audio.
 - Warn if audio doesn''t exits.
+- README.md
