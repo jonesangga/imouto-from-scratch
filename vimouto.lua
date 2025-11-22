@@ -11,6 +11,9 @@ local buffer = {""}
 local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 
+local remembercx = false
+local cxBeforeMoveLine = 1
+
 local blocked_chars = {}    -- Key that has been consumed in keypressed and will not be used in textinput.
                             -- NOTE: Handle enter with "\n" and space with " " later.
 
@@ -21,7 +24,7 @@ end
 
 -- Move cursor to ensure valid column.
 local function clampCursor()
-    cx = clamp(cx, 1, #buffer[cy])
+    cx = clamp(cxBeforeMoveLine, 1, #buffer[cy])
 end
 
 
@@ -111,14 +114,24 @@ function vimouto.keypressed(key, scancode, isrepeat)
         end
     else  -- NORMAL mode.
         if key == "h" or key == "left" then
+            remembercx = false
             cx = clamp(cx - 1, 1, #buffer[cy])
         elseif key == "l" or key == "right" then
+            remembercx = false
             cx = clamp(cx + 1, 1, #buffer[cy])
         elseif key == "j" or key == "down" then
             cy = clamp(cy + 1, 1, #buffer)
+            if not remembercx then
+                remembercx = true
+                cxBeforeMoveLine = cx
+            end
             clampCursor()
         elseif key == "k" or key == "up" then
             cy = clamp(cy - 1, 1, #buffer)
+            if not remembercx then
+                remembercx = true
+                cxBeforeMoveLine = cx
+            end
             clampCursor()
         elseif key == "i" then
             if love.keyboard.isDown("lshift", "rshift") then
