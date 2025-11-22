@@ -11,6 +11,7 @@ local home = require("home")
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")  -- Nearest neighbor filtering for pixel art.
     love.graphics.setBackgroundColor(1, 1, 1)
+    love.keyboard.setKeyRepeat(true)
 
     game.init()
     fsm.push(home)
