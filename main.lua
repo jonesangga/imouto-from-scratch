@@ -6,6 +6,7 @@ local home = require("home")
 -- local ep1 = require("ep1")
 -- local ep2 = require("ep2")
 -- local pattern = require("pattern")
+-- local vimouto = require("vimouto")
 
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")  -- Nearest neighbor filtering for pixel art.
@@ -18,6 +19,7 @@ function love.load()
     -- fsm.push(ep1)
     -- fsm.push(ep2)
     -- fsm.push(pattern)
+    -- fsm.push(vimouto)
 end
 
 function love.update(dt)
@@ -35,6 +37,10 @@ end
 
 function love.mousereleased(x, y, button)
     fsm.mousereleased(x, y, button)
+end
+
+function love.textinput(t)
+    fsm.textinput(t)
 end
 
 function love.keypressed(key, scancode, isrepeat)

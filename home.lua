@@ -7,6 +7,7 @@ local wallpaper = require("wallpaper")
 local ep1 = require("ep1")
 local ep2 = require("ep2")
 local pattern = require("pattern")
+local vimouto = require("vimouto")
 
 local home = {
     name = "Home",
@@ -45,6 +46,12 @@ function home.enter()
             "Patterns", function()
                 print("[home] Button Patterns clicked!")
                 fsm.push(pattern)
+            end
+        },
+        {
+            "Vimouto", function()
+                print("[home] Button Vimouto clicked!")
+                fsm.push(vimouto)
             end
         },
     })

@@ -43,6 +43,12 @@ function fsm.mousereleased(x, y, button)
     current.mousereleased(x, y, button)
 end
 
+function fsm.textinput(t)
+    if current.textinput then
+        current.textinput(t)
+    end
+end
+
 function fsm.keypressed(key, scancode, isrepeat)
     current.keypressed(key, scancode, isrepeat)
 end

@@ -13,6 +13,10 @@ function game.init()
     game.font:setFilter("nearest")
     love.graphics.setFont(game.font)
 
+    game.fontMono       = love.graphics.newFont("fonts/roboto.ttf", 16)
+    game.fontMonoWidth  = game.fontMono:getWidth(".")
+    game.fontMonoHeight = game.fontMono:getHeight()
+
     game.screenPadding = 10
     game.padding       = 5   -- For button, dialogue box, etc.
 end

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- roboto.ttf font.
+- Vimouto: in-game vim like text editor.
+- `fsm.textinput()`.
+
+
 ## [0.0.1] - 2025-11-21
 
 ### Added
