@@ -113,19 +113,14 @@ function vimouto.keypressed(key, scancode, isrepeat)
             cx = clamp(cx - 1, 1, #buffer[cy])
         end
     else  -- NORMAL mode.
-        if key == "h" or key == "left" then
-            remembercx = false
-            cx = clamp(cx - 1, 1, #buffer[cy])
-        elseif key == "l" or key == "right" then
-            remembercx = false
-            cx = clamp(cx + 1, 1, #buffer[cy])
-        elseif key == "j" or key == "down" then
+        if key == "j" or key == "down" then
             cy = clamp(cy + 1, 1, #buffer)
             if not remembercx then
                 remembercx = true
                 cxBeforeMoveLine = cx
             end
             clampCursor()
+            return
         elseif key == "k" or key == "up" then
             cy = clamp(cy - 1, 1, #buffer)
             if not remembercx then
@@ -133,6 +128,15 @@ function vimouto.keypressed(key, scancode, isrepeat)
                 cxBeforeMoveLine = cx
             end
             clampCursor()
+            return
+        end
+
+        remembercx = false
+
+        if key == "h" or key == "left" then
+            cx = clamp(cx - 1, 1, #buffer[cy])
+        elseif key == "l" or key == "right" then
+            cx = clamp(cx + 1, 1, #buffer[cy])
         elseif key == "i" then
             if love.keyboard.isDown("lshift", "rshift") then
                 blocked_chars["I"] = true
