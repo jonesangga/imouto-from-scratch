@@ -121,7 +121,12 @@ function vimouto.keypressed(key, scancode, isrepeat)
             cy = clamp(cy - 1, 1, #buffer)
             clampCursor()
         elseif key == "i" then
-            blocked_chars["i"] = true
+            if love.keyboard.isDown("lshift", "rshift") then
+                blocked_chars["I"] = true
+                cx = 1
+            else
+                blocked_chars["i"] = true
+            end
             mode = "INSERT"
         elseif key == "o" then
             if love.keyboard.isDown("lshift", "rshift") then
