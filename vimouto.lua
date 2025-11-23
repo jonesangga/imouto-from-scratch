@@ -137,6 +137,37 @@ bindings["i"] = function()
     remembercx = false
 end
 
+bindings["a"] = function()
+    if love.keyboard.isDown("lshift", "rshift") then
+        blocked_chars["A"] = true
+        if cx > 1 then
+            cx = #buffer[cy] + 1
+        end
+    else
+        blocked_chars["a"] = true
+        if cx > 1 then
+            cx = cx + 1
+        end
+    end
+    mode = "INSERT"
+    remembercx = false
+end
+
+bindings["o"] = function()
+    if love.keyboard.isDown("lshift", "rshift") then
+        blocked_chars["O"] = true
+        table.insert(buffer, cy, "")
+        cx = 1
+    else
+        blocked_chars["o"] = true
+        table.insert(buffer, cy + 1, "")
+        cy = cy + 1
+        cx = 1
+    end
+    mode = "INSERT"
+    remembercx = false
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -274,32 +305,7 @@ function vimouto.keypressed(key, scancode, isrepeat)
 
         remembercx = false
 
-        if key == "o" then
-            if love.keyboard.isDown("lshift", "rshift") then
-                blocked_chars["O"] = true
-                table.insert(buffer, cy, "")
-                cx = 1
-            else
-                blocked_chars["o"] = true
-                table.insert(buffer, cy + 1, "")
-                cy = cy + 1
-                cx = 1
-            end
-            mode = "INSERT"
-        elseif key == "a" then
-            if love.keyboard.isDown("lshift", "rshift") then
-                blocked_chars["A"] = true
-                if cx > 1 then
-                    cx = #buffer[cy] + 1
-                end
-            else
-                blocked_chars["a"] = true
-                if cx > 1 then
-                    cx = cx + 1
-                end
-            end
-            mode = "INSERT"
-        elseif key == "0" then
+        if key == "0" then
             cx = 1
         elseif key == "4" and love.keyboard.isDown("lshift", "rshift") then  -- "$".
             cx = #buffer[cy]
