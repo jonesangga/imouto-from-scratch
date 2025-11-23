@@ -384,7 +384,10 @@ function vimouto.draw()
     elseif mode == "CMD" then
         love.graphics.print(":" .. cmdbuf, 0, (row - 1) * fontH)
     end
-    love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
+
+    if mode ~= "CMD" then
+        love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
+    end
 
     -- Small hint when normal's cmdbuf set.
     if mode == "NORMAL" and cmdbuf ~= "" then
