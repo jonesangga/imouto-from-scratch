@@ -17,6 +17,7 @@ local row = 22
 local scroll_y = 1
 
 local bindings = {}
+local insertBindings = {}
 local pendings = {}
 local remembercx = false
 local cxBeforeMoveLine = 1
@@ -215,6 +216,39 @@ bindings["backspace"] = function()
     remembercx = false
 end
 
+insertBindings["backspace"] = function()
+    local line = buffer[cy]
+    if cx > 1 then
+        buffer[cy] = line:sub(1, cx - 2) .. line:sub(cx)
+        cx = cx - 1
+    else
+        -- Join with previous line if present.
+        if cy > 1 then
+            local prevlen = #buffer[cy - 1]
+            buffer[cy - 1] = buffer[cy - 1] .. buffer[cy]
+            table.remove(buffer, cy)
+            cy = cy - 1
+            cx = prevlen + 1
+        end
+    end
+end
+
+insertBindings["return"] = function()
+    local line = buffer[cy]
+    local a = line:sub(1, cx - 1)
+    local b = line:sub(cx)
+    buffer[cy] = a
+    table.insert(buffer, cy + 1, b)
+    cy = cy + 1
+    cx = 1
+end
+insertBindings["kpenter"] = insertBindings["return"]
+
+insertBindings["escape"] = function()
+    mode = "NORMAL"
+    cx = clamp(cx - 1, 1, #buffer[cy])
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -309,32 +343,9 @@ end
 
 function vimouto.keypressed(key, scancode, isrepeat)
     if mode == "INSERT" then
-        if key == "backspace" then
-            local line = buffer[cy]
-            if cx > 1 then
-                buffer[cy] = line:sub(1, cx - 2) .. line:sub(cx)
-                cx = cx - 1
-            else
-                -- Join with previous line if present.
-                if cy > 1 then
-                    local prevlen = #buffer[cy - 1]
-                    buffer[cy - 1] = buffer[cy - 1] .. buffer[cy]
-                    table.remove(buffer, cy)
-                    cy = cy - 1
-                    cx = prevlen + 1
-                end
-            end
-        elseif key == "return" or key == "kpenter" then
-            local line = buffer[cy]
-            local a = line:sub(1, cx - 1)
-            local b = line:sub(cx)
-            buffer[cy] = a
-            table.insert(buffer, cy + 1, b)
-            cy = cy + 1
-            cx = 1
-        elseif key == "escape" then
-            mode = "NORMAL"
-            cx = clamp(cx - 1, 1, #buffer[cy])
+        if insertBindings[key] then
+            insertBindings[key]()
+            return
         end
     elseif mode == "NORMAL" then  -- NORMAL mode.
         if cmdbuf ~= "" then
