@@ -145,12 +145,12 @@ end
 normalBindings["a"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         blocked_chars["A"] = true
-        if cx > 1 then
-            cx = #buffer[cy] + 1
-        end
+        cx = #buffer[cy] + 1  -- NOTE: The case for empty line already included here.
     else
         blocked_chars["a"] = true
-        if cx > 1 then
+        if #buffer[cy] == 0 then
+            cx = 1
+        else
             cx = cx + 1
         end
     end
