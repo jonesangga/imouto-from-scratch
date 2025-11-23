@@ -198,6 +198,23 @@ bindings[";"] = function()
     end
 end
 
+bindings["backspace"] = function()
+    if cx > 1 then
+        cx = cx - 1
+    else
+        -- Go to the end of previous line, if any.
+        if cy > 1 then
+            cy = cy - 1
+            cx = #buffer[cy]
+            -- Handle empty line.
+            if cx == 0 then
+                cx = 1
+            end
+        end
+    end
+    remembercx = false
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
