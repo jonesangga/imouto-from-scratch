@@ -88,7 +88,12 @@ pendings["d"] = {
 }
 
 normalBindings["g"] = function()
-    cmdbuf = "g"
+    if love.keyboard.isDown("lshift", "rshift") then
+        cy = #buffer
+        cx = 1
+    else
+        cmdbuf = "g"
+    end
     remembercx = false
 end
 
