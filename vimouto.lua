@@ -96,9 +96,17 @@ function vimouto.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
 
+    local digitMax = math.floor(math.log10(#buffer)) + 1
+    local lineNumberW = digitMax + 1
+
+    local function format(n)
+        local digit = math.floor(math.log10(n)) + 1
+        return string.rep(" ", digitMax - digit) .. n .. " "
+    end
+
     local to = math.min(scroll_y + row - 2, #buffer)
     for i = scroll_y, to do
-        love.graphics.print(buffer[i], 0, (i - scroll_y) * fontH)
+        love.graphics.print(format(i) .. buffer[i], 0, (i - scroll_y) * fontH)
     end
 
     -- Draw mode, row, and col indicator.
@@ -126,7 +134,7 @@ function vimouto.draw()
         love.graphics.print(chstr, px, py)
     else
         local line = buffer[cy]
-        local px = (cx - 1) * fontW
+        local px = (cx - 1 + lineNumberW) * fontW
         local py = (cy - scroll_y) * fontH
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", px, py, fontW, fontH)
