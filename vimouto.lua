@@ -126,6 +126,17 @@ bindings["l"] = function()
 end
 bindings["right"] = bindings["l"]
 
+bindings["i"] = function()
+    if love.keyboard.isDown("lshift", "rshift") then
+        blocked_chars["I"] = true
+        cx = 1
+    else
+        blocked_chars["i"] = true
+    end
+    mode = "INSERT"
+    remembercx = false
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -263,15 +274,7 @@ function vimouto.keypressed(key, scancode, isrepeat)
 
         remembercx = false
 
-        if key == "i" then
-            if love.keyboard.isDown("lshift", "rshift") then
-                blocked_chars["I"] = true
-                cx = 1
-            else
-                blocked_chars["i"] = true
-            end
-            mode = "INSERT"
-        elseif key == "o" then
+        if key == "o" then
             if love.keyboard.isDown("lshift", "rshift") then
                 blocked_chars["O"] = true
                 table.insert(buffer, cy, "")
