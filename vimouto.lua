@@ -9,6 +9,7 @@ local fontW, fontH
 local mode = "NORMAL"       -- "NORMAL" or "INSERT".
 local buffer = {""}
 local cmdbuf = ""
+local cmdcx = 1
 local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 
@@ -67,14 +68,24 @@ function vimouto.draw()
     -- end
 
     -- Draw cursor block (invert the color).
-    local line = buffer[cy]
-    local px = (cx - 1) * fontW
-    local py = (cy - 1) * fontH
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("fill", px, py, fontW, fontH)
-    love.graphics.setColor(1, 1, 1)
-    local chstr = line:sub(cx, cx) ~= "" and line:sub(cx, cx) or " "
-    love.graphics.print(chstr, px, py)
+    if mode == "CMD" then
+        local px = cmdcx * fontW
+        local py = (row - 1) * fontH
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.rectangle("fill", px, py, fontW, fontH)
+        love.graphics.setColor(1, 1, 1)
+        local chstr = cmdbuf:sub(cmdcx, cmdcx) ~= "" and cmdbuf:sub(cmdcx, cmdcx) or " "
+        love.graphics.print(chstr, px, py)
+    else
+        local line = buffer[cy]
+        local px = (cx - 1) * fontW
+        local py = (cy - 1) * fontH
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.rectangle("fill", px, py, fontW, fontH)
+        love.graphics.setColor(1, 1, 1)
+        local chstr = line:sub(cx, cx) ~= "" and line:sub(cx, cx) or " "
+        love.graphics.print(chstr, px, py)
+    end
 end
 
 function vimouto.textinput(t)
@@ -89,6 +100,7 @@ function vimouto.textinput(t)
         cx = cx + #t
     elseif mode == "CMD" then
         cmdbuf = cmdbuf .. t
+        cmdcx = cmdcx + #t
     end
 end
 
@@ -197,8 +209,9 @@ function vimouto.keypressed(key, scancode, isrepeat)
         end
     else  -- "CMD" mode.
         if key == "backspace" then
-            if #cmdbuf > 0 then
-                cmdbuf = cmdbuf:sub(1, #cmdbuf - 1)
+            if cmdcx > 1 then
+                cmdbuf = cmdbuf:sub(1, cmdcx - 2) .. cmdbuf:sub(cmdcx)
+                cmdcx = cmdcx - 1
             end
         elseif key == "return" or key == "kpenter" then
             if cmdbuf == "q" then
@@ -206,9 +219,11 @@ function vimouto.keypressed(key, scancode, isrepeat)
             end
             mode = "NORMAL"
             cmdbuf = ""
+            cmdcx = 1
         elseif key == "escape" then
             mode = "NORMAL"
             cmdbuf = ""
+            cmdcx = 1
         end
     end
 end
