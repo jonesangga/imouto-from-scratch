@@ -18,6 +18,7 @@ local scroll_y = 1
 
 local bindings = {}
 local insertBindings = {}
+local cmdBindings = {}
 local pendings = {}
 local remembercx = false
 local cxBeforeMoveLine = 1
@@ -249,6 +250,45 @@ insertBindings["escape"] = function()
     cx = clamp(cx - 1, 1, #buffer[cy])
 end
 
+cmdBindings["backspace"] = function()
+    if cmdcx > 1 then
+        cmdbuf = cmdbuf:sub(1, cmdcx - 2) .. cmdbuf:sub(cmdcx)
+        cmdcx = cmdcx - 1
+    else
+        mode = "NORMAL"
+        cmdbuf = ""
+        cmdcx = 1
+    end
+end
+
+cmdBindings["return"] = function()
+    -- TODO: Add feedback message.
+    local cmd, arg = cmdbuf:match("^([A-Za-z0-9]+)%s+([%w%-%._]+)%s*$")
+    if cmd == nil then
+        cmd = cmdbuf:match("^([A-Za-z0-9]+)$")
+    end
+    print(cmd, arg)
+
+    if cmd == "q" and arg == nil then
+        love.event.quit()
+    elseif cmd == "w" then
+        local ok, err = saveToFile(arg)
+        print(ok, err)
+    else
+        print("Not a valid command: " .. cmd)
+    end
+
+    mode = "NORMAL"
+    cmdbuf = ""
+    cmdcx = 1
+end
+
+cmdBindings["escape"] = function()
+    mode = "NORMAL"
+    cmdbuf = ""
+    cmdcx = 1
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -361,39 +401,9 @@ function vimouto.keypressed(key, scancode, isrepeat)
             return
         end
     else  -- "CMD" mode.
-        if key == "backspace" then
-            if cmdcx > 1 then
-                cmdbuf = cmdbuf:sub(1, cmdcx - 2) .. cmdbuf:sub(cmdcx)
-                cmdcx = cmdcx - 1
-            else
-                mode = "NORMAL"
-                cmdbuf = ""
-                cmdcx = 1
-            end
-        elseif key == "return" or key == "kpenter" then
-            -- TODO: Add feedback message.
-            local cmd, arg = cmdbuf:match("^([A-Za-z0-9]+)%s+([%w%-%._]+)%s*$")
-            if cmd == nil then
-                cmd = cmdbuf:match("^([A-Za-z0-9]+)$")
-            end
-            print(cmd, arg)
-
-            if cmd == "q" and arg == nil then
-                love.event.quit()
-            elseif cmd == "w" then
-                local ok, err = saveToFile(arg)
-                print(ok, err)
-            else
-                print("Not a valid command: " .. cmd)
-            end
-
-            mode = "NORMAL"
-            cmdbuf = ""
-            cmdcx = 1
-        elseif key == "escape" then
-            mode = "NORMAL"
-            cmdbuf = ""
-            cmdcx = 1
+        if cmdBindings[key] then
+            cmdBindings[key]()
+            return
         end
     end
 end
