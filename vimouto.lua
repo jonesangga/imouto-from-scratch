@@ -29,6 +29,8 @@ local cxBeforeMoveLine = 1
 local blocked_chars = {}    -- Key that has been consumed in keypressed and will not be used in textinput.
                             -- NOTE: Handle enter with "\n" and space with " " later.
 
+local message = ""
+local showMessage = false
 
 local function clamp(n, a, b)
     return math.max(a, math.min(b, n))
@@ -39,27 +41,40 @@ local function clampCursor()
     cx = clamp(cxBeforeMoveLine, 1, #buffer[cy])
 end
 
-local function saveToFile(path)
-    local fp, err
+local function feedback(msg)
+    showMessage = true
+    message = msg
+end
+
+-- TODO: Fix later.
+local function validatePath(path)
+    return true
+end
+
+-- NOTE: Currently doesn't support directory path.
+local function write(path)
     if not path or path == "" then
         if savePath == "" then
-            error("No file name")
-            return false
+            feedback("ERROR: No file name")
+            return
         end
-        fp, err = io.open(savePath, "w")
     else
-        path = "Ada/" .. path
-        fp, err = io.open(path, "w")
+        if not validatePath(path) then
+            feedback("ERROR: Invalid path")
+            return
+        end
+        savePath = "Ada/" .. path
     end
 
+    local fp, err = io.open(savePath, "w")
     if not fp then
-        return false, err
+        feedback("ERROR: Cannot open " .. savePath)
+        return
     end
-    savePath = path
 
     fp:write(table.concat(buffer, "\n"))
     fp:close()
-    return true
+    feedback(savePath .. " written")
 end
 
 local function delete_line(r)
@@ -205,6 +220,7 @@ normalBindings[";"] = function()
         blocked_chars[":"] = true
         mode = "CMD"
         cmdbuf = ""
+        showMessage = false
     end
 end
 
@@ -284,20 +300,21 @@ cmdBindings["backspace"] = function()
 end
 
 cmdBindings["return"] = function()
-    -- TODO: Add feedback message.
     local cmd, arg = cmdbuf:match("^([A-Za-z0-9]+)%s+([%w%-%._]+)%s*$")
     if cmd == nil then
         cmd = cmdbuf:match("^([A-Za-z0-9]+)$")
     end
-    print(cmd, arg)
 
-    if cmd == "q" and arg == nil then
-        love.event.quit()
-    elseif cmd == "w" then
-        local ok, err = saveToFile(arg)
-        print(ok, err)
+    if cmd ~= nil then
+        if cmd == "q" and arg == nil then
+            love.event.quit()
+        elseif cmd == "w" then
+            write(arg)
+        else
+            feedback("ERROR: Not a valid command: " .. cmd)
+        end
     else
-        print("Not a valid command: " .. cmd)
+        feedback("ERROR: Not a valid command")
     end
 
     mode = "NORMAL"
@@ -372,6 +389,10 @@ function vimouto.draw()
     -- Small hint when normal's cmdbuf set.
     if mode == "NORMAL" and cmdbuf ~= "" then
         love.graphics.print(cmdbuf, 400, (row - 1) * fontH)
+    end
+
+    if showMessage then
+        love.graphics.print(message, 0, (row - 1) * fontH)
     end
 
     -- Draw cursor block (invert the color).
