@@ -102,7 +102,7 @@ bindings["j"] = function()
     end
     clampCursor()
 end
-bindings["donw"] = bindings["j"]
+bindings["down"] = bindings["j"]
 
 bindings["k"] = function()
     cy = clamp(cy - 1, 1, #buffer)
