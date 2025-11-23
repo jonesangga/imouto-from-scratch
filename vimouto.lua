@@ -6,6 +6,8 @@ local vimouto = {
 
 local fontW, fontH
 
+local pwd = "Ada"           -- Ada's home dir.
+local savePath = ""
 local mode = "NORMAL"       -- "NORMAL" or "INSERT".
 local buffer = {""}
 local cmdbuf = ""
@@ -27,6 +29,29 @@ end
 -- Move cursor to ensure valid column.
 local function clampCursor()
     cx = clamp(cxBeforeMoveLine, 1, #buffer[cy])
+end
+
+local function saveToFile(path)
+    local fp, err
+    if not path or path == "" then
+        if savePath == "" then
+            error("No file name")
+            return false
+        end
+        fp, err = io.open(savePath, "w")
+    else
+        path = "Ada/" .. path
+        fp, err = io.open(path, "w")
+    end
+
+    if not fp then
+        return false, err
+    end
+    savePath = path
+
+    fp:write(table.concat(buffer, "\n"))
+    fp:close()
+    return true
 end
 
 
@@ -218,9 +243,22 @@ function vimouto.keypressed(key, scancode, isrepeat)
                 cmdcx = 1
             end
         elseif key == "return" or key == "kpenter" then
-            if cmdbuf == "q" then
-                love.event.quit()
+            -- TODO: Add feedback message.
+            local cmd, arg = cmdbuf:match("^([A-Za-z0-9]+)%s+([%w%-%._]+)%s*$")
+            if cmd == nil then
+                cmd = cmdbuf:match("^([A-Za-z0-9]+)$")
             end
+            print(cmd, arg)
+
+            if cmd == "q" and arg == nil then
+                love.event.quit()
+            elseif cmd == "w" then
+                local ok, err = saveToFile(arg)
+                print(ok, err)
+            else
+                print("Not a valid command: " .. cmd)
+            end
+
             mode = "NORMAL"
             cmdbuf = ""
             cmdcx = 1
