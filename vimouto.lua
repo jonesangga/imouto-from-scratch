@@ -15,6 +15,9 @@ local cmdcx = 1
 local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 local scroll_y = 1
+local waitForjk = false
+local jkTimer = 0           -- Using jk as escape.
+local jkTimeout = 0.5       -- If over 1 second then it is just text input.
 
 local normalBindings = {}
 local insertBindings = {}
@@ -250,6 +253,20 @@ insertBindings["escape"] = function()
     cx = clamp(cx - 1, 1, #buffer[cy])
 end
 
+insertBindings["j"] = function()
+    if waitForjk then
+        cx = cx + 1
+    end
+    waitForjk = true
+    jkTimer = 0
+
+    blocked_chars["j"] = true
+    local line = buffer[cy]
+    local a = line:sub(1, cx - 1)
+    local b = line:sub(cx)
+    buffer[cy] = a .. "j" .. b
+end
+
 cmdBindings["backspace"] = function()
     if cmdcx > 1 then
         cmdbuf = cmdbuf:sub(1, cmdcx - 2) .. cmdbuf:sub(cmdcx)
@@ -311,6 +328,14 @@ function vimouto.update(dt)
     elseif cy >= scroll_y + lines_on_screen then
         scroll_y = cy - lines_on_screen + 1
     end
+
+    if waitForjk then
+        jkTimer = jkTimer + dt
+        if jkTimer > jkTimeout then
+            waitForjk = false
+            cx = cx + 1
+        end
+    end
 end
 
 function vimouto.draw()
@@ -370,6 +395,19 @@ function vimouto.textinput(t)
         return
     end
     if mode == "INSERT" then
+        if waitForjk then
+            waitForjk = false
+
+            if t == "k" then
+                local line = buffer[cy]
+                buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
+                cx = clamp(cx - 1, 1, #buffer[cy])
+                mode = "NORMAL"
+                return
+            end
+            cx = cx + 1
+        end
+
         local line = buffer[cy]
         local a = line:sub(1, cx - 1)
         local b = line:sub(cx)
