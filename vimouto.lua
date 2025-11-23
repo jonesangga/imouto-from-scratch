@@ -168,6 +168,36 @@ bindings["o"] = function()
     remembercx = false
 end
 
+bindings["x"] = function()
+    local line = buffer[cy]
+    local lineLen = #line
+    buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
+    if cx == lineLen and lineLen ~= 1 then
+        cx = cx - 1
+    end
+    remembercx = false
+end
+
+bindings["0"] = function()
+    cx = 1
+    remembercx = false
+end
+
+bindings["4"] = function()
+    if love.keyboard.isDown("lshift", "rshift") then
+        cx = #buffer[cy]
+    end
+    remembercx = false
+end
+
+bindings[";"] = function()
+    if love.keyboard.isDown("lshift", "rshift") then
+        blocked_chars[":"] = true
+        mode = "CMD"
+        cmdbuf = ""
+    end
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -301,25 +331,6 @@ function vimouto.keypressed(key, scancode, isrepeat)
         if bindings[key] then
             bindings[key]()
             return
-        end
-
-        remembercx = false
-
-        if key == "0" then
-            cx = 1
-        elseif key == "4" and love.keyboard.isDown("lshift", "rshift") then  -- "$".
-            cx = #buffer[cy]
-        elseif key == "x" then
-            local line = buffer[cy]
-            local lineLen = #line
-            buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
-            if cx == lineLen and lineLen ~= 1 then
-                cx = cx - 1
-            end
-        elseif key == ";" and love.keyboard.isDown("lshift", "rshift") then
-            blocked_chars[":"] = true
-            mode = "CMD"
-            cmdbuf = ""
         end
     else  -- "CMD" mode.
         if key == "backspace" then
