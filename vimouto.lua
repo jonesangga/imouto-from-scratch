@@ -17,6 +17,7 @@ local row = 22
 local scroll_y = 1
 
 local bindings = {}
+local pendings = {}
 local remembercx = false
 local cxBeforeMoveLine = 1
 
@@ -80,15 +81,16 @@ bindings["d"] = function()
 end
 
 bindings["g"] = function()
-    if cmdbuf == "g" then
-        cy = 1
-        cx = 1
-        cmdbuf = ""
-    else
-        cmdbuf = "g"
-    end
+    cmdbuf = "g"
     remembercx = false
 end
+
+pendings["g"] = {
+    ["g"] =  function()
+        cy = 1
+        cx = 1
+    end,
+}
 
 bindings["j"] = function()
     cy = clamp(cy + 1, 1, #buffer)
@@ -232,13 +234,18 @@ function vimouto.keypressed(key, scancode, isrepeat)
             cx = clamp(cx - 1, 1, #buffer[cy])
         end
     elseif mode == "NORMAL" then  -- NORMAL mode.
+        if cmdbuf ~= "" then
+            if pendings[cmdbuf] and pendings[cmdbuf][key] then
+                pendings[cmdbuf][key]()
+            end
+            cmdbuf = ""
+            return
+        end
+
         if bindings[key] then
             bindings[key]()
             return
         end
-
-        -- Reset operator pending when not followed by valid action.
-        cmdbuf = ""
 
         remembercx = false
 
