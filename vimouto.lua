@@ -76,6 +76,7 @@ bindings["d"] = function()
     else
         cmdbuf = "d"
     end
+    remembercx = false
 end
 
 bindings["g"] = function()
@@ -86,7 +87,28 @@ bindings["g"] = function()
     else
         cmdbuf = "g"
     end
+    remembercx = false
 end
+
+bindings["j"] = function()
+    cy = clamp(cy + 1, 1, #buffer)
+    if not remembercx then
+        remembercx = true
+        cxBeforeMoveLine = cx
+    end
+    clampCursor()
+end
+bindings["donw"] = bindings["j"]
+
+bindings["k"] = function()
+    cy = clamp(cy - 1, 1, #buffer)
+    if not remembercx then
+        remembercx = true
+        cxBeforeMoveLine = cx
+    end
+    clampCursor()
+end
+bindings["up"] = bindings["k"]
 
 
 function vimouto.enter()
@@ -217,24 +239,6 @@ function vimouto.keypressed(key, scancode, isrepeat)
 
         -- Reset operator pending when not followed by valid action.
         cmdbuf = ""
-
-        if key == "j" or key == "down" then
-            cy = clamp(cy + 1, 1, #buffer)
-            if not remembercx then
-                remembercx = true
-                cxBeforeMoveLine = cx
-            end
-            clampCursor()
-            return
-        elseif key == "k" or key == "up" then
-            cy = clamp(cy - 1, 1, #buffer)
-            if not remembercx then
-                remembercx = true
-                cxBeforeMoveLine = cx
-            end
-            clampCursor()
-            return
-        end
 
         remembercx = false
 
