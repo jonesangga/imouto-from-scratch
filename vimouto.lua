@@ -71,14 +71,16 @@ local function delete_line(r)
 end
 
 bindings["d"] = function()
-    if cmdbuf == "d" then
-        delete_line(cy)
-        cmdbuf = ""
-    else
-        cmdbuf = "d"
-    end
+    cmdbuf = "d"
     remembercx = false
 end
+
+pendings["d"] = {
+    ["d"] = function()
+        delete_line(cy)
+        cmdbuf = ""
+    end,
+}
 
 bindings["g"] = function()
     cmdbuf = "g"
