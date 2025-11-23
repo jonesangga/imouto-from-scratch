@@ -55,6 +55,19 @@ local function saveToFile(path)
     return true
 end
 
+local function delete_line(r)
+    if #buffer == 1 then
+        buffer[1] = ""
+        cx, cy = 1, 1
+        return
+    end
+    table.remove(buffer, r)
+    if cy > #buffer then
+        cy = #buffer
+    end
+    cx = 1
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -98,9 +111,9 @@ function vimouto.draw()
     love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
 
     -- Small hint when normal's cmdbuf set.
-    -- if cmdbuf == "d" and mode == "normal" then
-        -- love.graphics.print("d", 400, (row - 1) * fontH)
-    -- end
+    if cmdbuf == "d" and mode == "NORMAL" then
+        love.graphics.print("d", 400, (row - 1) * fontH)
+    end
 
     -- Draw cursor block (invert the color).
     if mode == "CMD" then
@@ -169,6 +182,11 @@ function vimouto.keypressed(key, scancode, isrepeat)
             cx = clamp(cx - 1, 1, #buffer[cy])
         end
     elseif mode == "NORMAL" then  -- NORMAL mode.
+        -- TODO: Think about this later.
+        if key ~= "d" then  -- To abort dd.
+            cmdbuf = ""
+        end
+
         if key == "j" or key == "down" then
             cy = clamp(cy + 1, 1, #buffer)
             if not remembercx then
@@ -236,6 +254,14 @@ function vimouto.keypressed(key, scancode, isrepeat)
             buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
             if cx == lineLen and lineLen ~= 1 then
                 cx = cx - 1
+            end
+        elseif key == "d" then
+            -- dd: if previous cmdbuf was "d", delete current line.
+            if cmdbuf == "d" then
+                delete_line(cy)
+                cmdbuf = ""
+            else
+                cmdbuf = "d"
             end
         elseif key == ";" and love.keyboard.isDown("lshift", "rshift") then
             blocked_chars[":"] = true
