@@ -16,7 +16,7 @@ local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 local scroll_y = 1
 
-local bindings = {}
+local normalBindings = {}
 local insertBindings = {}
 local cmdBindings = {}
 local pendings = {}
@@ -72,7 +72,7 @@ local function delete_line(r)
     cx = 1
 end
 
-bindings["d"] = function()
+normalBindings["d"] = function()
     cmdbuf = "d"
     remembercx = false
 end
@@ -84,7 +84,7 @@ pendings["d"] = {
     end,
 }
 
-bindings["g"] = function()
+normalBindings["g"] = function()
     cmdbuf = "g"
     remembercx = false
 end
@@ -96,7 +96,7 @@ pendings["g"] = {
     end,
 }
 
-bindings["j"] = function()
+normalBindings["j"] = function()
     cy = clamp(cy + 1, 1, #buffer)
     if not remembercx then
         remembercx = true
@@ -104,9 +104,9 @@ bindings["j"] = function()
     end
     clampCursor()
 end
-bindings["down"] = bindings["j"]
+normalBindings["down"] = normalBindings["j"]
 
-bindings["k"] = function()
+normalBindings["k"] = function()
     cy = clamp(cy - 1, 1, #buffer)
     if not remembercx then
         remembercx = true
@@ -114,21 +114,21 @@ bindings["k"] = function()
     end
     clampCursor()
 end
-bindings["up"] = bindings["k"]
+normalBindings["up"] = normalBindings["k"]
 
-bindings["h"] = function()
+normalBindings["h"] = function()
     cx = clamp(cx - 1, 1, #buffer[cy])
     remembercx = false
 end
-bindings["left"] = bindings["h"]
+normalBindings["left"] = normalBindings["h"]
 
-bindings["l"] = function()
+normalBindings["l"] = function()
     cx = clamp(cx + 1, 1, #buffer[cy])
     remembercx = false
 end
-bindings["right"] = bindings["l"]
+normalBindings["right"] = normalBindings["l"]
 
-bindings["i"] = function()
+normalBindings["i"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         blocked_chars["I"] = true
         cx = 1
@@ -139,7 +139,7 @@ bindings["i"] = function()
     remembercx = false
 end
 
-bindings["a"] = function()
+normalBindings["a"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         blocked_chars["A"] = true
         if cx > 1 then
@@ -155,7 +155,7 @@ bindings["a"] = function()
     remembercx = false
 end
 
-bindings["o"] = function()
+normalBindings["o"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         blocked_chars["O"] = true
         table.insert(buffer, cy, "")
@@ -170,7 +170,7 @@ bindings["o"] = function()
     remembercx = false
 end
 
-bindings["x"] = function()
+normalBindings["x"] = function()
     local line = buffer[cy]
     local lineLen = #line
     buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
@@ -180,19 +180,19 @@ bindings["x"] = function()
     remembercx = false
 end
 
-bindings["0"] = function()
+normalBindings["0"] = function()
     cx = 1
     remembercx = false
 end
 
-bindings["4"] = function()
+normalBindings["4"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         cx = #buffer[cy]
     end
     remembercx = false
 end
 
-bindings[";"] = function()
+normalBindings[";"] = function()
     if love.keyboard.isDown("lshift", "rshift") then
         blocked_chars[":"] = true
         mode = "CMD"
@@ -200,7 +200,7 @@ bindings[";"] = function()
     end
 end
 
-bindings["backspace"] = function()
+normalBindings["backspace"] = function()
     if cx > 1 then
         cx = cx - 1
     else
@@ -396,8 +396,8 @@ function vimouto.keypressed(key, scancode, isrepeat)
             return
         end
 
-        if bindings[key] then
-            bindings[key]()
+        if normalBindings[key] then
+            normalBindings[key]()
             return
         end
     else  -- "CMD" mode.
