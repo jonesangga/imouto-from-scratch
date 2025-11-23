@@ -8,6 +8,7 @@ local fontW, fontH
 
 local mode = "NORMAL"       -- "NORMAL" or "INSERT".
 local buffer = {""}
+local cmdbuf = ""
 local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 
@@ -53,8 +54,17 @@ function vimouto.draw()
 
     -- Draw mode, row, and col indicator.
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print("-- " .. mode .. " --", 0, (row - 1) * fontH)
+    if mode == "INSERT" then
+        love.graphics.print("-- INSERT --", 0, (row - 1) * fontH)
+    elseif mode == "CMD" then
+        love.graphics.print(":" .. cmdbuf, 0, (row - 1) * fontH)
+    end
     love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
+
+    -- Small hint when normal's cmdbuf set.
+    -- if cmdbuf == "d" and mode == "normal" then
+        -- love.graphics.print("d", 400, (row - 1) * fontH)
+    -- end
 
     -- Draw cursor block (invert the color).
     local line = buffer[cy]
@@ -68,19 +78,18 @@ function vimouto.draw()
 end
 
 function vimouto.textinput(t)
-    if mode ~= "INSERT" then
-        return
-    end
-
     if blocked_chars[t] then
         return
     end
-
-    local line = buffer[cy]
-    local a = line:sub(1, cx - 1)
-    local b = line:sub(cx)
-    buffer[cy] = a .. t .. b
-    cx = cx + #t
+    if mode == "INSERT" then
+        local line = buffer[cy]
+        local a = line:sub(1, cx - 1)
+        local b = line:sub(cx)
+        buffer[cy] = a .. t .. b
+        cx = cx + #t
+    elseif mode == "CMD" then
+        cmdbuf = cmdbuf .. t
+    end
 end
 
 function vimouto.keypressed(key, scancode, isrepeat)
@@ -112,7 +121,7 @@ function vimouto.keypressed(key, scancode, isrepeat)
             mode = "NORMAL"
             cx = clamp(cx - 1, 1, #buffer[cy])
         end
-    else  -- NORMAL mode.
+    elseif mode == "NORMAL" then  -- NORMAL mode.
         if key == "j" or key == "down" then
             cy = clamp(cy + 1, 1, #buffer)
             if not remembercx then
@@ -181,6 +190,25 @@ function vimouto.keypressed(key, scancode, isrepeat)
             if cx == lineLen and lineLen ~= 1 then
                 cx = cx - 1
             end
+        elseif key == ";" and love.keyboard.isDown("lshift", "rshift") then
+            blocked_chars[":"] = true
+            mode = "CMD"
+            cmdbuf = ""
+        end
+    else  -- "CMD" mode.
+        if key == "backspace" then
+            if #cmdbuf > 0 then
+                cmdbuf = cmdbuf:sub(1, #cmdbuf - 1)
+            end
+        elseif key == "return" or key == "kpenter" then
+            if cmdbuf == "q" then
+                love.event.quit()
+            end
+            mode = "NORMAL"
+            cmdbuf = ""
+        elseif key == "escape" then
+            mode = "NORMAL"
+            cmdbuf = ""
         end
     end
 end
