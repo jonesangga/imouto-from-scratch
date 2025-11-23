@@ -16,6 +16,7 @@ local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
 local scroll_y = 1
 
+local bindings = {}
 local remembercx = false
 local cxBeforeMoveLine = 1
 
@@ -66,6 +67,25 @@ local function delete_line(r)
         cy = #buffer
     end
     cx = 1
+end
+
+bindings["d"] = function()
+    if cmdbuf == "d" then
+        delete_line(cy)
+        cmdbuf = ""
+    else
+        cmdbuf = "d"
+    end
+end
+
+bindings["g"] = function()
+    if cmdbuf == "g" then
+        cy = 1
+        cx = 1
+        cmdbuf = ""
+    else
+        cmdbuf = "g"
+    end
 end
 
 
@@ -190,10 +210,13 @@ function vimouto.keypressed(key, scancode, isrepeat)
             cx = clamp(cx - 1, 1, #buffer[cy])
         end
     elseif mode == "NORMAL" then  -- NORMAL mode.
-        -- TODO: Think about this later.
-        if cmdbuf ~= key then  -- To abort dd, gg.
-            cmdbuf = ""
+        if bindings[key] then
+            bindings[key]()
+            return
         end
+
+        -- Reset operator pending when not followed by valid action.
+        cmdbuf = ""
 
         if key == "j" or key == "down" then
             cy = clamp(cy + 1, 1, #buffer)
@@ -262,21 +285,6 @@ function vimouto.keypressed(key, scancode, isrepeat)
             buffer[cy] = line:sub(1, cx - 1) .. line:sub(cx + 1)
             if cx == lineLen and lineLen ~= 1 then
                 cx = cx - 1
-            end
-        elseif key == "d" then
-            if cmdbuf == "d" then
-                delete_line(cy)
-                cmdbuf = ""
-            else
-                cmdbuf = "d"
-            end
-        elseif key == "g" then
-            if cmdbuf == "g" then
-                cy = 1
-                cx = 1
-                cmdbuf = ""
-            else
-                cmdbuf = "g"
             end
         elseif key == ";" and love.keyboard.isDown("lshift", "rshift") then
             blocked_chars[":"] = true
