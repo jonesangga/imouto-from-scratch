@@ -14,6 +14,7 @@ local cmdbuf = ""
 local cmdcx = 1
 local cx, cy = 1, 1         -- Cursor column and row (1-based).
 local row = 22
+local scroll_y = 1
 
 local remembercx = false
 local cxBeforeMoveLine = 1
@@ -68,14 +69,23 @@ end
 
 function vimouto.update(dt)
     blocked_chars = {}
+
+    -- When scrolling, keep cursor within visible area.
+    local lines_on_screen = row - 1
+    if cy < scroll_y then
+        scroll_y = cy
+    elseif cy >= scroll_y + lines_on_screen then
+        scroll_y = cy - lines_on_screen + 1
+    end
 end
 
 function vimouto.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
 
-    for i = 1, #buffer do
-        love.graphics.print(buffer[i], 0, (i - 1) * fontH)
+    local to = math.min(scroll_y + row - 2, #buffer)
+    for i = scroll_y, to do
+        love.graphics.print(buffer[i], 0, (i - scroll_y) * fontH)
     end
 
     -- Draw mode, row, and col indicator.
@@ -104,7 +114,7 @@ function vimouto.draw()
     else
         local line = buffer[cy]
         local px = (cx - 1) * fontW
-        local py = (cy - 1) * fontH
+        local py = (cy - scroll_y) * fontH
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", px, py, fontW, fontH)
         love.graphics.setColor(1, 1, 1)
