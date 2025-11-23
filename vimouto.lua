@@ -212,6 +212,10 @@ function vimouto.keypressed(key, scancode, isrepeat)
             if cmdcx > 1 then
                 cmdbuf = cmdbuf:sub(1, cmdcx - 2) .. cmdbuf:sub(cmdcx)
                 cmdcx = cmdcx - 1
+            else
+                mode = "NORMAL"
+                cmdbuf = ""
+                cmdcx = 1
             end
         elseif key == "return" or key == "kpenter" then
             if cmdbuf == "q" then
