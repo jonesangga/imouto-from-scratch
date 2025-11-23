@@ -119,8 +119,8 @@ function vimouto.draw()
     love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
 
     -- Small hint when normal's cmdbuf set.
-    if cmdbuf == "d" and mode == "NORMAL" then
-        love.graphics.print("d", 400, (row - 1) * fontH)
+    if mode == "NORMAL" and cmdbuf ~= "" then
+        love.graphics.print(cmdbuf, 400, (row - 1) * fontH)
     end
 
     -- Draw cursor block (invert the color).
@@ -191,7 +191,7 @@ function vimouto.keypressed(key, scancode, isrepeat)
         end
     elseif mode == "NORMAL" then  -- NORMAL mode.
         -- TODO: Think about this later.
-        if key ~= "d" then  -- To abort dd.
+        if cmdbuf ~= key then  -- To abort dd, gg.
             cmdbuf = ""
         end
 
@@ -264,12 +264,19 @@ function vimouto.keypressed(key, scancode, isrepeat)
                 cx = cx - 1
             end
         elseif key == "d" then
-            -- dd: if previous cmdbuf was "d", delete current line.
             if cmdbuf == "d" then
                 delete_line(cy)
                 cmdbuf = ""
             else
                 cmdbuf = "d"
+            end
+        elseif key == "g" then
+            if cmdbuf == "g" then
+                cy = 1
+                cx = 1
+                cmdbuf = ""
+            else
+                cmdbuf = "g"
             end
         elseif key == ";" and love.keyboard.isDown("lshift", "rshift") then
             blocked_chars[":"] = true
