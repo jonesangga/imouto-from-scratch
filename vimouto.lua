@@ -114,6 +114,18 @@ bindings["k"] = function()
 end
 bindings["up"] = bindings["k"]
 
+bindings["h"] = function()
+    cx = clamp(cx - 1, 1, #buffer[cy])
+    remembercx = false
+end
+bindings["left"] = bindings["h"]
+
+bindings["l"] = function()
+    cx = clamp(cx + 1, 1, #buffer[cy])
+    remembercx = false
+end
+bindings["right"] = bindings["l"]
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -251,11 +263,7 @@ function vimouto.keypressed(key, scancode, isrepeat)
 
         remembercx = false
 
-        if key == "h" or key == "left" then
-            cx = clamp(cx - 1, 1, #buffer[cy])
-        elseif key == "l" or key == "right" then
-            cx = clamp(cx + 1, 1, #buffer[cy])
-        elseif key == "i" then
+        if key == "i" then
             if love.keyboard.isDown("lshift", "rshift") then
                 blocked_chars["I"] = true
                 cx = 1
