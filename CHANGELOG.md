@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 - roboto.ttf font.
 - Vimouto: in-game vim like text editor.
 - `fsm.textinput()`.
+- Supported vim binding: i, I, a, A, o, O, 0, $, x, h, j, k, l, dd, gg, G
+- Support cmd mode :q, and :w filename commands.
+- Line number.
+- `jk` maping to escape in insert mode.
+- Message and error message in cmd line.
 
 
 ## [0.0.1] - 2025-11-21

@@ -2,6 +2,12 @@
 
 WIP.
 
+
+## Features
+
+1. Vimouto: in-game vim-like text editor.
+
+
 ## Installation
 
 This project uses [LÖVE](https://www.love2d.org/) framework.
