@@ -75,7 +75,7 @@ local function write(path)
 
     fp:write(table.concat(buffer, "\n"))
     fp:close()
-    feedback(savePath .. " written")
+    feedback("\"" .. savePath .. "\" written")
     changed = false
 end
 
