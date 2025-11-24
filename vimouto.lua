@@ -7,6 +7,7 @@ local vimouto = {
 local fontW, fontH
 
 local pwd = "Ada"           -- Ada's home dir.
+local changed = false
 local savePath = ""
 local mode = "NORMAL"       -- "NORMAL" or "INSERT".
 local buffer = {""}
@@ -75,6 +76,7 @@ local function write(path)
     fp:write(table.concat(buffer, "\n"))
     fp:close()
     feedback(savePath .. " written")
+    changed = false
 end
 
 local function delete_line(r)
@@ -191,6 +193,7 @@ normalBindings["o"] = function()
     end
     mode = "INSERT"
     remembercx = false
+    changed = true
 end
 
 normalBindings["x"] = function()
@@ -386,6 +389,9 @@ function vimouto.draw()
     end
 
     if mode ~= "CMD" then
+        if changed then
+            love.graphics.print("+", 480, (row - 1) * fontH)
+        end
         love.graphics.print(cy .. "," .. cx, 500, (row - 1) * fontH)
     end
 
@@ -442,6 +448,7 @@ function vimouto.textinput(t)
         local b = line:sub(cx)
         buffer[cy] = a .. t .. b
         cx = cx + #t
+        changed = true
     elseif mode == "CMD" then
         cmdbuf = cmdbuf .. t
         cmdcx = cmdcx + #t
