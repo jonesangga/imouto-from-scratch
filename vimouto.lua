@@ -32,6 +32,7 @@ local blocked_chars = {}    -- Key that has been consumed in keypressed and will
 
 local message = ""
 local showMessage = false
+local feedbackError = false
 
 local function clamp(n, a, b)
     return math.max(a, math.min(b, n))
@@ -42,9 +43,16 @@ local function clampCursor()
     cx = clamp(cxBeforeMoveLine, 1, #buffer[cy])
 end
 
-local function feedback(msg)
+local function echo(msg)
     showMessage = true
     message = msg
+    feedbackError = false
+end
+
+local function echoError(msg)
+    showMessage = true
+    message = msg
+    feedbackError = true
 end
 
 -- TODO: Fix later.
@@ -56,12 +64,12 @@ end
 local function write(path)
     if not path or path == "" then
         if savePath == "" then
-            feedback("ERROR: No file name")
+            echoError("ERROR: No file name")
             return
         end
     else
         if not validatePath(path) then
-            feedback("ERROR: Invalid path")
+            echoError("ERROR: Invalid path")
             return
         end
         savePath = "Ada/" .. path
@@ -69,13 +77,13 @@ local function write(path)
 
     local fp, err = io.open(savePath, "w")
     if not fp then
-        feedback("ERROR: Cannot open " .. savePath)
+        echoError("ERROR: Cannot open " .. savePath)
         return
     end
 
     fp:write(table.concat(buffer, "\n"))
     fp:close()
-    feedback("\"" .. savePath .. "\" written")
+    echo("\"" .. savePath .. "\" written")
     changed = false
 end
 
@@ -314,10 +322,10 @@ cmdBindings["return"] = function()
         elseif cmd == "w" then
             write(arg)
         else
-            feedback("ERROR: Not a valid command: " .. cmd)
+            echoError("ERROR: Not a valid command: " .. cmd)
         end
     else
-        feedback("ERROR: Not a valid command")
+        echoError("ERROR: Not a valid command")
     end
 
     mode = "NORMAL"
@@ -397,11 +405,18 @@ function vimouto.draw()
 
     -- Small hint when normal's cmdbuf set.
     if mode == "NORMAL" and cmdbuf ~= "" then
-        love.graphics.print(cmdbuf, 400, (row - 1) * fontH)
+            love.graphics.print(cmdbuf, 400, (row - 1) * fontH)
     end
 
     if showMessage then
-        love.graphics.print(message, 0, (row - 1) * fontH)
+        if feedbackError then
+            love.graphics.setColor(0.84, 0, 0)
+            love.graphics.rectangle("fill", 0, (row - 1) * fontH, game.fontMono:getWidth(message), fontH)
+            love.graphics.setColor(1, 1, 1)
+            love.graphics.print(message, 0, (row - 1) * fontH)
+        else
+            love.graphics.print(message, 0, (row - 1) * fontH)
+        end
     end
 
     -- Draw cursor block (invert the color).
