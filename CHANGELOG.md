@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
+## [0.0.2] - 2025-11-24
+
 ### Added
 
 - roboto.ttf font.
