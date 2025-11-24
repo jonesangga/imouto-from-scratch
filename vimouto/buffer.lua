@@ -19,7 +19,7 @@ function Buffer.new(path)
     buf.changed = false
     buf.savePath = ""
     buf.mode = "NORMAL"       -- "NORMAL" or "INSERT".
-    buf.buffer = {""}
+    buf.lines = {""}
     buf.cmdbuf = ""
     buf.waitForjk = false
     buf.jkTimer = 0           -- Using jk as escape.
@@ -46,7 +46,7 @@ end
 
 -- Move cursor to ensure valid column.
 function Buffer:clampCursor()
-    self.cx = self.clamp(self.cxBeforeMoveLine, 1, #self.buffer[self.cy])
+    self.cx = self.clamp(self.cxBeforeMoveLine, 1, #self.lines[self.cy])
 end
 
 function Buffer:echo(msg)
@@ -87,21 +87,21 @@ function Buffer:write(path)
         return
     end
 
-    fp:write(table.concat(self.buffer, "\n"))
+    fp:write(table.concat(self.lines, "\n"))
     fp:close()
     self:echo("\"" .. self.savePath .. "\" written")
     self.changed = false
 end
 
 function Buffer:delete_line(r)
-    if #self.buffer == 1 then
-        self.buffer[1] = ""
+    if #self.lines == 1 then
+        self.lines[1] = ""
         self.cx, self.cy = 1, 1
         return
     end
-    table.remove(self.buffer, r)
-    if self.cy > #self.buffer then
-        self.cy = #self.buffer
+    table.remove(self.lines, r)
+    if self.cy > #self.lines then
+        self.cy = #self.lines
     end
     self.cx = 1
 end
@@ -130,7 +130,7 @@ function Buffer:draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
 
-    local digitMax = math.floor(math.log10(#self.buffer)) + 1
+    local digitMax = math.floor(math.log10(#self.lines)) + 1
     local lineNumberW = digitMax + 1
 
     local function format(n)
@@ -138,9 +138,9 @@ function Buffer:draw()
         return string.rep(" ", digitMax - digit) .. n .. " "
     end
 
-    local to = math.min(self.scroll_y + row - 2, #self.buffer)
+    local to = math.min(self.scroll_y + row - 2, #self.lines)
     for i = self.scroll_y, to do
-        love.graphics.print(format(i) .. self.buffer[i], 0, (i - self.scroll_y) * self.fontH)
+        love.graphics.print(format(i) .. self.lines[i], 0, (i - self.scroll_y) * self.fontH)
     end
 
     -- Draw mode, row, and col indicator.
@@ -184,7 +184,7 @@ function Buffer:draw()
         local chstr = self.cmdbuf:sub(self.cmdcx, self.cmdcx) ~= "" and self.cmdbuf:sub(self.cmdcx, self.cmdcx) or " "
         love.graphics.print(chstr, px, py)
     else
-        local line = self.buffer[self.cy]
+        local line = self.lines[self.cy]
         local px = (self.cx - 1 + lineNumberW) * self.fontW
         local py = (self.cy - self.scroll_y) * self.fontH
         love.graphics.setColor(0, 0, 0)
@@ -205,19 +205,19 @@ function Buffer:textinput(t)
             self.waitForjk = false
 
             if t == "k" then
-                local line = self.buffer[self.cy]
-                self.buffer[self.cy] = line:sub(1, self.cx - 1) .. line:sub(self.cx + 1)
-                self.cx = self.clamp(self.cx - 1, 1, #self.buffer[self.cy])
+                local line = self.lines[self.cy]
+                self.lines[self.cy] = line:sub(1, self.cx - 1) .. line:sub(self.cx + 1)
+                self.cx = self.clamp(self.cx - 1, 1, #self.lines[self.cy])
                 self.mode = "NORMAL"
                 return
             end
             self.cx = self.cx + 1
         end
 
-        local line = self.buffer[self.cy]
+        local line = self.lines[self.cy]
         local a = line:sub(1, self.cx - 1)
         local b = line:sub(self.cx)
-        self.buffer[self.cy] = a .. t .. b
+        self.lines[self.cy] = a .. t .. b
         self.cx = self.cx + #t
         self.changed = true
     elseif self.mode == "CMD" then

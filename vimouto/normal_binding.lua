@@ -16,7 +16,7 @@ pendings["d"] = {
 
 normalBindings["g"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
-        buf.cy = #buf.buffer
+        buf.cy = #buf.lines
         buf.cx = 1
     else
         buf.cmdbuf = "g"
@@ -32,7 +32,7 @@ pendings["g"] = {
 }
 
 normalBindings["j"] = function(buf)
-    buf.cy = buf.clamp(buf.cy + 1, 1, #buf.buffer)
+    buf.cy = buf.clamp(buf.cy + 1, 1, #buf.lines)
     if not buf.remembercx then
         buf.remembercx = true
         buf.cxBeforeMoveLine = buf.cx
@@ -42,7 +42,7 @@ end
 normalBindings["down"] = normalBindings["j"]
 
 normalBindings["k"] = function(buf)
-    buf.cy = buf.clamp(buf.cy - 1, 1, #buf.buffer)
+    buf.cy = buf.clamp(buf.cy - 1, 1, #buf.lines)
     if not buf.remembercx then
         buf.remembercx = true
         buf.cxBeforeMoveLine = buf.cx
@@ -52,13 +52,13 @@ end
 normalBindings["up"] = normalBindings["k"]
 
 normalBindings["h"] = function(buf)
-    buf.cx = buf.clamp(buf.cx - 1, 1, #buf.buffer[buf.cy])
+    buf.cx = buf.clamp(buf.cx - 1, 1, #buf.lines[buf.cy])
     buf.remembercx = false
 end
 normalBindings["left"] = normalBindings["h"]
 
 normalBindings["l"] = function(buf)
-    buf.cx = buf.clamp(buf.cx + 1, 1, #buf.buffer[buf.cy])
+    buf.cx = buf.clamp(buf.cx + 1, 1, #buf.lines[buf.cy])
     buf.remembercx = false
 end
 normalBindings["right"] = normalBindings["l"]
@@ -77,10 +77,10 @@ end
 normalBindings["a"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.blocked_chars["A"] = true
-        buf.cx = #buf.buffer[buf.cy] + 1  -- NOTE: The case for empty line already included here.
+        buf.cx = #buf.lines[buf.cy] + 1  -- NOTE: The case for empty line already included here.
     else
         buf.blocked_chars["a"] = true
-        if #buf.buffer[buf.cy] == 0 then
+        if #buf.lines[buf.cy] == 0 then
             buf.cx = 1
         else
             buf.cx = buf.cx + 1
@@ -93,11 +93,11 @@ end
 normalBindings["o"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.blocked_chars["O"] = true
-        table.insert(buf.buffer, buf.cy, "")
+        table.insert(buf.lines, buf.cy, "")
         buf.cx = 1
     else
         buf.blocked_chars["o"] = true
-        table.insert(buf.buffer, buf.cy + 1, "")
+        table.insert(buf.lines, buf.cy + 1, "")
         buf.cy = buf.cy + 1
         buf.cx = 1
     end
@@ -107,9 +107,9 @@ normalBindings["o"] = function(buf)
 end
 
 normalBindings["x"] = function(buf)
-    local line = buf.buffer[buf.cy]
+    local line = buf.lines[buf.cy]
     local lineLen = #line
-    buf.buffer[buf.cy] = line:sub(1, buf.cx - 1) .. line:sub(buf.cx + 1)
+    buf.lines[buf.cy] = line:sub(1, buf.cx - 1) .. line:sub(buf.cx + 1)
     if buf.cx == lineLen and lineLen ~= 1 then
         buf.cx = buf.cx - 1
     end
@@ -123,7 +123,7 @@ end
 
 normalBindings["4"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
-        buf.cx = #buf.buffer[buf.cy]
+        buf.cx = #buf.lines[buf.cy]
     end
     buf.remembercx = false
 end
@@ -144,7 +144,7 @@ normalBindings["backspace"] = function(buf)
         -- Go to the end of previous line, if any.
         if buf.cy > 1 then
             buf.cy = buf.cy - 1
-            buf.cx = #buf.buffer[buf.cy]
+            buf.cx = #buf.lines[buf.cy]
             -- Handle empty line.
             if buf.cx == 0 then
                 buf.cx = 1
