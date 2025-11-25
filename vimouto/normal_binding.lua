@@ -133,7 +133,7 @@ normalBindings[";"] = function(buf)
         buf.blocked_chars[":"] = true
         buf.parent.mode = "CMD"
         buf.cmdbuf = ""
-        buf.showMessage = false
+        buf.parent.showMessage = false
     end
 end
 

@@ -24,10 +24,6 @@ function Buffer.new(parent)
 
     buf.blocked_chars = {}    -- Key that has been consumed in keypressed and will not be used in textinput.
                                 -- NOTE: Handle enter with "\n" and space with " " later.
-
-    buf.message = ""
-    buf.showMessage = false
-    buf.feedbackError = false
     return buf
 end
 
@@ -40,18 +36,6 @@ function Buffer:clampCursor()
     self.cx = self.clamp(self.cxBeforeMoveLine, 1, #self.lines[self.cy])
 end
 
-function Buffer:echo(msg)
-    self.showMessage = true
-    self.message = msg
-    self.feedbackError = false
-end
-
-function Buffer:echoError(msg)
-    self.showMessage = true
-    self.message = msg
-    self.feedbackError = true
-end
-
 -- TODO: Fix later.
 function Buffer.validatePath(path)
     return true
@@ -61,12 +45,12 @@ end
 function Buffer:write(path)
     if not path or path == "" then
         if self.savePath == "" then
-            self:echoError("ERROR: No file name")
+            self.parent:echoError("ERROR: No file name")
             return
         end
     else
         if not self.validatePath(path) then
-            self:echoError("ERROR: Invalid path")
+            self.parent:echoError("ERROR: Invalid path")
             return
         end
         self.savePath = "Ada/" .. path
@@ -74,13 +58,13 @@ function Buffer:write(path)
 
     local fp, err = io.open(self.savePath, "w")
     if not fp then
-        self:echoError("ERROR: Cannot open " .. savePath)
+        self.parent:echoError("ERROR: Cannot open " .. savePath)
         return
     end
 
     fp:write(table.concat(self.lines, "\n"))
     fp:close()
-    self:echo("\"" .. self.savePath .. "\" written")
+    self.parent:echo("\"" .. self.savePath .. "\" written")
     self.changed = false
 end
 

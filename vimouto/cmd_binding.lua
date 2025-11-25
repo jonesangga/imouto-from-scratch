@@ -25,10 +25,10 @@ cmdBindings["return"] = function(buf)
         elseif cmd == "e" then
             buf.parent.open(arg)
         else
-            buf:echoError("ERROR: Not a valid command: " .. cmd)
+            buf.parent:echoError("ERROR: Not a valid command: " .. cmd)
         end
     else
-        buf:echoError("ERROR: Not a valid command")
+        buf.parent:echoError("ERROR: Not a valid command")
     end
 
     buf.parent.mode = "NORMAL"

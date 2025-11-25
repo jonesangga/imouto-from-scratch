@@ -10,6 +10,9 @@ local vimouto = {
     name = "vimouto",
     buffers = {},
     mode = "NORMAL",
+    message = "",
+    showMessage = false,
+    feedbackError = false,
 }
 local active = nil
 local row = 22
@@ -28,8 +31,7 @@ function vimouto.open(path)
     path = "Ada/" .. path
     local fp, err = io.open(path, "r")
     if not fp then
-        -- self:echoError("ERROR: Cannot read " .. path)
-        print("ERROR: Cannot read " .. path)
+        vimouto:echoError("ERROR: Cannot read \"" .. path .. "\"")
         return
     end
 
@@ -45,6 +47,19 @@ function vimouto.open(path)
     buf.savePath = path
     active = buf
 end
+
+function vimouto:echo(msg)
+    self.showMessage = true
+    self.message = msg
+    self.feedbackError = false
+end
+
+function vimouto:echoError(msg)
+    self.showMessage = true
+    self.message = msg
+    self.feedbackError = true
+end
+
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -116,14 +131,14 @@ function vimouto.draw()
             love.graphics.print(active.cmdbuf, 400, (row - 1) * active.fontH)
     end
 
-    if active.showMessage then
-        if active.feedbackError then
+    if vimouto.showMessage then
+        if vimouto.feedbackError then
             love.graphics.setColor(0.84, 0, 0)
-            love.graphics.rectangle("fill", 0, (row - 1) * active.fontH, game.fontMono:getWidth(active.message), active.fontH)
+            love.graphics.rectangle("fill", 0, (row - 1) * active.fontH, game.fontMono:getWidth(vimouto.message), active.fontH)
             love.graphics.setColor(1, 1, 1)
-            love.graphics.print(active.message, 0, (row - 1) * active.fontH)
+            love.graphics.print(vimouto.message, 0, (row - 1) * active.fontH)
         else
-            love.graphics.print(active.message, 0, (row - 1) * active.fontH)
+            love.graphics.print(vimouto.message, 0, (row - 1) * active.fontH)
         end
     end
 
