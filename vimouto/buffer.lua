@@ -3,8 +3,11 @@ local game = require("game")
 local Buffer = {}
 Buffer.__index = Buffer
 
+local currentId = 1
+
 function Buffer.new(parent)
     local buf = setmetatable({}, Buffer)
+    buf.id = currentId
     buf.parent = parent
     buf.fontH = game.fontMonoHeight
     buf.fontW = game.fontMonoWidth
@@ -24,6 +27,7 @@ function Buffer.new(parent)
 
     buf.blocked_chars = {}    -- Key that has been consumed in keypressed and will not be used in textinput.
                                 -- NOTE: Handle enter with "\n" and space with " " later.
+    currentId = currentId + 1
     return buf
 end
 

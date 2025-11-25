@@ -11,6 +11,7 @@ local vimouto = {
     buffers = {},
     mode = "NORMAL",
     message = "",
+    messageLine = 1,
     showMessage = false,
     feedbackError = false,
 }
@@ -51,15 +52,28 @@ end
 function vimouto:echo(msg)
     self.showMessage = true
     self.message = msg
+    self.messageLine = 1
     self.feedbackError = false
 end
 
 function vimouto:echoError(msg)
     self.showMessage = true
     self.message = msg
+    self.messageLine = 1
     self.feedbackError = true
 end
 
+function vimouto:ls()
+    self.showMessage = true
+    self.messageLine = 1
+    local msg = "------"
+    for _, buf in pairs(vimouto.buffers) do
+        msg = msg .. "\n" .. buf.id .. " \"" .. buf.savePath .. "\""
+        self.messageLine = self.messageLine + 1
+    end
+    self.message = msg
+    self.feedbackError = false
+end
 
 function vimouto.enter()
     print("[vimouto] enter")
@@ -138,7 +152,7 @@ function vimouto.draw()
             love.graphics.setColor(1, 1, 1)
             love.graphics.print(vimouto.message, 0, (row - 1) * active.fontH)
         else
-            love.graphics.print(vimouto.message, 0, (row - 1) * active.fontH)
+            love.graphics.print(vimouto.message, 0, (row - vimouto.messageLine) * active.fontH)
         end
     end
 
