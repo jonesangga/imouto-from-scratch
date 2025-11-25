@@ -1,6 +1,11 @@
 local insertBindings = {}
 
 insertBindings["backspace"] = function(buf)
+    if buf.waitForjk then
+        buf.waitForjk = false
+        buf.cx = buf.cx + 1
+    end
+
     local line = buf.lines[buf.cy]
     if buf.cx > 1 then
         buf.lines[buf.cy] = line:sub(1, buf.cx - 2) .. line:sub(buf.cx)
