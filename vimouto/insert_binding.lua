@@ -1,3 +1,5 @@
+local normalBindings = require("vimouto/normal_binding")
+
 local insertBindings = {}
 
 insertBindings["backspace"] = function(buf)
@@ -56,5 +58,10 @@ insertBindings["j"] = function(buf)
     local b = line:sub(buf.cx)
     buf.lines[buf.cy] = a .. "j" .. b
 end
+
+insertBindings["down"] = normalBindings["down"]
+insertBindings["up"] = normalBindings["up"]
+insertBindings["left"] = normalBindings["left"]
+insertBindings["right"] = normalBindings["right"]
 
 return insertBindings
