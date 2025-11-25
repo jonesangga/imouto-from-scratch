@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.3] - 2025-11-25
+
+### Added
+
+- Buffer class for vimouto.
+- Opening file support with :e filename.
+- Buffer id.
+- Command :ls to list buffers.
+- Arrow keys in insert mode.
+
+### Changed
+
+- Turn vimouto into several files.
+- Modes are for whole session instead of per buffer.
+- Turn echo() and echoError() for whole session.
+
+### Fixed
+
+- Bug: pressing J in insert mode will result in jJ.
+- Bug: pressing o, O, i, I, a, A after displaying message in cmd didn't erase the message.
+- Bug: backspace after j didn't work properly
+
 
 ## [0.0.2] - 2025-11-24
 
