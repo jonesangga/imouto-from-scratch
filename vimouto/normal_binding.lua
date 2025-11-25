@@ -72,6 +72,7 @@ normalBindings["i"] = function(buf)
     end
     buf.parent.mode = "INSERT"
     buf.remembercx = false
+    buf.parent.showMessage = false
 end
 
 normalBindings["a"] = function(buf)
@@ -88,6 +89,7 @@ normalBindings["a"] = function(buf)
     end
     buf.parent.mode = "INSERT"
     buf.remembercx = false
+    buf.parent.showMessage = false
 end
 
 normalBindings["o"] = function(buf)
@@ -104,6 +106,7 @@ normalBindings["o"] = function(buf)
     buf.parent.mode = "INSERT"
     buf.remembercx = false
     buf.changed = true
+    buf.parent.showMessage = false
 end
 
 normalBindings["x"] = function(buf)
