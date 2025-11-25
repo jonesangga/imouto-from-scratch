@@ -35,6 +35,10 @@ insertBindings["escape"] = function(buf)
 end
 
 insertBindings["j"] = function(buf)
+    if love.keyboard.isDown("lshift", "rshift") then
+        return
+    end
+
     if buf.waitForjk then
         buf.cx = buf.cx + 1
     end
