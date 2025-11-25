@@ -8,7 +8,12 @@ local home = require("home")
 -- local pattern = require("pattern")
 -- local vimouto = require("vimouto")
 
-function love.load()
+function love.load(args)
+    if #args > 0 and args[1] == "test" then
+        require("tests/unit/util_test")
+        os.exit()
+    end
+
     love.graphics.setDefaultFilter("nearest", "nearest")  -- Nearest neighbor filtering for pixel art.
     love.graphics.setBackgroundColor(1, 1, 1)
     love.keyboard.setKeyRepeat(true)
