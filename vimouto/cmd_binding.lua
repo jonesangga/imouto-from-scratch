@@ -5,7 +5,7 @@ cmdBindings["backspace"] = function(buf)
         buf.cmdbuf = buf.cmdbuf:sub(1, buf.cmdcx - 2) .. buf.cmdbuf:sub(buf.cmdcx)
         buf.cmdcx = buf.cmdcx - 1
     else
-        buf.mode = "NORMAL"
+        buf.parent.mode = "NORMAL"
         buf.cmdbuf = ""
         buf.cmdcx = 1
     end
@@ -22,6 +22,8 @@ cmdBindings["return"] = function(buf)
             love.event.quit()
         elseif cmd == "w" then
             buf:write(arg)
+        elseif cmd == "e" then
+            buf.parent.open(arg)
         else
             buf:echoError("ERROR: Not a valid command: " .. cmd)
         end
@@ -29,13 +31,13 @@ cmdBindings["return"] = function(buf)
         buf:echoError("ERROR: Not a valid command")
     end
 
-    buf.mode = "NORMAL"
+    buf.parent.mode = "NORMAL"
     buf.cmdbuf = ""
     buf.cmdcx = 1
 end
 
 cmdBindings["escape"] = function(buf)
-    buf.mode = "NORMAL"
+    buf.parent.mode = "NORMAL"
     buf.cmdbuf = ""
     buf.cmdcx = 1
 end

@@ -70,7 +70,7 @@ normalBindings["i"] = function(buf)
     else
         buf.blocked_chars["i"] = true
     end
-    buf.mode = "INSERT"
+    buf.parent.mode = "INSERT"
     buf.remembercx = false
 end
 
@@ -86,7 +86,7 @@ normalBindings["a"] = function(buf)
             buf.cx = buf.cx + 1
         end
     end
-    buf.mode = "INSERT"
+    buf.parent.mode = "INSERT"
     buf.remembercx = false
 end
 
@@ -101,7 +101,7 @@ normalBindings["o"] = function(buf)
         buf.cy = buf.cy + 1
         buf.cx = 1
     end
-    buf.mode = "INSERT"
+    buf.parent.mode = "INSERT"
     buf.remembercx = false
     buf.changed = true
 end
@@ -131,7 +131,7 @@ end
 normalBindings[";"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.blocked_chars[":"] = true
-        buf.mode = "CMD"
+        buf.parent.mode = "CMD"
         buf.cmdbuf = ""
         buf.showMessage = false
     end

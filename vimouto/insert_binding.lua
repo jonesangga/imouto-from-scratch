@@ -30,7 +30,7 @@ end
 insertBindings["kpenter"] = insertBindings["return"]
 
 insertBindings["escape"] = function(buf)
-    buf.mode = "NORMAL"
+    buf.parent.mode = "NORMAL"
     buf.cx = buf.clamp(buf.cx - 1, 1, #buf.lines[buf.cy])
 end
 
