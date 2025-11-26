@@ -19,4 +19,14 @@ function util.getFileNames(path, includePath)
     return filenames
 end
 
+function util.splitLines(s)
+    assert(type(s) == "string")
+
+    local lines = {}
+    for line in (s .. "\n"):gmatch("(.-)\r?\n") do
+        table.insert(lines, line)
+    end
+    return lines
+end
+
 return util

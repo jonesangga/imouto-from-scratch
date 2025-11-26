@@ -1,4 +1,5 @@
 local game = require("game")
+local util = require("util")
 local buffer = require("vimouto/buffer")
 local cmdBindings = require("vimouto/cmd_binding")
 local insertBindings = require("vimouto/insert_binding")
@@ -18,16 +19,6 @@ local vimouto = {
 local active = nil
 local row = 22
 
-local function splitlines(s)
-    if not s then return {""} end
-    local t = {}
-    for line in (s .. "\n"):gmatch("(.-)\n") do
-        table.insert(t, line)
-    end
-    if #t == 0 then t = {""} end
-    return t
-end
-
 function vimouto.open(path)
     path = "Ada/" .. path
     local fp, err = io.open(path, "r")
@@ -38,7 +29,7 @@ function vimouto.open(path)
 
     local content = fp:read("*a")
     fp:close()
-    local lines = splitlines(content)
+    local lines = util.splitLines(content)
     if #lines == 0 then
         lines = {""}
     end
