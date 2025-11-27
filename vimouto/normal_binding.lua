@@ -5,6 +5,8 @@ normalBindings.pendings = pendings
 normalBindings["tab"] = function(buf)
     if not buf.parent.showTree then
         buf.parent.loadTree()
+        buf.parent.mode = "TREE"
+        buf.parent.treeFocus = true
     end
     buf.parent.showTree = not buf.parent.showTree
 end
@@ -162,6 +164,13 @@ normalBindings["backspace"] = function(buf)
         end
     end
     buf.remembercx = false
+end
+
+normalBindings["space"] = function(buf)
+    if buf.parent.showTree then
+        buf.parent.mode = "TREE"
+        buf.parent.treeFocus = true
+    end
 end
 
 return normalBindings

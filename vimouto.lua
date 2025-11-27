@@ -1,9 +1,11 @@
 local game = require("game")
 local util = require("util")
 local buffer = require("vimouto/buffer")
+local tree = require("vimouto/tree")
 local cmdBindings = require("vimouto/cmd_binding")
 local insertBindings = require("vimouto/insert_binding")
 local normalBindings = require("vimouto/normal_binding")
+local treeBindings = require("vimouto/tree_binding")
 
 local pendings = normalBindings.pendings
 
@@ -14,10 +16,11 @@ local active = nil
 local row = 22
 
 function vimouto:reset()
-    self.showTree = true
-    self.tree = {}
+    self.showTree = false
+    self.treeFocus = false
+    self.tree = tree.new(vimouto)
     self.buffers = {}
-    self.mode = "NORMAL"
+    self.mode = "NORMAL"  -- "INSERT", "NORMAL", "CMD", "TREE".
     self.message = ""
     self.messageLine = 1
     self.showMessage = false
@@ -30,7 +33,7 @@ end
 
 function vimouto.loadTree()
     local files = util.getFileNames("Ada")
-    vimouto.tree = files
+    vimouto.tree.lines = files
 end
 
 function vimouto.open(path)
@@ -123,8 +126,17 @@ function vimouto.draw()
 
     local start = 0
     if vimouto.showTree then
+        if vimouto.treeFocus then
+            local px = start
+            local py = (vimouto.tree.cy - vimouto.tree.scroll_y) * vimouto.tree.fontH
+            love.graphics.setColor(0.8, 0.8, 0.8)
+            love.graphics.rectangle("fill", px, py, active.fontW * 20, active.fontH)
+        end
+
+        love.graphics.setColor(0, 0, 0)
+
         local i = 1
-        for _, file in pairs(vimouto.tree) do
+        for _, file in pairs(vimouto.tree.lines) do
             love.graphics.print(file, start, (i - 1) * active.fontH)
             i = i + 1
         end
@@ -189,14 +201,16 @@ function vimouto.draw()
         local chstr = active.cmdbuf:sub(active.cmdcx, active.cmdcx) ~= "" and active.cmdbuf:sub(active.cmdcx, active.cmdcx) or " "
         love.graphics.print(chstr, px, py)
     else
-        local line = active.lines[active.cy]
-        local px = start + (active.cx - 1 + lineNumberW) * active.fontW
-        local py = (active.cy - active.scroll_y) * active.fontH
-        love.graphics.setColor(0, 0, 0)
-        love.graphics.rectangle("fill", px, py, active.fontW, active.fontH)
-        love.graphics.setColor(1, 1, 1)
-        local chstr = line:sub(active.cx, active.cx) ~= "" and line:sub(active.cx, active.cx) or " "
-        love.graphics.print(chstr, px, py)
+        if not vimouto.treeFocus then
+            local line = active.lines[active.cy]
+            local px = start + (active.cx - 1 + lineNumberW) * active.fontW
+            local py = (active.cy - active.scroll_y) * active.fontH
+            love.graphics.setColor(0, 0, 0)
+            love.graphics.rectangle("fill", px, py, active.fontW, active.fontH)
+            love.graphics.setColor(1, 1, 1)
+            local chstr = line:sub(active.cx, active.cx) ~= "" and line:sub(active.cx, active.cx) or " "
+            love.graphics.print(chstr, px, py)
+        end
     end
 end
 
@@ -250,9 +264,14 @@ function vimouto.keypressed(key)
             normalBindings[key](active)
             return
         end
-    else  -- "CMD" mode.
+    elseif vimouto.mode == "CMD" then
         if cmdBindings[key] then
             cmdBindings[key](active)
+            return
+        end
+    else
+        if treeBindings[key] then
+            treeBindings[key](vimouto.tree)
             return
         end
     end
