@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-11-27
+
+### Added
+
+- Lust testing library.
+- Testing for util.lua.
+- `vimouto:reset()`.
+- Test i, I, o, O, a, A.
+- Basic tree listing. Toggle with tab. Switch between tree and current buffer with space.
+- TREE mode.
+- Make treeBindings.
+
+### Changed
+
+- Move splitlines to util.lua.
+- Move fontH and fontW to vimoto table.
+- Proper quit from vimouto using fsm.pop().
+
+## Fixed
+
+- Don't open file if already opened before.
+
+
 ## [0.0.3] - 2025-11-25
 
 ### Added
