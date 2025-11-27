@@ -19,7 +19,7 @@ cmdBindings["return"] = function(buf)
 
     if cmd ~= nil then
         if cmd == "q" and arg == nil then
-            love.event.quit()
+            buf.parent.quit()
         elseif cmd == "ls" then
             buf.parent:ls()
         elseif cmd == "w" then

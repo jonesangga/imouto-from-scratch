@@ -1,4 +1,5 @@
 local game = require("game")
+local fsm = require("fsm")
 local util = require("util")
 local buffer = require("vimouto/buffer")
 local tree = require("vimouto/tree")
@@ -31,6 +32,10 @@ function vimouto:reset()
     local buf = buffer.new(vimouto, "")
     self.active = buf
     active = buf
+end
+
+function vimouto.quit()
+    fsm.pop()
 end
 
 function vimouto.loadTree()
