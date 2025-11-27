@@ -141,7 +141,7 @@ function vimouto.draw()
             i = i + 1
         end
         local separator = active.fontW * 19
-        for i = 1, 20 do
+        for i = 1, 21 do
             love.graphics.print("|", separator, (i - 1) * active.fontH)
         end
         start = active.fontW * 20
