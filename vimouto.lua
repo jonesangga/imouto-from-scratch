@@ -15,9 +15,25 @@ local vimouto = {
     messageLine = 1,
     showMessage = false,
     feedbackError = false,
+    active = nil,
 }
 local active = nil
 local row = 22
+
+function vimouto:reset()
+    self.name = "vimouto"
+    self.buffers = {}
+    self.mode = "NORMAL"
+    self.message = ""
+    self.messageLine = 1
+    self.showMessage = false
+    self.feedbackError = false
+
+    local buf = buffer.new(vimouto)
+    table.insert(vimouto.buffers, buf)
+    self.active = buf
+    active = buf
+end
 
 function vimouto.open(path)
     path = "Ada/" .. path
@@ -37,6 +53,7 @@ function vimouto.open(path)
     table.insert(vimouto.buffers, buf)
     buf.lines = lines
     buf.savePath = path
+    vimouto.active = buf
     active = buf
 end
 
@@ -72,6 +89,7 @@ function vimouto.enter()
 
     local buf = buffer.new(vimouto)
     table.insert(vimouto.buffers, buf)
+    vimouto.active = buf
     active = buf
 end
 
