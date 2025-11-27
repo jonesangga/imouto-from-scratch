@@ -2,6 +2,13 @@ local normalBindings = {}
 local pendings = {}
 normalBindings.pendings = pendings
 
+normalBindings["tab"] = function(buf)
+    if not buf.parent.showTree then
+        buf.parent.loadTree()
+    end
+    buf.parent.showTree = not buf.parent.showTree
+end
+
 normalBindings["d"] = function(buf)
     buf.cmdbuf = "d"
     buf.remembercx = false

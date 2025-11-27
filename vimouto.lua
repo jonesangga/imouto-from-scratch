@@ -14,6 +14,8 @@ local active = nil
 local row = 22
 
 function vimouto:reset()
+    self.showTree = true
+    self.tree = {}
     self.buffers = {}
     self.mode = "NORMAL"
     self.message = ""
@@ -24,6 +26,11 @@ function vimouto:reset()
     local buf = buffer.new(vimouto, "")
     self.active = buf
     active = buf
+end
+
+function vimouto.loadTree()
+    local files = util.getFileNames("Ada")
+    vimouto.tree = files
 end
 
 function vimouto.open(path)
@@ -83,6 +90,7 @@ function vimouto.enter()
     love.graphics.setFont(game.fontMono)
 
     vimouto:reset()
+    vimouto.loadTree()
 end
 
 function vimouto.exit()
@@ -113,6 +121,20 @@ function vimouto.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
 
+    local start = 0
+    if vimouto.showTree then
+        local i = 1
+        for _, file in pairs(vimouto.tree) do
+            love.graphics.print(file, start, (i - 1) * active.fontH)
+            i = i + 1
+        end
+        local separator = active.fontW * 19
+        for i = 1, 20 do
+            love.graphics.print("|", separator, (i - 1) * active.fontH)
+        end
+        start = active.fontW * 20
+    end
+
     local digitMax = math.floor(math.log10(#active.lines)) + 1
     local lineNumberW = digitMax + 1
 
@@ -123,7 +145,7 @@ function vimouto.draw()
 
     local to = math.min(active.scroll_y + row - 2, #active.lines)
     for i = active.scroll_y, to do
-        love.graphics.print(format(i) .. active.lines[i], 0, (i - active.scroll_y) * active.fontH)
+        love.graphics.print(format(i) .. active.lines[i], start, (i - active.scroll_y) * active.fontH)
     end
 
     -- Draw mode, row, and col indicator.
@@ -168,7 +190,7 @@ function vimouto.draw()
         love.graphics.print(chstr, px, py)
     else
         local line = active.lines[active.cy]
-        local px = (active.cx - 1 + lineNumberW) * active.fontW
+        local px = start + (active.cx - 1 + lineNumberW) * active.fontW
         local py = (active.cy - active.scroll_y) * active.fontH
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", px, py, active.fontW, active.fontH)
