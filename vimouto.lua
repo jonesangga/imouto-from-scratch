@@ -9,19 +9,11 @@ local pendings = normalBindings.pendings
 
 local vimouto = {
     name = "vimouto",
-    buffers = {},
-    mode = "NORMAL",
-    message = "",
-    messageLine = 1,
-    showMessage = false,
-    feedbackError = false,
-    active = nil,
 }
 local active = nil
 local row = 22
 
 function vimouto:reset()
-    self.name = "vimouto"
     self.buffers = {}
     self.mode = "NORMAL"
     self.message = ""
@@ -87,10 +79,7 @@ function vimouto.enter()
     print("[vimouto] enter")
     love.graphics.setFont(game.fontMono)
 
-    local buf = buffer.new(vimouto)
-    table.insert(vimouto.buffers, buf)
-    vimouto.active = buf
-    active = buf
+    vimouto:reset()
 end
 
 function vimouto.exit()
