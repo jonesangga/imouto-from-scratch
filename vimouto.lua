@@ -21,14 +21,18 @@ function vimouto:reset()
     self.showMessage = false
     self.feedbackError = false
 
-    local buf = buffer.new(vimouto)
-    table.insert(vimouto.buffers, buf)
+    local buf = buffer.new(vimouto, "")
     self.active = buf
     active = buf
 end
 
 function vimouto.open(path)
     path = "Ada/" .. path
+    if vimouto.buffers[path] then
+        print("there already exist: " .. path)
+        return
+    end
+
     local fp, err = io.open(path, "r")
     if not fp then
         vimouto:echoError("ERROR: Cannot read \"" .. path .. "\"")
@@ -41,8 +45,7 @@ function vimouto.open(path)
     if #lines == 0 then
         lines = {""}
     end
-    local buf = buffer.new(vimouto)
-    table.insert(vimouto.buffers, buf)
+    local buf = buffer.new(vimouto, path)
     buf.lines = lines
     buf.savePath = path
     vimouto.active = buf
@@ -67,8 +70,8 @@ function vimouto:ls()
     self.showMessage = true
     self.messageLine = 1
     local msg = "------"
-    for _, buf in pairs(vimouto.buffers) do
-        msg = msg .. "\n" .. buf.id .. " \"" .. buf.savePath .. "\""
+    for name, buf in pairs(vimouto.buffers) do
+        msg = msg .. "\n" .. buf.id .. " \"" .. name .. "\""
         self.messageLine = self.messageLine + 1
     end
     self.message = msg

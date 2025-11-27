@@ -24,7 +24,7 @@ cmdBindings["return"] = function(buf)
             buf.parent:ls()
         elseif cmd == "w" then
             buf:write(arg)
-        elseif cmd == "e" then
+        elseif cmd == "e" and arg ~= nil then
             buf.parent.open(arg)
         else
             buf.parent:echoError("ERROR: Not a valid command: " .. cmd)

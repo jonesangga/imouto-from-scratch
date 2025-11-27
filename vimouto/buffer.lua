@@ -5,8 +5,9 @@ Buffer.__index = Buffer
 
 local currentId = 1
 
-function Buffer.new(parent)
+function Buffer.new(parent, name)
     local buf = setmetatable({}, Buffer)
+    parent.buffers[name] = buf
     buf.id = currentId
     buf.parent = parent
     buf.fontH = game.fontMonoHeight
