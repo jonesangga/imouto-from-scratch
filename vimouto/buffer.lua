@@ -10,8 +10,6 @@ function Buffer.new(parent, name)
     parent.buffers[name] = buf
     buf.id = currentId
     buf.parent = parent
-    buf.fontH = game.fontMonoHeight
-    buf.fontW = game.fontMonoWidth
     buf.cx = 1         -- Cursor column and row (1-based).
     buf.cy = 1
     buf.cmdcx = 1

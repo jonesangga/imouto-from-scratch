@@ -16,6 +16,8 @@ local active = nil
 local row = 22
 
 function vimouto:reset()
+    self.fontH = game.fontMonoHeight
+    self.fontW = game.fontMonoWidth
     self.showTree = false
     self.treeFocus = false
     self.tree = tree.new(vimouto)
@@ -128,23 +130,23 @@ function vimouto.draw()
     if vimouto.showTree then
         if vimouto.treeFocus then
             local px = start
-            local py = (vimouto.tree.cy - vimouto.tree.scroll_y) * vimouto.tree.fontH
+            local py = (vimouto.tree.cy - vimouto.tree.scroll_y) * vimouto.fontH
             love.graphics.setColor(0.8, 0.8, 0.8)
-            love.graphics.rectangle("fill", px, py, active.fontW * 20, active.fontH)
+            love.graphics.rectangle("fill", px, py, vimouto.fontW * 20, vimouto.fontH)
         end
 
         love.graphics.setColor(0, 0, 0)
 
         local i = 1
         for _, file in pairs(vimouto.tree.lines) do
-            love.graphics.print(file, start, (i - 1) * active.fontH)
+            love.graphics.print(file, start, (i - 1) * vimouto.fontH)
             i = i + 1
         end
-        local separator = active.fontW * 19
+        local separator = vimouto.fontW * 19
         for i = 1, 21 do
-            love.graphics.print("|", separator, (i - 1) * active.fontH)
+            love.graphics.print("|", separator, (i - 1) * vimouto.fontH)
         end
-        start = active.fontW * 20
+        start = vimouto.fontW * 20
     end
 
     local digitMax = math.floor(math.log10(#active.lines)) + 1
@@ -157,56 +159,56 @@ function vimouto.draw()
 
     local to = math.min(active.scroll_y + row - 2, #active.lines)
     for i = active.scroll_y, to do
-        love.graphics.print(format(i) .. active.lines[i], start, (i - active.scroll_y) * active.fontH)
+        love.graphics.print(format(i) .. active.lines[i], start, (i - active.scroll_y) * vimouto.fontH)
     end
 
     -- Draw mode, row, and col indicator.
     love.graphics.setColor(0, 0, 0)
     if vimouto.mode == "INSERT" then
-        love.graphics.print("-- INSERT --", 0, (row - 1) * active.fontH)
+        love.graphics.print("-- INSERT --", 0, (row - 1) * vimouto.fontH)
     elseif vimouto.mode == "CMD" then
-        love.graphics.print(":" .. active.cmdbuf, 0, (row - 1) * active.fontH)
+        love.graphics.print(":" .. active.cmdbuf, 0, (row - 1) * vimouto.fontH)
     end
 
     if vimouto.mode ~= "CMD" then
         if active.changed then
-            love.graphics.print("+", 480, (row - 1) * active.fontH)
+            love.graphics.print("+", 480, (row - 1) * vimouto.fontH)
         end
-        love.graphics.print(active.cy .. "," .. active.cx, 500, (row - 1) * active.fontH)
+        love.graphics.print(active.cy .. "," .. active.cx, 500, (row - 1) * vimouto.fontH)
     end
 
     -- Small hint when normal's cmdbuf set.
     if vimouto.mode == "NORMAL" and active.cmdbuf ~= "" then
-            love.graphics.print(active.cmdbuf, 400, (row - 1) * active.fontH)
+            love.graphics.print(active.cmdbuf, 400, (row - 1) * vimouto.fontH)
     end
 
     if vimouto.showMessage then
         if vimouto.feedbackError then
             love.graphics.setColor(0.84, 0, 0)
-            love.graphics.rectangle("fill", 0, (row - 1) * active.fontH, game.fontMono:getWidth(vimouto.message), active.fontH)
+            love.graphics.rectangle("fill", 0, (row - 1) * vimouto.fontH, game.fontMono:getWidth(vimouto.message), vimouto.fontH)
             love.graphics.setColor(1, 1, 1)
-            love.graphics.print(vimouto.message, 0, (row - 1) * active.fontH)
+            love.graphics.print(vimouto.message, 0, (row - 1) * vimouto.fontH)
         else
-            love.graphics.print(vimouto.message, 0, (row - vimouto.messageLine) * active.fontH)
+            love.graphics.print(vimouto.message, 0, (row - vimouto.messageLine) * vimouto.fontH)
         end
     end
 
     -- Draw cursor block (invert the color).
     if vimouto.mode == "CMD" then
-        local px = active.cmdcx * active.fontW
-        local py = (row - 1) * active.fontH
+        local px = active.cmdcx * vimouto.fontW
+        local py = (row - 1) * vimouto.fontH
         love.graphics.setColor(0, 0, 0)
-        love.graphics.rectangle("fill", px, py, active.fontW, active.fontH)
+        love.graphics.rectangle("fill", px, py, vimouto.fontW, vimouto.fontH)
         love.graphics.setColor(1, 1, 1)
         local chstr = active.cmdbuf:sub(active.cmdcx, active.cmdcx) ~= "" and active.cmdbuf:sub(active.cmdcx, active.cmdcx) or " "
         love.graphics.print(chstr, px, py)
     else
         if not vimouto.treeFocus then
             local line = active.lines[active.cy]
-            local px = start + (active.cx - 1 + lineNumberW) * active.fontW
-            local py = (active.cy - active.scroll_y) * active.fontH
+            local px = start + (active.cx - 1 + lineNumberW) * vimouto.fontW
+            local py = (active.cy - active.scroll_y) * vimouto.fontH
             love.graphics.setColor(0, 0, 0)
-            love.graphics.rectangle("fill", px, py, active.fontW, active.fontH)
+            love.graphics.rectangle("fill", px, py, vimouto.fontW, vimouto.fontH)
             love.graphics.setColor(1, 1, 1)
             local chstr = line:sub(active.cx, active.cx) ~= "" and line:sub(active.cx, active.cx) or " "
             love.graphics.print(chstr, px, py)
