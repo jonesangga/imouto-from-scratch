@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.6] - 2025-11-29
+
+### Added
+
+- Horizontal scroll in vimouto.
+- `vimouto:adjustViewport()`.
+- `Buffer:adjustView()`.
+- `Buffer:calculateDigits()`.
+
+### Changed
+
+- Change main font.
+
+### Fixed
+
+- Bug: tree entries oveflow.
+- Bug: pressing tab to close tree when cursor in tree will make the cursor vanish.
+
+
 ## [0.0.5] - 2025-11-28
 
 ### Added
