@@ -3,6 +3,7 @@ local treeBindings = {}
 treeBindings["tab"] = function(buf)
     buf.parent.mode = "NORMAL"
     buf.parent.showTree = not buf.parent.showTree
+    buf.parent.treeFocus = false
 end
 
 treeBindings["return"] = function(buf)
