@@ -12,6 +12,7 @@ function love.load(args)
     if #args > 0 and args[1] == "test" then
         require("tests/unit/util_test")
         require("tests/integration/vimouto_test")
+        require("tests/integration/vimouto_tree_test")
         os.exit()
     end
 
