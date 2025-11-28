@@ -148,7 +148,14 @@ function vimouto.draw()
             love.graphics.print(file, start, (i - 1) * vimouto.fontH)
             i = i + 1
         end
+
         local separator = vimouto.fontW * 19
+
+        -- Draw background to hide the overflow.
+        love.graphics.setColor(0.93, 0.93, 0.93)
+        love.graphics.rectangle("fill", separator, 0, vimouto.fontW * 45, (row - 1) * vimouto.fontH)
+
+        love.graphics.setColor(0, 0, 0)
         for i = 1, 21 do
             love.graphics.print("|", separator, (i - 1) * vimouto.fontH)
         end
