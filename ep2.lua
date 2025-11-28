@@ -22,7 +22,7 @@ function ep2.enter()
         initialized = true
         wall = wallpaper.new("patterns/neocities/pattern33.png")
         imouto = character.new("characters/kasugano-sora.png")
-        music = audio.new("audio/clannad-track-6.mp3", "stream")
+        music = audio.new("audios/clannad-track-6.mp3", "stream")
 
         dialogue = ui.Dialogue.new({
 1, "Nii-san, nani shiteru no?",

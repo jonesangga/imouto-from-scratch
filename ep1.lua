@@ -22,7 +22,7 @@ function ep1.enter()
         initialized = true
         wall = wallpaper.new("patterns/pastel64/blue3.png")
         imouto = character.new("characters/kanbe-kotori.png")
-        music = audio.new("audio/ep1.mp3", "stream")
+        music = audio.new("audios/ep1.mp3", "stream")
 
         dialogue = ui.Dialogue.new({
 2, "Welcome, Ada. I created you as my imouto. Korekara mo yoroshiku onegaishimasu.",

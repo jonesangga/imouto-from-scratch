@@ -80,7 +80,7 @@ function home.enter()
 
     current = stories
 
-    music = audio.new("audio/laur-you-are-my-irreplaceable-treasure.mp3", "stream")
+    music = audio.new("audios/laur-you-are-my-irreplaceable-treasure.mp3", "stream")
     music:play()
 end
 
