@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.5] - 2025-11-28
+
+### Added
+
+- Test for vimouto TREE mode.
+- `Ada/` home directory Ada.
+- Ep3: Write the future.
+- notes-from-future.txt.
+- NFF 2025-11-30.
+
+### Changed
+
+- Master branch to main.
+
+## Fixed
+
+- Audio path has changed to `audios/`.
+
+
 ## [0.0.4] - 2025-11-27
 
 ### Added
