@@ -8,7 +8,8 @@ function game.init()
     game.titleFont:setFilter("nearest")
 
     -- General font setup.
-    game.font       = love.graphics.newFont(16, "mono")
+    -- game.font       = love.graphics.newFont(16, "mono")
+    game.font       = love.graphics.newFont("fonts/FuzzyBubbles-Regular.ttf", 16)
     game.fontHeight = game.font:getHeight()
     game.font:setFilter("nearest")
     love.graphics.setFont(game.font)
