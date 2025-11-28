@@ -13,6 +13,7 @@ function Buffer.new(parent, name)
     buf.cx = 1         -- Cursor column and row (1-based).
     buf.cy = 1
     buf.cmdcx = 1
+    buf.scroll_x = 1
     buf.scroll_y = 1
     buf.changed = false
     buf.savePath = ""
@@ -37,6 +38,18 @@ end
 -- Move cursor to ensure valid column.
 function Buffer:clampCursor()
     self.cx = self.clamp(self.cxBeforeMoveLine, 1, #self.lines[self.cy])
+end
+
+function Buffer:adjustView()
+    if self.cx < self.scroll_x then
+        self.scroll_x = self.cx
+    elseif self.cx >= self.scroll_x + self.parent.cols_visible then
+        self.scroll_x = self.cx - self.parent.cols_visible + 1
+    end
+end
+
+function Buffer:calculateDigits()
+    return math.floor(math.log10(#self.lines)) + 1
 end
 
 -- TODO: Fix later.

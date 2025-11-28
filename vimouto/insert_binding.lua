@@ -22,6 +22,7 @@ insertBindings["backspace"] = function(buf)
             buf.cx = prevlen + 1
         end
     end
+    buf:adjustView()
 end
 
 insertBindings["return"] = function(buf)
@@ -32,7 +33,7 @@ insertBindings["return"] = function(buf)
     table.insert(buf.lines, buf.cy + 1, b)
     buf.cy = buf.cy + 1
     buf.cx = 1
-    print("enter pressed")
+    buf:adjustView()
 end
 insertBindings["kpenter"] = insertBindings["return"]
 

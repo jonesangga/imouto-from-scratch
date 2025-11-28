@@ -9,6 +9,7 @@ normalBindings["tab"] = function(buf)
         buf.parent.treeFocus = true
     end
     buf.parent.showTree = not buf.parent.showTree
+    buf.parent:adjustViewport()
 end
 
 normalBindings["d"] = function(buf)
@@ -20,6 +21,7 @@ pendings["d"] = {
     ["d"] = function(buf)
         buf:delete_line(buf.cy)
         buf.cmdbuf = ""
+        buf:adjustView()
     end,
 }
 
@@ -27,6 +29,7 @@ normalBindings["g"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.cy = #buf.lines
         buf.cx = 1
+        buf:adjustView()
     else
         buf.cmdbuf = "g"
     end
@@ -37,6 +40,7 @@ pendings["g"] = {
     ["g"] =  function(buf)
         buf.cy = 1
         buf.cx = 1
+        buf:adjustView()
     end,
 }
 
@@ -47,6 +51,7 @@ normalBindings["j"] = function(buf)
         buf.cxBeforeMoveLine = buf.cx
     end
     buf:clampCursor()
+    buf:adjustView()
 end
 normalBindings["down"] = normalBindings["j"]
 
@@ -57,17 +62,20 @@ normalBindings["k"] = function(buf)
         buf.cxBeforeMoveLine = buf.cx
     end
     buf:clampCursor()
+    buf:adjustView()
 end
 normalBindings["up"] = normalBindings["k"]
 
 normalBindings["h"] = function(buf)
     buf.cx = buf.clamp(buf.cx - 1, 1, #buf.lines[buf.cy])
+    buf:adjustView()
     buf.remembercx = false
 end
 normalBindings["left"] = normalBindings["h"]
 
 normalBindings["l"] = function(buf)
     buf.cx = buf.clamp(buf.cx + 1, 1, #buf.lines[buf.cy])
+    buf:adjustView()
     buf.remembercx = false
 end
 normalBindings["right"] = normalBindings["l"]
@@ -76,6 +84,7 @@ normalBindings["i"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.blocked_chars["I"] = true
         buf.cx = 1
+        buf:adjustView()
     else
         buf.blocked_chars["i"] = true
     end
@@ -97,6 +106,7 @@ normalBindings["a"] = function(buf)
         end
     end
     buf.parent.mode = "INSERT"
+    buf:adjustView()
     buf.remembercx = false
     buf.parent.showMessage = false
 end
@@ -113,6 +123,7 @@ normalBindings["o"] = function(buf)
         buf.cx = 1
     end
     buf.parent.mode = "INSERT"
+    buf:adjustView()
     buf.remembercx = false
     buf.changed = true
     buf.parent.showMessage = false
@@ -125,11 +136,13 @@ normalBindings["x"] = function(buf)
     if buf.cx == lineLen and lineLen ~= 1 then
         buf.cx = buf.cx - 1
     end
+    buf:adjustView()
     buf.remembercx = false
 end
 
 normalBindings["0"] = function(buf)
     buf.cx = 1
+    buf:adjustView()
     buf.remembercx = false
 end
 
@@ -137,6 +150,7 @@ normalBindings["4"] = function(buf)
     if love.keyboard.isDown("lshift", "rshift") then
         buf.cx = #buf.lines[buf.cy]
     end
+    buf:adjustView()
     buf.remembercx = false
 end
 
@@ -163,6 +177,7 @@ normalBindings["backspace"] = function(buf)
             end
         end
     end
+    buf:adjustView()
     buf.remembercx = false
 end
 

@@ -15,6 +15,16 @@ local vimouto = {
 }
 local active = nil
 local row = 22
+local col = 64
+
+function vimouto:adjustViewport()
+    local digits = self.active:calculateDigits()
+    if self.showTree then
+        self.cols_visible = col - 20 - digits - 1
+    else
+        self.cols_visible = col - digits - 1
+    end
+end
 
 function vimouto:reset()
     self.fontH = game.fontMonoHeight
@@ -32,6 +42,7 @@ function vimouto:reset()
     local buf = buffer.new(vimouto, "")
     self.active = buf
     active = buf
+    self:adjustViewport()
 end
 
 function vimouto.quit()
@@ -67,6 +78,7 @@ function vimouto.open(path)
     buf.savePath = path
     vimouto.active = buf
     active = buf
+    vimouto:adjustViewport()
 end
 
 function vimouto:echo(msg)
@@ -162,8 +174,9 @@ function vimouto.draw()
         start = vimouto.fontW * 20
     end
 
-    local digitMax = math.floor(math.log10(#active.lines)) + 1
+    local digitMax = active:calculateDigits()
     local lineNumberW = digitMax + 1
+    vimouto:adjustViewport()
 
     local function format(n)
         local digit = math.floor(math.log10(n)) + 1
@@ -172,7 +185,9 @@ function vimouto.draw()
 
     local to = math.min(active.scroll_y + row - 2, #active.lines)
     for i = active.scroll_y, to do
-        love.graphics.print(format(i) .. active.lines[i], start, (i - active.scroll_y) * vimouto.fontH)
+        local line = active.lines[i]
+        local visible = line:sub(active.scroll_x, active.scroll_x + vimouto.cols_visible - 1)
+        love.graphics.print(format(i) .. visible, start, (i - active.scroll_y) * vimouto.fontH)
     end
 
     -- Draw mode, row, and col indicator.
@@ -218,7 +233,7 @@ function vimouto.draw()
     else
         if not vimouto.treeFocus then
             local line = active.lines[active.cy]
-            local px = start + (active.cx - 1 + lineNumberW) * vimouto.fontW
+            local px = start + (active.cx - active.scroll_x + lineNumberW) * vimouto.fontW
             local py = (active.cy - active.scroll_y) * vimouto.fontH
             love.graphics.setColor(0, 0, 0)
             love.graphics.rectangle("fill", px, py, vimouto.fontW, vimouto.fontH)
@@ -253,6 +268,7 @@ function vimouto.textinput(t)
         local b = line:sub(active.cx)
         active.lines[active.cy] = a .. t .. b
         active.cx = active.cx + #t
+        active:adjustView()
         active.changed = true
     elseif vimouto.mode == "CMD" then
         active.cmdbuf = active.cmdbuf .. t
