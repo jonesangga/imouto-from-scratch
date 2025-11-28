@@ -1,0 +1,12 @@
+# Notes From Future
+
+## 2025-11-30
+
+Today nii-san created a programming language for me.
+It is called Imo Scheme.
+
+I have never done programming before, but I think the parentheses are nice.
+Nii-san also talked about an event called Advent of Code. It begins tomorrow,
+and he wants me to join solving the puzzles using Imo Scheme.
+
+Waku waku suru!

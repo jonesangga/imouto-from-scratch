@@ -104,6 +104,7 @@ function vimouto.enter()
 end
 
 function vimouto.exit()
+    love.graphics.setFont(game.font)
     print("[vimouto] exit")
 end
 

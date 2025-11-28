@@ -5,6 +5,7 @@ local home = require("home")
 -- Uncomment to test the state immediately.
 -- local ep1 = require("ep1")
 -- local ep2 = require("ep2")
+-- local ep3 = require("ep3")
 -- local pattern = require("pattern")
 -- local vimouto = require("vimouto")
 
@@ -26,6 +27,7 @@ function love.load(args)
     -- Uncomment to test the state immediately.
     -- fsm.push(ep1)
     -- fsm.push(ep2)
+    -- fsm.push(ep3)
     -- fsm.push(pattern)
     -- fsm.push(vimouto)
 end

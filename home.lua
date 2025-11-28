@@ -6,6 +6,7 @@ local character = require("character")
 local wallpaper = require("wallpaper")
 local ep1 = require("ep1")
 local ep2 = require("ep2")
+local ep3 = require("ep3")
 local pattern = require("pattern")
 local vimouto = require("vimouto")
 
@@ -37,6 +38,12 @@ function home.enter()
             "#2 Nii-san no new hobby", function()
                 print("[home] Button ep2 clicked!")
                 fsm.push(ep2)
+            end
+        },
+        {
+            "#3 Write the future", function()
+                print("[home] Button ep3 clicked!")
+                fsm.push(ep3)
             end
         },
     })
