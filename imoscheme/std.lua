@@ -2,7 +2,7 @@ local eval = require("eval")
 local util = require("util")
 local inspect = require("libraries/inspect")
 local types = require("types")
-local is_symbol = types.is_symbol
+local List, is_list, is_symbol = types.List, types.is_list, types.is_symbol
 
 local function init_lambda(params, args, evalenv, saveenv)
     local key, val
@@ -23,10 +23,18 @@ local procedures = {}
 
 procedures["define"] = function(args, env)
     local key = args.head
-    if not is_symbol(key) then
-        error(key .. " is not a symbol")
+    local val
+
+    if is_list(key) then
+        local L = List.from{key.tail, args.tail.head}
+        val = procedures.lambda(L, env)  -- Call manually.
+        key = key.head
+    elseif is_symbol(key) then
+        val = eval(args.tail.head, env)
+    else
+        error(key .. " is invalid")
     end
-    local val = eval(args.tail.head, env)
+
     env:define(key.name, val)
 end
 
