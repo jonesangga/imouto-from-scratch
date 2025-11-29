@@ -1,0 +1,121 @@
+local eval = require("eval")
+local util = require("util")
+local inspect = require("libraries/inspect")
+local types = require("types")
+local is_symbol = types.is_symbol
+
+local function init_lambda(params, args, evalenv, saveenv)
+    local key, val
+    while params.head ~= nil and args.head ~= nil do
+        key = params.head
+        val = args.head
+        if not is_symbol(key) then
+            error(key .. " is not a symbol")
+        end
+        saveenv:define(key.name, eval(val, evalenv))
+        params, args = params.tail, args.tail
+    end
+    return saveenv
+end
+
+
+local procedures = {}
+
+procedures["define"] = function(args, env)
+    local key = args.head
+    if not is_symbol(key) then
+        error(key .. " is not a symbol")
+    end
+    local val = eval(args.tail.head, env)
+    env:define(key.name, val)
+end
+
+local function eval_body(list, env)
+    local result
+    while list.head ~= nil do
+        result = eval(list.head, env)
+        list = list.tail
+    end
+    return result
+end
+
+procedures["lambda"] = function(args, env)
+    local params = args.head
+    local body = args.tail
+
+    return function(callargs, callenv)
+        local localenv = env:branch()
+        init_lambda(params, callargs, callenv, localenv)
+
+        return eval_body(body, localenv)
+    end
+end
+
+-- 6.1 Equivalence predicates.
+
+-- Fix these later.
+procedures["eq?"] = function(args, env)
+    local x = eval(args.head, env)
+    local y = eval(args.tail.head, env)
+    return x == y
+end
+
+procedures["eqv?"] = procedures["eq?"]
+procedures["equal?"] = procedures["eq?"]
+
+-- 6.2 Numbers.
+
+procedures["+"] = function(args, env)
+    local res = 0
+    while args.head ~= nil do
+        res  = res + eval(args.head, env)
+        args = args.tail
+    end
+    return res
+end
+
+procedures["*"] = function(args, env)
+    local res = 1
+    while args.head ~= nil do
+        res  = res * eval(args.head, env)
+        args = args.tail
+    end
+    return res
+end
+
+procedures["-"] = function(args, env)
+    if args.head == nil then
+        error("operator - needs at least one argument")
+    end
+    local res = eval(args.head, env)
+    args = args.tail
+
+    if args.head == nil then
+        return -res
+    end
+    repeat
+        res  = res - eval(args.head, env)
+        args = args.tail
+    until args.head == nil
+    return res
+end
+
+-- 6.3 Other data types.
+
+procedures["not"] = function(args, env)
+    return not eval(args.head, env)
+end
+
+procedures["boolean?"] = function(args, env)
+    return type(eval(args.head, env)) == "boolean"
+end
+
+-- 6.6 Input and Output.
+
+procedures["display"] = function(args, env)
+    local msg = eval(args.head, env)
+    util.repr(msg)
+end
+
+
+return procedures
