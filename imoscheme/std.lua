@@ -125,7 +125,7 @@ local function repr(x)
     elseif x == false then
         return "#f"
     else
-        return inspect(x)
+        return x
     end
 end
 

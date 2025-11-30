@@ -66,4 +66,20 @@ describe("tokenizer", function()
             t("rparen", ")", 2),
         } )
     end)
+
+    it("string", function()
+        expect( tokenize('""') ).to.equal( {t("string", "", 1)} )
+        expect( tokenize('"so real"') ).to.equal( {t("string", "so real", 1)} )
+    end)
+
+    it("escape sequence in string", function()
+        expect( tokenize('"so \nreal"') ).to.equal( {t("string", "so \nreal", 1)} )
+        expect( tokenize('"so \treal"') ).to.equal( {t("string", "so \treal", 1)} )
+        expect( tokenize('"so \\"real"') ).to.equal( {t("string", "so \"real", 1)} )
+        expect( tokenize('"so \\\\ real"') ).to.equal( {t("string", "so \\ real", 1)} )
+    end)
+
+    it("error unterminated string", function()
+        expect( function() tokenize('"so real') end ).to.fail.with("unterminated string")
+    end)
 end)

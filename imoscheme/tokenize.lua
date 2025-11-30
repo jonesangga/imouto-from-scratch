@@ -30,6 +30,14 @@ local function tokenize(src)
         })
     end
 
+    local function token_string(value)
+        table.insert(tokens, {
+            type  = "string",
+            value = value,
+            line  = line,
+        })
+    end
+
     local function skip_whitespace()
         while true do
             local c = peek()
@@ -73,6 +81,27 @@ local function tokenize(src)
                 end
             end
             token("number")
+
+        elseif c == '"' then
+            local s = ""
+            while not eof() and peek() ~= '"' do
+                local d = advance()
+                if d == '\\' then
+                    local e = advance()
+                    if e == 'n' then s = s .. '\n'
+                    elseif e == 't' then s = s .. '\t'
+                    elseif e == '"' then s = s .. '"'
+                    elseif e == '\\' then s = s .. '\\'
+                    else s = s .. e  -- Implementation defined.
+                    end
+                else
+                    s = s .. d
+                end
+            end
+
+            if eof() then error("unterminated string") end
+            advance()  -- Closing quote.
+            token_string(s)
 
         else
             while not eof() do

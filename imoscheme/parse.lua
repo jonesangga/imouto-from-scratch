@@ -26,6 +26,9 @@ local function parse(tokens)
         elseif tok.type == "boolean" then
             return tok.value == "#t"
 
+        elseif tok.type == "string" then
+            return tok.value
+
         elseif tok.type == "number" then
             return tonumber(tok.value)
         else
