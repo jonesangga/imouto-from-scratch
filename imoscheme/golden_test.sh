@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+interpreter="$1"
 fail=0
 
 for in_file in tests/golden/*.scm; do
@@ -7,7 +8,7 @@ for in_file in tests/golden/*.scm; do
     expect_file="tests/golden/$name.expect"
     out_file="tests/golden/out/$name.out"
 
-    lua main.lua "$in_file" > "$out_file"
+    eval "$interpreter $in_file > $out_file"
 
     if ! cmp -s "$out_file" "$expect_file"; then
         echo "FAIL: $name"
