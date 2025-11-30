@@ -1,0 +1,5 @@
+(display 12)
+(display 3)
+(newline)
+(display 456)
+(newline)
