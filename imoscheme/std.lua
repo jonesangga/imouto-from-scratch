@@ -125,6 +125,15 @@ procedures["string-length"] = function(args, env)
     return #eval(args.head, env)
 end
 
+procedures["string=?"] = function(args, env)
+    local x = eval(args.head, env)
+    local y = eval(args.tail.head, env)
+    if type(x) ~= "string" or type(y) ~= "string" then
+        error("arguements must be strings")
+    end
+    return x == y
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)

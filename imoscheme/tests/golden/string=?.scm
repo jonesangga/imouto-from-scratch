@@ -1,0 +1,5 @@
+(display (string=? "real" "real"))
+(display (string=? "real" "real "))
+(display (string=? "" ""))
+(display (string=? "\t\n" "\t\n"))
+(newline)
