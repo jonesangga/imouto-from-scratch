@@ -138,5 +138,14 @@ procedures["display"] = function(args, env)
     io.write(repr(obj))
 end
 
+-- NOTE: Doesn't support port argument.
+procedures["newline"] = function(args, env)
+    local obj = eval(args.head, env)
+    if obj ~= nil then
+        error("<newline> must not have argument")
+    end
+    io.write("\n")
+end
+
 
 return procedures
