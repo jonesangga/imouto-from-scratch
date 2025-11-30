@@ -1,7 +1,8 @@
 all: unit_test golden_test_imo golden_test_chicken golden_test_chibi golden_test_guile
 
 unit_test:
-	lua tests/unit/parser_test.lua
+	lua tests/unit/tokenize_test.lua
+	lua tests/unit/parse_test.lua
 
 golden_test_imo:
 	bash golden_test.sh "lua main.lua"

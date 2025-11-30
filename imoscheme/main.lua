@@ -1,12 +1,14 @@
-local parser  = require("parser")
-local eval    = require("eval")
-local envir   = require("envir")
-local std     = require("std")
-local inspect = require("libraries/inspect")
+local tokenize = require("tokenize")
+local parse    = require("parse")
+local eval     = require("eval")
+local envir    = require("envir")
+local std      = require("std")
+local inspect  = require("libraries/inspect")
 
 local function run_file(path, env)
-    local file  = assert(io.open(path, "r"), "failed to open file")
-    local exprs = parser(file:read("*all"))
+    local file   = assert(io.open(path, "r"), "failed to open file")
+    local tokens = tokenize(file:read("*all"))
+    local exprs  = parse(tokens)
     file:close()
 
     local result
@@ -30,11 +32,12 @@ end
 local function repl(env)
     print("Imo Scheme. Ctrl+D to quit.")
 
-    local exprs, result
+    local tokens, exprs, result
 
     while true do
         io.write("> ")
-        exprs = parser(io.read())
+        tokens = tokenize(io.read())
+        exprs = parse(tokens)
         -- print(inspect(exprs))
 
         for _, expr in ipairs(exprs) do
