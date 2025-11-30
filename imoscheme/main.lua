@@ -2,7 +2,6 @@ local parser  = require("parser")
 local eval    = require("eval")
 local envir   = require("envir")
 local std     = require("std")
-local util    = require("util")
 local inspect = require("libraries/inspect")
 
 local function run_file(path, env)
@@ -14,7 +13,18 @@ local function run_file(path, env)
     for _, expr in ipairs(exprs) do
         result = eval(expr, env)
     end
-    util.repr(result)
+end
+
+local function repr(x)
+    if x == nil then
+        return
+    elseif x == true then
+        print("#t")
+    elseif x == false then
+        print("#f")
+    else
+        print(inspect(x))
+    end
 end
 
 local function repl(env)
@@ -30,7 +40,7 @@ local function repl(env)
         for _, expr in ipairs(exprs) do
             result = eval(expr, env)
         end
-        util.repr(result)
+        repr(result)
     end
 end
 

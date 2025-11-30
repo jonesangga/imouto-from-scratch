@@ -1,5 +1,4 @@
 local eval = require("eval")
-local util = require("util")
 local inspect = require("libraries/inspect")
 local types = require("types")
 local List, is_list, is_symbol = types.List, types.is_list, types.is_symbol
@@ -120,9 +119,23 @@ end
 
 -- 6.6 Input and Output.
 
+local function repr(x)
+    if x == true then
+        return "#t"
+    elseif x == false then
+        return "#f"
+    else
+        return inspect(x)
+    end
+end
+
+-- NOTE: Doesn't support port argument.
 procedures["display"] = function(args, env)
-    local msg = eval(args.head, env)
-    util.repr(msg)
+    local obj = eval(args.head, env)
+    if obj == nil then
+        error("<display> must have one argument")
+    end
+    io.write(repr(obj))
 end
 
 
