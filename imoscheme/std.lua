@@ -121,6 +121,10 @@ procedures["string?"] = function(args, env)
     return type(eval(args.head, env)) == "string"
 end
 
+procedures["string-length"] = function(args, env)
+    return #eval(args.head, env)
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)

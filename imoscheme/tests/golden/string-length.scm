@@ -1,0 +1,5 @@
+(display (string-length "real"))
+(display (string-length "real\n"))
+(display (string-length "real\t"))
+(display (string-length ""))
+(newline)
