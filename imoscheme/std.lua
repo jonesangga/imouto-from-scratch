@@ -117,6 +117,10 @@ procedures["boolean?"] = function(args, env)
     return type(eval(args.head, env)) == "boolean"
 end
 
+procedures["string?"] = function(args, env)
+    return type(eval(args.head, env)) == "string"
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)

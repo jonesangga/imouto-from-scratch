@@ -1,0 +1,5 @@
+(display (string? "real"))
+(display (string? "real \n real"))
+(display (string? 2))
+(display (string? #t))
+(newline)
