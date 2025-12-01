@@ -161,6 +161,14 @@ procedures["string-append"] = function(args, env)
     return res
 end
 
+procedures["string-copy"] = function(args, env)
+    local s = eval(args.head, env)
+    if type(s) ~= "string" then
+        error("<string-copy> arg must be a string")
+    end
+    return s
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)
