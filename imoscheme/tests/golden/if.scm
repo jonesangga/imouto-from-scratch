@@ -1,0 +1,7 @@
+(display (if (> 3 2) 'yes 'no))
+(newline)
+(display (if (= 3 2) 'yes 'no))
+(newline)
+(if (< 2 2) (display 'yes))
+(if (< 2 2) (display 'yes) (display 'no))
+(newline)

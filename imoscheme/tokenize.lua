@@ -68,7 +68,11 @@ local function tokenize(src)
         elseif c == '#' and peek():match('[tf]') then
             local val = advance()
             token("boolean")
-        elseif digit[c] then
+
+        elseif digit[c] or ((c == '+' or c == '-') and digit[peek()]) then
+            if c == '+' or c == '-' then
+                advance()
+            end
             while digit[peek()] do
                 advance()
             end

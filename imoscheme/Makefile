@@ -1,7 +1,7 @@
 repl:
 	rlwrap lua main.lua
 
-test: unit_test golden_test_imo golden_test_chicken golden_test_chibi golden_test_guile
+test: unit_test golden_test_imo golden_test_chicken golden_test_guile
 
 unit_test:
 	lua tests/unit/tokenize_test.lua

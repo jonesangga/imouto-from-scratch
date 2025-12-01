@@ -3,6 +3,28 @@ local inspect = require("libraries/inspect")
 local types = require("types")
 local List, is_list, is_symbol = types.List, types.is_list, types.is_symbol
 
+local function compare_using(fn)
+    return function(args, env)
+        if args.tail == nil then
+            return true
+        end
+
+        local prev, current
+        prev = eval(args.head, env)
+        args = args.tail
+
+        while args.head ~= nil do
+            current = eval(args.head, env)
+            if not fn(prev, current) then
+                return false
+            end
+            prev = current
+            args = args.tail
+        end
+        return true
+    end
+end
+
 local function init_lambda(params, args, evalenv, saveenv)
     local key, val
     while params.head ~= nil and args.head ~= nil do
@@ -58,6 +80,16 @@ procedures["lambda"] = function(args, env)
     end
 end
 
+procedures["if"] = function(args, env)
+    local iftrue = args.tail.head
+    local iffalse = args.tail.tail.head
+    if eval(args.head, env) then
+        return eval(iftrue, env)
+    else
+        return eval(iffalse, env)
+    end
+end
+
 -- 6.1 Equivalence predicates.
 
 -- Fix these later.
@@ -71,6 +103,16 @@ procedures["eqv?"] = procedures["eq?"]
 procedures["equal?"] = procedures["eq?"]
 
 -- 6.2 Numbers.
+
+procedures["="] = compare_using(function(x, y) return x == y end)
+
+procedures["<"] = compare_using(function(x, y) return x < y end)
+
+procedures[">"] = compare_using(function(x, y) return x > y end)
+
+procedures["<="] = compare_using(function(x, y) return x <= y end)
+
+procedures[">="] = compare_using(function(x, y) return x >= y end)
 
 procedures["+"] = function(args, env)
     local res = 0
@@ -177,7 +219,7 @@ local function repr(x)
     elseif x == false then
         return "#f"
     else
-        return x
+        return tostring(x)
     end
 end
 
