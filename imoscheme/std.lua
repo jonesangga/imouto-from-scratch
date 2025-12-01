@@ -134,6 +134,19 @@ procedures["string=?"] = function(args, env)
     return x == y
 end
 
+procedures["substring"] = function(args, env)
+    local str = eval(args.head, env)
+    local start = eval(args.tail.head, env)
+    local stop = eval(args.tail.tail.head, env)
+    if type(str) ~= "string" or type(start) ~= "number" or type(stop) ~= "number" then
+        error("<substring> arguements not valid")
+    end
+    if start < 0 or stop > #str then
+        error("<substring> out of range")
+    end
+    return str:sub(start + 1, stop)
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)

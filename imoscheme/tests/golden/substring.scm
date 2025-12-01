@@ -1,0 +1,8 @@
+(display (substring "so real" 0 1))
+(newline)
+(display (substring "so real" 0 3))
+(newline)
+(display (substring "so real" 0 0))
+(newline)
+(display (substring "so real" 3 7))
+(newline)
