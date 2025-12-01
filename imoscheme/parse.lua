@@ -1,5 +1,5 @@
 local types = require("types")
-local List, Symbol = types.List, types.Symbol
+local List, Quote, Symbol = types.List, types.Quote, types.Symbol
 
 local function parse(tokens)
     local i = 1
@@ -25,6 +25,9 @@ local function parse(tokens)
 
         elseif tok.type == "boolean" then
             return tok.value == "#t"
+
+        elseif tok.type == "quote" then
+            return Quote.new(parse_expr())
 
         elseif tok.type == "string" then
             return tok.value

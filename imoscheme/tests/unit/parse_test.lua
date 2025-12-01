@@ -3,7 +3,7 @@ local tokenize = require("tokenize")
 local parse = require("parse")
 local types = require("types")
 
-local List, Symbol = types.List, types.Symbol
+local List, Quote, Symbol = types.List, types.Quote, types.Symbol
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
 describe("parse", function()
@@ -21,6 +21,12 @@ describe("parse", function()
         expect( parse(tokenize("a")) ).to.equal( {{type = "symbol", name = "a"}} )
         expect( parse(tokenize("+")) ).to.equal( {{type = "symbol", name = "+"}} )
         expect( parse(tokenize("a b +")) ).to.equal( {Symbol.new("a"), Symbol.new("b"), Symbol.new("+")} )
+    end)
+
+    it("quote", function()
+        expect( parse(tokenize("'a")) ).to.equal( {{type = "quote", value = Symbol.new("a")}} )
+        expect( parse(tokenize("''a")) ).to.equal( {Quote.new(Quote.new(Symbol.new("a")))} )
+        expect( parse(tokenize("'(so real)")) ).to.equal( {Quote.new(List.from {Symbol.new("so"), Symbol.new("real")})} )
     end)
 
     it("number", function()

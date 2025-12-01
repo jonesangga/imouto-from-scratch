@@ -82,4 +82,16 @@ describe("tokenizer", function()
     it("error unterminated string", function()
         expect( function() tokenize('"so real') end ).to.fail.with("unterminated string")
     end)
+
+    it("quote", function()
+        expect( tokenize("'a") ).to.equal( {t("quote", "'", 1), t("symbol", "a", 1)} )
+        expect( tokenize("''a") ).to.equal( {t("quote", "'", 1), t("quote", "'", 1), t("symbol", "a", 1)} )
+        expect( tokenize("'(so real)") ).to.equal( {
+            t("quote", "'", 1),
+            t("lparen", "(", 1),
+            t("symbol", "so", 1),
+            t("symbol", "real", 1),
+            t("rparen", ")", 1),
+        } )
+    end)
 end)

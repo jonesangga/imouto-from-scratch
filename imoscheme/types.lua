@@ -14,6 +14,22 @@ function Symbol.new(name)
 end
 
 
+local Quote = {
+    __eq = function(x, y)
+        return x.value == y.value
+    end,
+
+    __tostring = function(q)
+        return "'" .. tostring(q.value)
+    end
+}
+Quote.__index = Quote
+
+function Quote.new(obj)
+    return setmetatable({ type = "quote", value = obj }, Quote)
+end
+
+
 local List = {
     __eq = function(x, y)
         while x.head ~= nil or y.head ~= nil do
@@ -59,14 +75,20 @@ local function is_symbol(x)
     return type(x) == "table" and x.type == "symbol"
 end
 
+function is_quote(x)
+    return type(x) == "table" and x.type == "quote"
+end
+
 local function is_list(x)
     return type(x) == "table" and x.type == "list"
 end
 
 
 return {
-    Symbol = Symbol,
     List = List,
-    is_symbol = is_symbol,
+    Quote = Quote,
+    Symbol = Symbol,
     is_list = is_list,
+    is_quote = is_quote,
+    is_symbol = is_symbol,
 }

@@ -25,7 +25,7 @@ local function repr(x)
     elseif x == false then
         print("#f")
     else
-        print(inspect(x))
+        print(x)
     end
 end
 

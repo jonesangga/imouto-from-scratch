@@ -82,6 +82,9 @@ local function tokenize(src)
             end
             token("number")
 
+        elseif c == '\'' then
+            token("quote")
+
         elseif c == '"' then
             local s = ""
             while not eof() and peek() ~= '"' do
