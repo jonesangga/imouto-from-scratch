@@ -23,6 +23,13 @@ describe("parse", function()
         expect( parse(tokenize("a b +")) ).to.equal( {Symbol.new("a"), Symbol.new("b"), Symbol.new("+")} )
     end)
 
+    it("string", function()
+        expect( parse(tokenize('""')) ).to.equal( {""} )
+        expect( parse(tokenize('"so real"')) ).to.equal( {"so real"} )
+        expect( parse(tokenize('"so \\"real"')) ).to.equal( {"so \"real"} )
+        expect( parse(tokenize('"so \\\\real"')) ).to.equal( {"so \\real"} )
+    end)
+
     it("quote", function()
         expect( parse(tokenize("'a")) ).to.equal( {{type = "quote", value = Symbol.new("a")}} )
         expect( parse(tokenize("''a")) ).to.equal( {Quote.new(Quote.new(Symbol.new("a")))} )
