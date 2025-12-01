@@ -147,6 +147,20 @@ procedures["substring"] = function(args, env)
     return str:sub(start + 1, stop)
 end
 
+procedures["string-append"] = function(args, env)
+    local res = ""
+    local next
+    while args.head ~= nil do
+        next = eval(args.head, env)
+        if type(next) ~= "string" then
+            error("<string-append> args must be strings")
+        end
+        res  = res .. next
+        args = args.tail
+    end
+    return res
+end
+
 -- 6.6 Input and Output.
 
 local function repr(x)
