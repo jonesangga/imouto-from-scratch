@@ -1,5 +1,5 @@
 local types = require("types")
-local List, Quote, Symbol = types.List, types.Quote, types.Symbol
+local list, quote, symbol = types.list, types.quote, types.symbol
 
 local function parse(tokens)
     local i = 1
@@ -10,13 +10,13 @@ local function parse(tokens)
         i = i + 1
 
         if tok.type == "lparen" then
-            local list = {}
+            local arr = {}
             while tokens[i] do
                 if tokens[i].type == "rparen" then
                     i = i + 1  -- Skip ')'.
-                    return List.from(list)
+                    return list(arr)
                 end
-                table.insert(list, parse_expr())
+                table.insert(arr, parse_expr())
             end
             error("missing )")
 
@@ -27,7 +27,7 @@ local function parse(tokens)
             return tok.value == "#t"
 
         elseif tok.type == "quote" then
-            return Quote.new(parse_expr())
+            return quote(parse_expr())
 
         elseif tok.type == "string" then
             return tok.value
@@ -35,7 +35,7 @@ local function parse(tokens)
         elseif tok.type == "number" then
             return tonumber(tok.value)
         else
-            return Symbol.new(tok.value)
+            return symbol(tok.value)
         end
     end
 

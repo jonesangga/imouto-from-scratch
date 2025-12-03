@@ -1,25 +1,24 @@
 local eval = require("eval")
-local inspect = require("libraries/inspect")
 local types = require("types")
-local List, is_list, is_symbol = types.List, types.is_list, types.is_symbol
+local EMPTY, list, is_pair, is_list, is_symbol, is_empty = types.EMPTY, types.list, types.is_pair, types.is_list, types.is_symbol, types.is_empty
 
 local function compare_using(fn)
     return function(args, env)
-        if args.tail == nil then
+        if is_empty(args) then
             return true
         end
 
         local prev, current
-        prev = eval(args.head, env)
-        args = args.tail
+        prev = eval(args.car, env)
+        args = args.cdr
 
-        while args.head ~= nil do
-            current = eval(args.head, env)
+        while not is_empty(args) do
+            current = eval(args.car, env)
             if not fn(prev, current) then
                 return false
             end
             prev = current
-            args = args.tail
+            args = args.cdr
         end
         return true
     end
@@ -27,28 +26,28 @@ end
 
 local function init_lambda(params, args, evalenv, saveenv)
     local key, val
-    while params.head ~= nil and args.head ~= nil do
-        key = params.head
-        val = args.head
+    while params.car ~= nil and args.car ~= nil do
+        key = params.car
+        val = args.car
         if not is_symbol(key) then
             error(key .. " is not a symbol")
         end
         saveenv:define(key.name, eval(val, evalenv))
-        params, args = params.tail, args.tail
+        params, args = params.cdr, args.cdr
     end
     return saveenv
 end
 
 local function init_let(bindings, evalenv, saveenv)
     local key, val
-    while bindings.head ~= nil do
-        key = bindings.head.head
-        val = bindings.head.tail.head
+    while not is_empty(bindings) do
+        key = bindings.car.car
+        val = bindings.car.cdr.car
         if not is_symbol(key) then
             error(key .. " is not a symbol")
         end
         saveenv:define(key.name, eval(val, evalenv))
-        bindings = bindings.tail
+        bindings = bindings.cdr
     end
     return saveenv
 end
@@ -57,15 +56,15 @@ end
 local procedures = {}
 
 procedures["define"] = function(args, env)
-    local key = args.head
+    local key = args.car
     local val
 
-    if is_list(key) then
-        local L = List.from{key.tail, args.tail.head}
+    if is_pair(key) then
+        local L = list {key.cdr, args.cdr.car}
         val = procedures.lambda(L, env)  -- Call manually.
-        key = key.head
+        key = key.car
     elseif is_symbol(key) then
-        val = eval(args.tail.head, env)
+        val = eval(args.cdr.car, env)
     else
         error(key .. " is invalid")
     end
@@ -73,18 +72,18 @@ procedures["define"] = function(args, env)
     env:define(key.name, val)
 end
 
-local function eval_body(list, env)
+local function eval_body(expr, env)
     local result
-    while list.head ~= nil do
-        result = eval(list.head, env)
-        list = list.tail
+    while not is_empty(expr) do
+        result = eval(expr.car, env)
+        expr = expr.cdr
     end
     return result
 end
 
 procedures["lambda"] = function(args, env)
-    local params = args.head
-    local body = args.tail
+    local params = args.car
+    local body = args.cdr
 
     return function(callargs, callenv)
         local localenv = env:branch()
@@ -95,9 +94,9 @@ procedures["lambda"] = function(args, env)
 end
 
 procedures["if"] = function(args, env)
-    local iftrue = args.tail.head
-    local iffalse = args.tail.tail.head
-    if eval(args.head, env) then
+    local iftrue = args.cdr.car
+    local iffalse = args.cdr.cdr.car
+    if eval(args.car, env) then
         return eval(iftrue, env)
     else
         return eval(iffalse, env)
@@ -105,35 +104,35 @@ procedures["if"] = function(args, env)
 end
 
 procedures["set!"] = function(args, env)
-    local key = args.head
+    local key = args.car
     if not is_symbol(key) then
         error(key .. " is not a symbol")
     end
-    local val = eval(args.tail.head, env)
+    local val = eval(args.cdr.car, env)
     env:set(key.name, val)
 end
 
 procedures["cond"] = function(args, env)
     local condition, body
-    while args.head ~= nil do
-        condition = args.head.head
-        body = args.head.tail
+    while args.car ~= nil do
+        condition = args.car.car
+        body = args.car.cdr
         if eval(condition, env) then
-            if body.head ~= nil then
+            if body.car ~= nil then
                 return eval_body(body, env)
             else
                 return true
             end
         end
-        args = args.tail
+        args = args.cdr
     end
 end
 
 procedures["else"] = true
 
 procedures["let"] = function(args, env)
-    local bindings = args.head
-    local body = args.tail
+    local bindings = args.car
+    local body = args.cdr
 
     local localenv = env:branch()
     init_let(bindings, env, localenv)
@@ -142,8 +141,8 @@ procedures["let"] = function(args, env)
 end
 
 procedures["let*"] = function(args, env)
-    local bindings = args.head
-    local body = args.tail
+    local bindings = args.car
+    local body = args.cdr
 
     local localenv = env:branch()
     init_let(bindings, localenv, localenv)
@@ -159,8 +158,8 @@ end
 
 -- Fix these later.
 procedures["eq?"] = function(args, env)
-    local x = eval(args.head, env)
-    local y = eval(args.tail.head, env)
+    local x = eval(args.car, env)
+    local y = eval(args.cdr.car, env)
     return x == y
 end
 
@@ -181,63 +180,60 @@ procedures[">="] = compare_using(function(x, y) return x >= y end)
 
 procedures["+"] = function(args, env)
     local res = 0
-    while args.head ~= nil do
-        res  = res + eval(args.head, env)
-        args = args.tail
+    while not is_empty(args) do
+        res  = res + eval(args.car, env)
+        args = args.cdr
     end
     return res
 end
 
 procedures["*"] = function(args, env)
     local res = 1
-    while args.head ~= nil do
-        res  = res * eval(args.head, env)
-        args = args.tail
+    while not is_empty(args) do
+        res  = res * eval(args.car, env)
+        args = args.cdr
     end
     return res
 end
 
 procedures["-"] = function(args, env)
-    if args.head == nil then
+    if is_empty(args) then
         error("operator - needs at least one argument")
     end
-    local res = eval(args.head, env)
-    args = args.tail
+    local res = eval(args.car, env)
+    args = args.cdr
 
-    if args.head == nil then
+    if is_empty(args) then
         return -res
     end
     repeat
-        res  = res - eval(args.head, env)
-        args = args.tail
-    until args.head == nil
+        res  = res - eval(args.car, env)
+        args = args.cdr
+    until args.car == nil
     return res
 end
 
 -- 6.3 Other data types.
 
 procedures["not"] = function(args, env)
-    return not eval(args.head, env)
+    return not eval(args.car, env)
 end
 
 procedures["boolean?"] = function(args, env)
-    return type(eval(args.head, env)) == "boolean"
+    return type(eval(args.car, env)) == "boolean"
 end
 
-local function eval_to_list(list, env)
-    local current = List.new()
-    local out = current
-    while list.head ~= nil do
-        current.head = eval(list.head, env)
-        current.tail = List.new()
-        current = current.tail
-        list = list.tail
+local function eval_to_list(expr, env)
+    local arr = {}
+    while not is_empty(expr) do
+        table.insert(arr, eval(expr.car, env))
+        expr = expr.cdr
     end
-    return out
+    return list(arr)
 end
 
 procedures["list?"] = function(args, env)
-    return is_list(eval(args.head, env))
+    return is_list(eval(args.car, env))
 end
 
 procedures["list"] = function(args, env)
@@ -245,26 +241,26 @@ procedures["list"] = function(args, env)
 end
 
 procedures["length"] = function(args, env)
-    local list = eval(args.head, env)
+    local list = eval(args.car, env)
     local len = 0
-    while list.head ~= nil do
+    while not is_empty(list) do
         len = len + 1
-        list = list.tail
+        list = list.cdr
     end
     return len
 end
 
 procedures["string?"] = function(args, env)
-    return type(eval(args.head, env)) == "string"
+    return type(eval(args.car, env)) == "string"
 end
 
 procedures["string-length"] = function(args, env)
-    return #eval(args.head, env)
+    return #eval(args.car, env)
 end
 
 procedures["string=?"] = function(args, env)
-    local x = eval(args.head, env)
-    local y = eval(args.tail.head, env)
+    local x = eval(args.car, env)
+    local y = eval(args.cdr.car, env)
     if type(x) ~= "string" or type(y) ~= "string" then
         error("arguements must be strings")
     end
@@ -272,9 +268,9 @@ procedures["string=?"] = function(args, env)
 end
 
 procedures["substring"] = function(args, env)
-    local str = eval(args.head, env)
-    local start = eval(args.tail.head, env)
-    local stop = eval(args.tail.tail.head, env)
+    local str = eval(args.car, env)
+    local start = eval(args.cdr.car, env)
+    local stop = eval(args.cdr.cdr.car, env)
     if type(str) ~= "string" or type(start) ~= "number" or type(stop) ~= "number" then
         error("<substring> arguements not valid")
     end
@@ -287,19 +283,19 @@ end
 procedures["string-append"] = function(args, env)
     local res = ""
     local next
-    while args.head ~= nil do
-        next = eval(args.head, env)
+    while not is_empty(args) do
+        next = eval(args.car, env)
         if type(next) ~= "string" then
             error("<string-append> args must be strings")
         end
         res  = res .. next
-        args = args.tail
+        args = args.cdr
     end
     return res
 end
 
 procedures["string-copy"] = function(args, env)
-    local s = eval(args.head, env)
+    local s = eval(args.car, env)
     if type(s) ~= "string" then
         error("<string-copy> arg must be a string")
     end
@@ -320,16 +316,13 @@ end
 
 -- NOTE: Doesn't support port argument.
 procedures["display"] = function(args, env)
-    local obj = eval(args.head, env)
-    if obj == nil then
-        error("<display> must have one argument")
-    end
+    local obj = eval(args.car, env)
     io.write(repr(obj))
 end
 
 -- NOTE: Doesn't support port argument.
 procedures["newline"] = function(args, env)
-    local obj = eval(args.head, env)
+    local obj = eval(args.car, env)
     if obj ~= nil then
         error("<newline> must not have argument")
     end

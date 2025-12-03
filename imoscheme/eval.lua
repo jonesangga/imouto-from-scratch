@@ -1,9 +1,9 @@
 local types = require("types")
 local is_list, is_quote, is_symbol = types.is_list, types.is_quote, types.is_symbol
 
-local function eval_list(list, env)
-    local fn = eval(list.head, env)
-    local args = list.tail
+local function eval_list(expr, env)
+    local fn = eval(expr.car, env)
+    local args = expr.cdr
     return fn(args, env)
 end
 
@@ -13,7 +13,7 @@ function eval(expr, env)
         return expr.value
     elseif is_symbol(expr) then
         return env:get(expr.name)
-    elseif is_list(expr) then
+    elseif is_pair(expr) then
         return eval_list(expr, env)
     else
         return expr

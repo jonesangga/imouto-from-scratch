@@ -1,94 +1,104 @@
 local Symbol = {
-    __eq = function(x, y)
-        return x.name == y.name
-    end,
-
-    __tostring = function(s)
-        return s.name
-    end
+    __eq = function(x, y) return x.name == y.name end,
+    __tostring = function(s) return s.name end,
 }
 Symbol.__index = Symbol
 
-function Symbol.new(name)
-    return setmetatable({ type = "symbol", name = name }, Symbol)
+function symbol(name)
+    return setmetatable({ name = name }, Symbol)
 end
 
 
 local Quote = {
-    __eq = function(x, y)
-        return x.value == y.value
-    end,
-
-    __tostring = function(q)
-        return "'" .. tostring(q.value)
-    end
+    __eq = function(x, y) return x.value == y.value end,
+    __tostring = function(q) return "'" .. tostring(q.value) end,
 }
 Quote.__index = Quote
 
-function Quote.new(obj)
-    return setmetatable({ type = "quote", value = obj }, Quote)
+function quote(obj)
+    return setmetatable({ value = obj }, Quote)
 end
 
 
-local List = {
+local EMPTY = setmetatable({}, {
+    __tostring = function(e) return "()" end,
+})
+
+local function is_empty(x)
+    return rawequal(x, EMPTY)
+end
+
+
+local Pair = {
     __eq = function(x, y)
-        while x.head ~= nil or y.head ~= nil do
-            if x.head ~= y.head then
+        while is_pair(x) and is_pair(y) do
+            if x.car ~= y.car then
                 return false
             end
-            x, y = x.tail, y.tail
+            x, y = x.cdr, y.cdr
         end
-        return true
+        return is_empty(x) and is_empty(y)
     end,
-
-    __tostring = function(list)
+ 
+    __tostring = function(x)
         local strs = {}
-        while list.head ~= nil do
-            table.insert(strs, tostring(list.head))
-            list = list.tail
+        while is_pair(x) do
+            table.insert(strs, tostring(x.car))
+            x = x.cdr
         end
-        return "(" .. table.concat(strs, " ") .. ")"
+        if is_empty(x) then
+            return "(" .. table.concat(strs, " ") .. ")"
+        else
+            -- Dotted/improper list.
+            return "(" .. table.concat(strs, " ") .. " . " .. tostring(x) .. ")"
+        end
     end
 }
-List.__index = List
+Pair.__index = Pair
 
-function List.new()
-    return setmetatable({ type = "list" }, List)
+function is_pair(x)
+    return type(x) == "table" and getmetatable(x) == Pair
 end
 
-function List.from(arr)
-    local list = List.new()
+function pair(a, b)
+    return setmetatable({ car = a, cdr = b }, Pair)
+end
+
+local function list(arr)
+    local list = EMPTY
     for i = #arr, 1, -1 do
-        list = list:prepend(arr[i])
+        list = pair(arr[i], list)
     end
-    return list
-end
-
-function List:prepend(val)
-    local list = List.new()
-    list.head = val
-    list.tail = self
     return list
 end
 
 local function is_symbol(x)
-    return type(x) == "table" and x.type == "symbol"
+    return type(x) == "table" and getmetatable(x) == Symbol
 end
 
-function is_quote(x)
-    return type(x) == "table" and x.type == "quote"
+local function is_quote(x)
+    return type(x) == "table" and getmetatable(x) == Quote
 end
 
 local function is_list(x)
-    return type(x) == "table" and x.type == "list"
+    local cur = x
+    while true do
+        if is_empty(cur) then return true end
+        if not is_pair(cur) then return false end
+        cur = cur.cdr
+    end
 end
 
 
 return {
-    List = List,
-    Quote = Quote,
-    Symbol = Symbol,
+    EMPTY = EMPTY,
+    pair = pair,
+    list = list,
+    quote = quote,
+    symbol = symbol,
+    is_pair = is_pair,
     is_list = is_list,
     is_quote = is_quote,
     is_symbol = is_symbol,
+    is_empty = is_empty,
 }
