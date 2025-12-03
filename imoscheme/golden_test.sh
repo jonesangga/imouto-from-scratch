@@ -8,7 +8,7 @@ for in_file in tests/golden/*.scm; do
     expect_file="tests/golden/$name.expect"
     out_file="tests/golden/out/$name.out"
 
-    eval "$interpreter $in_file > $out_file"
+    eval "$interpreter \"$in_file\" > \"$out_file\""  # To support literal * in file name.
 
     if ! cmp -s "$out_file" "$expect_file"; then
         echo "FAIL: $name"

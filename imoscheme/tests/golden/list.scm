@@ -1,0 +1,6 @@
+(display (list 'a 'b 'c))
+(newline)
+(display (list (+ 1 2) (* 3 2) "real"))
+(newline)
+(display (list))
+(newline)

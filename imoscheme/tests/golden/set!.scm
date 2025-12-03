@@ -1,0 +1,6 @@
+(define x 2)
+(display x)
+(newline)
+(set! x 4)
+(display x)
+(newline)

@@ -39,6 +39,20 @@ local function init_lambda(params, args, evalenv, saveenv)
     return saveenv
 end
 
+local function init_let(bindings, evalenv, saveenv)
+    local key, val
+    while bindings.head ~= nil do
+        key = bindings.head.head
+        val = bindings.head.tail.head
+        if not is_symbol(key) then
+            error(key .. " is not a symbol")
+        end
+        saveenv:define(key.name, eval(val, evalenv))
+        bindings = bindings.tail
+    end
+    return saveenv
+end
+
 
 local procedures = {}
 
@@ -88,6 +102,57 @@ procedures["if"] = function(args, env)
     else
         return eval(iffalse, env)
     end
+end
+
+procedures["set!"] = function(args, env)
+    local key = args.head
+    if not is_symbol(key) then
+        error(key .. " is not a symbol")
+    end
+    local val = eval(args.tail.head, env)
+    env:set(key.name, val)
+end
+
+procedures["cond"] = function(args, env)
+    local condition, body
+    while args.head ~= nil do
+        condition = args.head.head
+        body = args.head.tail
+        if eval(condition, env) then
+            if body.head ~= nil then
+                return eval_body(body, env)
+            else
+                return true
+            end
+        end
+        args = args.tail
+    end
+end
+
+procedures["else"] = true
+
+procedures["let"] = function(args, env)
+    local bindings = args.head
+    local body = args.tail
+
+    local localenv = env:branch()
+    init_let(bindings, env, localenv)
+
+    return eval_body(body, localenv)
+end
+
+procedures["let*"] = function(args, env)
+    local bindings = args.head
+    local body = args.tail
+
+    local localenv = env:branch()
+    init_let(bindings, localenv, localenv)
+
+    return eval_body(body, localenv)
+end
+
+procedures["begin"] = function(args, env)
+    return eval_body(args, env)
 end
 
 -- 6.1 Equivalence predicates.
@@ -157,6 +222,36 @@ end
 
 procedures["boolean?"] = function(args, env)
     return type(eval(args.head, env)) == "boolean"
+end
+
+local function eval_to_list(list, env)
+    local current = List.new()
+    local out = current
+    while list.head ~= nil do
+        current.head = eval(list.head, env)
+        current.tail = List.new()
+        current = current.tail
+        list = list.tail
+    end
+    return out
+end
+
+procedures["list?"] = function(args, env)
+    return is_list(eval(args.head, env))
+end
+
+procedures["list"] = function(args, env)
+    return eval_to_list(args, env)
+end
+
+procedures["length"] = function(args, env)
+    local list = eval(args.head, env)
+    local len = 0
+    while list.head ~= nil do
+        len = len + 1
+        list = list.tail
+    end
+    return len
 end
 
 procedures["string?"] = function(args, env)
