@@ -9,13 +9,13 @@ unit_test:
 	lua tests/unit/types_test.lua
 
 golden_test_imo:
-	bash golden_test.sh "lua main.lua"
+	bash golden_test.sh "lua main.lua" "tests/golden"
 
 golden_test_chicken:
-	bash golden_test.sh "chicken-csi -s"
+	(cd tests/golden && bash ../../golden_test.sh "chicken-csi -s" ".")
 
 golden_test_chibi:
-	bash golden_test.sh "chibi-scheme -xchibi"
+	(cd tests/golden && bash ../../golden_test.sh "chibi-scheme -xchibi" ".")
 
 golden_test_guile:
-	bash golden_test.sh "guile --no-auto-compile"
+	(cd tests/golden && bash ../../golden_test.sh "guile --no-auto-compile" ".")

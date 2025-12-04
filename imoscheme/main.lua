@@ -3,10 +3,13 @@ local parse    = require("parse")
 local eval     = require("eval")
 local envir    = require("envir")
 local std      = require("std")
+local state    = require("state")
 local inspect  = require("libraries/inspect")
+
 
 local function run_file(path, env)
     local file   = assert(io.open(path, "r"), "failed to open file")
+    state.push_base(path)
     local tokens = tokenize(file:read("*all"))
     local exprs  = parse(tokens)
     file:close()
@@ -32,6 +35,7 @@ end
 local function repl(env)
     print("Imo Scheme. Ctrl+D to quit.")
 
+    state.push_base(".")
     local tokens, exprs, result
 
     while true do

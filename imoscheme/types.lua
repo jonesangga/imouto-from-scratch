@@ -108,9 +108,18 @@ local Char = {
         else
             return "#\\" .. string.char(o.ch)
         end
-    end
+    end,
+
 }
 Char.__index = Char
+
+function Char:display()
+    return string.char(self.ch)
+end
+
+local function is_char(x)
+    return type(x) == "table" and getmetatable(x) == Char
+end
 
 local function char(s)
     s = s:sub(3)
@@ -128,14 +137,45 @@ local function char(s)
     return setmetatable({ ch = ch }, Char)
 end
 
+local function char_char(c)
+    ch = c:byte(1)
+    assert(ch <= 127)
+    return setmetatable({ ch = ch }, Char)
+end
+
+
+local EOF = setmetatable({}, {
+    __tostring = function(e) return "#!eof" end,
+})
+
+local Port = {
+    __tostring = function(p)
+        return "#<" .. p.type .. " \"" .. p.name .. "\">"
+    end,
+}
+Port.__index = Port
+
+function Port:read_char()
+    if self.closed then error("port closed") end
+    local ch = self.fp:read(1)
+    if ch == nil then return EOF end
+    return char_char(ch)
+end
+
+local function port(type, fp, name)
+    return setmetatable({ type = type, fp = fp, name = name, closed = false }, Port)
+end
+
 
 return {
     EMPTY = EMPTY,
+    port = port,
     char = char,
     pair = pair,
     list = list,
     quote = quote,
     symbol = symbol,
+    is_char = is_char,
     is_pair = is_pair,
     is_list = is_list,
     is_quote = is_quote,

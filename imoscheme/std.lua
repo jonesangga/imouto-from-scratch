@@ -1,6 +1,7 @@
+local state = require("state")
 local eval = require("eval")
 local types = require("types")
-local EMPTY, list, is_pair, is_list, is_symbol, is_empty = types.EMPTY, types.list, types.is_pair, types.is_list, types.is_symbol, types.is_empty
+local EMPTY, list, port, is_pair, is_list, is_symbol, is_empty, is_char = types.EMPTY, types.list, types.port, types.is_pair, types.is_list, types.is_symbol, types.is_empty, types.is_char
 
 local function compare_using(fn)
     return function(args, env)
@@ -304,11 +305,33 @@ end
 
 -- 6.6 Input and Output.
 
-local function repr(x)
+procedures["open-input-file"] = function(args, env)
+    local path = eval(args.car, env)
+    if type(path) ~= "string" then
+        error("<open-input-file> arg must be string")
+    end
+
+    path = state.resolve(path)
+    local fp, err = io.open(path, "r")
+    if not fp then
+        error("<open-input-file> failed to open " .. path)
+    end
+
+    return port("input port", fp, path)
+end
+
+procedures["read-char"] = function(args, env)
+    local port = eval(args.car, env)
+    return port:read_char()
+end
+
+local function display(x)
     if x == true then
         return "#t"
     elseif x == false then
         return "#f"
+    elseif is_char(x) then
+        return x:display()
     else
         return tostring(x)
     end
@@ -317,7 +340,7 @@ end
 -- NOTE: Doesn't support port argument.
 procedures["display"] = function(args, env)
     local obj = eval(args.car, env)
-    io.write(repr(obj))
+    io.write(display(obj))
 end
 
 -- NOTE: Doesn't support port argument.
