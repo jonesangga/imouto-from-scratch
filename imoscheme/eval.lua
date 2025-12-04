@@ -1,21 +1,24 @@
 local types = require("types")
-local is_list, is_quote, is_symbol = types.is_list, types.is_quote, types.is_symbol
 
-local function eval_list(expr, env)
-    local fn = eval(expr.car, env)
-    local args = expr.cdr
-    return fn(args, env)
-end
+local is_pair   = types.is_pair
+local is_quote  = types.is_quote
+local is_symbol = types.is_symbol
 
--- NOTE: This cannot be local because this and eval_list call each other.
-function eval(expr, env)
-    if is_quote(expr) then
-        return expr.value
-    elseif is_symbol(expr) then
+-- TODO: Using is_pair() is not correct but using is_list() is costly. Think again.
+local function eval(expr, env)
+    if is_symbol(expr) then
         return env:get(expr.name)
+
+    elseif is_quote(expr) then
+        return expr.value
+
     elseif is_pair(expr) then
-        return eval_list(expr, env)
+        local fn   = eval(expr.car, env)
+        local args = expr.cdr
+        return fn(args, env)
+
     else
+        -- String, number, true, false.
         return expr
     end
 end

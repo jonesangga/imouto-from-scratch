@@ -1,22 +1,30 @@
 local Symbol = {
-    __eq = function(x, y) return x.name == y.name end,
+    __eq       = function(x, y) return x.name == y.name end,
     __tostring = function(s) return s.name end,
 }
 Symbol.__index = Symbol
 
-function symbol(name)
+local function symbol(name)
     return setmetatable({ name = name }, Symbol)
+end
+
+local function is_symbol(x)
+    return type(x) == "table" and getmetatable(x) == Symbol
 end
 
 
 local Quote = {
-    __eq = function(x, y) return x.value == y.value end,
+    __eq       = function(x, y) return x.value == y.value end,
     __tostring = function(q) return "'" .. tostring(q.value) end,
 }
 Quote.__index = Quote
 
-function quote(obj)
+local function quote(obj)
     return setmetatable({ value = obj }, Quote)
+end
+
+local function is_quote(x)
+    return type(x) == "table" and getmetatable(x) == Quote
 end
 
 
@@ -60,7 +68,7 @@ function is_pair(x)
     return type(x) == "table" and getmetatable(x) == Pair
 end
 
-function pair(a, b)
+local function pair(a, b)
     return setmetatable({ car = a, cdr = b }, Pair)
 end
 
@@ -70,14 +78,6 @@ local function list(arr)
         list = pair(arr[i], list)
     end
     return list
-end
-
-local function is_symbol(x)
-    return type(x) == "table" and getmetatable(x) == Symbol
-end
-
-local function is_quote(x)
-    return type(x) == "table" and getmetatable(x) == Quote
 end
 
 local function is_list(x)
@@ -168,17 +168,17 @@ end
 
 
 return {
-    EMPTY = EMPTY,
-    port = port,
-    char = char,
-    pair = pair,
-    list = list,
-    quote = quote,
-    symbol = symbol,
-    is_char = is_char,
-    is_pair = is_pair,
-    is_list = is_list,
-    is_quote = is_quote,
+    char      = char,
+    EMPTY     = EMPTY,
+    list      = list,
+    pair      = pair,
+    port      = port,
+    quote     = quote,
+    symbol    = symbol,
+    is_char   = is_char,
+    is_empty  = is_empty,
+    is_list   = is_list,
+    is_pair   = is_pair,
+    is_quote  = is_quote,
     is_symbol = is_symbol,
-    is_empty = is_empty,
 }

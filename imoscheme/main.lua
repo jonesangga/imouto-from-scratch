@@ -4,8 +4,6 @@ local eval     = require("eval")
 local envir    = require("envir")
 local std      = require("std")
 local state    = require("state")
-local inspect  = require("libraries/inspect")
-
 
 local function run_file(path, env)
     local file   = assert(io.open(path, "r"), "failed to open file")
@@ -36,13 +34,15 @@ local function repl(env)
     print("Imo Scheme. Ctrl+D to quit.")
 
     state.push_base(".")
-    local tokens, exprs, result
+    local line, tokens, exprs, result
 
     while true do
         io.write("> ")
-        tokens = tokenize(io.read())
+        line = io.read()
+        if not line then break end
+
+        tokens = tokenize(line)
         exprs = parse(tokens)
-        -- print(inspect(exprs))
 
         for _, expr in ipairs(exprs) do
             result = eval(expr, env)

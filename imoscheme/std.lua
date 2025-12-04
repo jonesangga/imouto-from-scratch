@@ -1,7 +1,15 @@
+local eval  = require("eval")
 local state = require("state")
-local eval = require("eval")
 local types = require("types")
-local EMPTY, list, port, is_pair, is_list, is_symbol, is_empty, is_char = types.EMPTY, types.list, types.port, types.is_pair, types.is_list, types.is_symbol, types.is_empty, types.is_char
+
+local EMPTY     = types.EMPTY
+local list      = types.list
+local port      = types.port
+local is_char   = types.is_char
+local is_empty  = types.is_empty
+local is_list   = types.is_list
+local is_pair   = types.is_pair
+local is_symbol = types.is_symbol
 
 local function compare_using(fn)
     return function(args, env)

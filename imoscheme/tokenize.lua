@@ -6,9 +6,13 @@ local function Set(list)
     return set
 end
 
-local whitespace = Set { " ", "\t", "\n", "\r" }
-local wordend    = Set { "(", ")", "'", ",", ";", "\"" }
-local digit      = Set { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" }
+local whitespace = Set { ' ', '\t', '\n', '\r' }
+local wordend    = Set { '(', ')', '\'', ',', ';', '"' }
+
+local function is_digit(c)
+    local b = (c or ""):byte()
+    return b and b >= 48 and b <= 57
+end
 
 local function tokenize(src)
     local start   = 1
@@ -53,7 +57,6 @@ local function tokenize(src)
     end
 
     while true do
-        -- print(start, current)
         skip_whitespace()
         start = current
 
@@ -65,6 +68,8 @@ local function tokenize(src)
             token("lparen")
         elseif c == ')' then
             token("rparen")
+
+        -- Boolean type.
         elseif c == '#' and peek():match('[tf]') then
             local val = advance()
             token("boolean")
@@ -87,18 +92,19 @@ local function tokenize(src)
             end
             token("char")
 
-        elseif digit[c] or ((c == '+' or c == '-') and digit[peek()]) then
+        -- Number type.
+        elseif is_digit(c) or ((c == '+' or c == '-') and is_digit(peek())) then
             if c == '+' or c == '-' then
                 advance()
             end
-            while digit[peek()] do
+            while is_digit(peek()) do
                 advance()
             end
 
             -- Optional fractional part.
-            if peek() == '.' and digit[peek_next()] then
+            if peek() == '.' and is_digit(peek_next()) then
                 advance()
-                while digit[peek()] do
+                while is_digit(peek()) do
                     advance()
                 end
             end
@@ -107,6 +113,7 @@ local function tokenize(src)
         elseif c == '\'' then
             token("quote")
 
+        -- String type.
         elseif c == '"' then
             local s = ""
             while not eof() and peek() ~= '"' do
@@ -128,6 +135,7 @@ local function tokenize(src)
             advance()  -- Closing quote.
             token_string(s)
 
+        -- Symbol type.
         else
             while not eof() do
                 local c = peek()
