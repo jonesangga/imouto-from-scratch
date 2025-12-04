@@ -90,8 +90,48 @@ local function is_list(x)
 end
 
 
+local named_to_cp = {
+    space = 0x20,
+    newline = 0x0A,
+}
+
+local cp_to_named = {}
+for n, cp in pairs(named_to_cp) do
+    cp_to_named[cp] = n
+end
+
+local Char = {
+    __tostring = function(o)
+        local n = cp_to_named[o.ch]
+        if n then
+            return "#\\" .. n
+        else
+            return "#\\" .. string.char(o.ch)
+        end
+    end
+}
+Char.__index = Char
+
+local function char(s)
+    s = s:sub(3)
+    local ch
+    if #s > 1 then
+        if named_to_cp[s] then
+            ch = named_to_cp[s]
+        else
+            error("unknown named character " .. s)
+        end
+    else
+        ch = s:byte(1)
+        assert(ch <= 127)
+    end
+    return setmetatable({ ch = ch }, Char)
+end
+
+
 return {
     EMPTY = EMPTY,
+    char = char,
     pair = pair,
     list = list,
     quote = quote,

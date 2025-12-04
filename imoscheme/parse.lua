@@ -1,5 +1,5 @@
 local types = require("types")
-local list, quote, symbol = types.list, types.quote, types.symbol
+local list, quote, symbol, char = types.list, types.quote, types.symbol, types.char
 
 local function parse(tokens)
     local i = 1
@@ -34,6 +34,9 @@ local function parse(tokens)
 
         elseif tok.type == "number" then
             return tonumber(tok.value)
+
+        elseif tok.type == "char" then
+            return char(tok.value)
         else
             return symbol(tok.value)
         end

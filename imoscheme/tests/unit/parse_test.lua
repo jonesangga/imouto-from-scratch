@@ -3,7 +3,7 @@ local tokenize = require("tokenize")
 local parse = require("parse")
 local types = require("types")
 
-local list, quote, symbol = types.list, types.quote, types.symbol
+local list, quote, symbol, char = types.list, types.quote, types.symbol, types.char
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
 describe("parse", function()
@@ -15,6 +15,19 @@ describe("parse", function()
     it("boolean", function()
         expect( parse(tokenize("#t")) ).to.equal( {true} )
         expect( parse(tokenize("#f")) ).to.equal( {false} )
+    end)
+
+    it("char", function()
+        expect( parse(tokenize("#\\a")) ).to.equal( {char("#\\a")} )
+        expect( parse(tokenize("#\\;")) ).to.equal( {char("#\\;")} )
+        expect( parse(tokenize("#\\space")) ).to.equal( {char("#\\space")} )
+        -- expect( tokenize("#\\real") ).to.equal( {t("char", "#\\real", 1)} )
+        expect( parse(tokenize("#\\newline ")) ).to.equal( {char("#\\newline")} )
+        expect( parse(tokenize("#\\newline()")) ).to.equal( {char("#\\newline"), list{}} )
+    end)
+
+    it("char error", function()
+        expect( function() parse(tokenize("#\\real")) end ).to.fail.with( "unknown named character" )
     end)
 
     it("symbol", function()

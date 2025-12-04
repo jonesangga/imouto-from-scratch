@@ -2,7 +2,7 @@ local lust = require("libraries/lust")
 local types = require("types")
 
 local describe, it, expect = lust.describe, lust.it, lust.expect
-local EMPTY, pair, list, Quote, Symbol = types.EMPTY, types.pair, types.list, types.Quote, types.Symbol
+local EMPTY, pair, list, char = types.EMPTY, types.pair, types.list, types.char
 
 local function t(type, value, line)
     return { type = type, value = value, line = line }
@@ -50,5 +50,33 @@ describe("types", function()
     it("list nested", function()
         local l = list {1, list {2, 3}, 4}
         expect( tostring(l) ).to.equal( "(1 (2 3) 4)" )
+    end)
+
+    it("char alphabet", function()
+        local l = char("#\\a")
+        expect( l.ch ).to.equal( ("a"):byte(1) )
+        expect( tostring(l) ).to.equal( "#\\a" )
+    end)
+
+    it("char non alphabet", function()
+        local l = char("#\\;")
+        expect( l.ch ).to.equal( (";"):byte(1) )
+        expect( tostring(l) ).to.equal( "#\\;" )
+    end)
+
+    it("char named space", function()
+        local l = char("#\\space")
+        expect( l.ch ).to.equal( (" "):byte(1) )
+        expect( tostring(l) ).to.equal( "#\\space" )
+    end)
+
+    it("char named newline", function()
+        local l = char("#\\newline")
+        expect( l.ch ).to.equal( ("\n"):byte(1) )
+        expect( tostring(l) ).to.equal( "#\\newline" )
+    end)
+
+    it("char invalid", function()
+        expect( function() char("#\\real") end ).to.fail.with( "unknown named character" )
     end)
 end)

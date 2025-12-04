@@ -69,6 +69,24 @@ local function tokenize(src)
             local val = advance()
             token("boolean")
 
+        -- Character type.
+        elseif c == '#' and peek() == "\\" and peek_next() ~= " " then
+            advance()  -- Consume \.
+            local d = peek()
+            if d:match("%a") then
+                advance()
+                while not eof() do
+                    local e = peek()
+                    if whitespace[e] or wordend[e] then
+                        break
+                    end
+                    advance()
+                end
+            else
+                advance()
+            end
+            token("char")
+
         elseif digit[c] or ((c == '+' or c == '-') and digit[peek()]) then
             if c == '+' or c == '-' then
                 advance()
