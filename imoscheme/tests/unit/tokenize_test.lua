@@ -13,6 +13,11 @@ describe("tokenizer", function()
         expect( tokenize("    ") ).to.equal( {} )
     end)
 
+    it("comment", function()
+        expect( tokenize(";") ).to.equal( {} )
+        expect( tokenize(";real\n 2") ).to.equal( {t("number", "2", 2)} )
+    end)
+
     it("number", function()
         expect( tokenize("123") ).to.equal( {t("number", "123", 1)} )
         expect( tokenize("123.45") ).to.equal( {t("number", "123.45", 1)} )

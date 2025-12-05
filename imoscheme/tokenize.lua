@@ -69,6 +69,13 @@ local function tokenize(src)
         elseif c == ')' then
             token("rparen")
 
+        -- Comment.
+        -- NOTE: Comments are not handled in skip_whitespace() because it can contains extended syntax later.
+        elseif c == ';' then
+            while not eof() and peek() ~= '\n' do
+                advance()
+            end
+
         -- Boolean type.
         elseif c == '#' and peek():match('[tf]') then
             local val = advance()
