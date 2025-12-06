@@ -9,6 +9,12 @@ function Envir:branch(names)
     return Envir.new(names, self)
 end
 
+function Envir:add_module(mod)
+    for key, val in pairs(mod) do
+        self.names[key] = val
+    end
+end
+
 function Envir:define(key, val)
     self.names[key] = val
 end

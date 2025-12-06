@@ -3,6 +3,7 @@ local parse    = require("parse")
 local eval     = require("eval")
 local envir    = require("envir")
 local std      = require("std")
+local racket   = require("racket")
 local state    = require("state")
 
 local function run_file(path, env)
@@ -53,6 +54,7 @@ end
 
 do
     local env = envir.new(std)
+    env:add_module(racket)
 
     if #arg == 0 then
         repl(env)
