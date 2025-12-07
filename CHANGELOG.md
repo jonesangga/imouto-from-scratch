@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.7] - 2025-12-07
+
+### Added
+
+- Imo Scheme terminal version.
+- Repl.
+- Unit test.
+- Golden tests.
+
+
 ## [0.0.6] - 2025-11-29
 
 ### Added

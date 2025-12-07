@@ -6,6 +6,7 @@ WIP.
 ## Features
 
 1. Vimouto: in-game vim-like text editor.
+2. Imo Scheme: in-game R5RS implementation.
 
 
 ## Installation
