@@ -130,13 +130,12 @@ function imoterm.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
     local w, h = love.graphics.getDimensions()
-    local margin = 8
     -- draw lines from bottom up
     local max_visible = math.floor((h - 40) / imoterm.line_height)
     local start = math.max(1, #imoterm.lines - max_visible + 1)
-    local y = margin
+    local y = 0
     for i = start, #imoterm.lines do
-        love.graphics.print(imoterm.lines[i], margin, y)
+        love.graphics.print(imoterm.lines[i], 0, y)
         y = y + imoterm.line_height
     end
 
@@ -145,7 +144,7 @@ function imoterm.draw()
     love.graphics.rectangle("fill", 0, h - 30, w, 30)
     love.graphics.setColor(0, 0, 0)
     local display = imoterm.prompt .. imoterm.input
-    love.graphics.print(display, margin, h - 26)
+    love.graphics.print(display, 0, h - 26)
 end
 
 function imoterm.textinput(t)
