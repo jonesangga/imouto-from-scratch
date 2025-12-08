@@ -7,39 +7,40 @@ local CAT_MAX_BYTES = 20 * 1024     -- Limit file size to avoid huge prints (20 
 local imoterm = {
     name = "imoterm",
 }
-imoterm.line_height = nil
-imoterm.lines = {}
-imoterm.scroll = 0          -- lines scrolled up from bottom (0 = at bottom)
-imoterm.input = ""          -- Current input buffer.
-imoterm.history = {}
-imoterm.hist_index = 0
-imoterm.prompt = "> "
-imoterm.max_lines = 100
-imoterm.last_output = ""    -- For handling program that doesn't write newline at the end.
-imoterm.builtins = {}
 
-local maxLinesVisible = 21
+local lines = {}
+local max_lines = 100
+local scroll = 0          -- lines scrolled up from bottom (0 = at bottom)
+local input = ""          -- Current input buffer.
+local prompt = "$ "
+local history = {}
+local hist_index = 0
+local last_output = ""    -- For handling program that doesn't write newline at the end.
+local builtins = {}
+
 local cwd = "Ada"
+local line_height = nil
+local maxLinesVisible = 21
 
 local function push_line(text)
-    table.insert(imoterm.lines, text)
-    if #imoterm.lines > imoterm.max_lines then
-        table.remove(imoterm.lines, 1)
+    table.insert(lines, text)
+    if #lines > max_lines then
+        table.remove(lines, 1)
     end
 end
 
 local function write(text)
     if text:match("\n$") then
-        push_line(imoterm.last_output)
-        imoterm.last_output = ""
+        push_line(last_output)
+        last_output = ""
     else
-        imoterm.last_output = imoterm.last_output .. text
+        last_output = last_output .. text
     end
 end
 
 -- Built-in commands.
 
-imoterm.builtins.cat = function(args)
+builtins.cat = function(args)
     if #args == 0 then
         push_line("Usage: cat [filename]")
         return
@@ -75,17 +76,17 @@ imoterm.builtins.cat = function(args)
     end
 end
 
-imoterm.builtins.clear = function(args)
-    imoterm.lines = {}
-    imoterm.scroll = 0
-    imoterm.last_output = ""
+builtins.clear = function(args)
+    lines = {}
+    scroll = 0
+    last_output = ""
 end
 
-imoterm.builtins.echo = function(args)
+builtins.echo = function(args)
     push_line(table.concat(args, " "))
 end
 
-imoterm.builtins.help = function(args)
+builtins.help = function(args)
     if #args == 0 then
         push_line("ImoTerm. Type 'help name' for specific help. Available commands:")
         push_line("  cat [file]")
@@ -116,14 +117,14 @@ imoterm.builtins.help = function(args)
     end
 end
 
-imoterm.builtins.imoscm = function(args)
+builtins.imoscm = function(args)
     local old_write = io.write
     io.write = write
     imoscm.run_file(args[1])
     io.write = old_write
 end
 
-imoterm.builtins.pwd = function(args)
+builtins.pwd = function(args)
     if #args == 0 then
         push_line(cwd)
     else
@@ -133,11 +134,11 @@ end
 
 
 local function execute(cmdline)
-    push_line(imoterm.last_output .. imoterm.prompt .. cmdline)
-    imoterm.last_output = ""
+    push_line(last_output .. prompt .. cmdline)
+    last_output = ""
     if cmdline:match("^%s*$") then return end
-    table.insert(imoterm.history, cmdline)
-    imoterm.hist_index = 0
+    table.insert(history, cmdline)
+    hist_index = 0
 
     -- Simple parse: split by spaces.
     local parts = {}
@@ -150,8 +151,8 @@ local function execute(cmdline)
         table.insert(args, parts[i])
     end
 
-    if imoterm.builtins[cmd] then
-        imoterm.builtins[cmd](args)
+    if builtins[cmd] then
+        builtins[cmd](args)
     else
         push_line("Unknown command: " .. cmd)
     end
@@ -161,7 +162,7 @@ end
 function imoterm.enter()
     print("[imoterm] enter")
     love.graphics.setFont(game.fontMono)
-    imoterm.line_height = game.fontMonoHeight
+    line_height = game.fontMonoHeight
     push_line("ImoTerm. Type 'help' for commands.")
 end
 
@@ -179,62 +180,62 @@ function imoterm.draw()
 
     local w, h = love.graphics.getDimensions()
 
-    local totalLines = #imoterm.lines
-    local bottomIndex = math.max(0, totalLines - imoterm.scroll) -- index after the last printed line (0..totalLines)
+    local totalLines = #lines
+    local bottomIndex = math.max(0, totalLines - scroll) -- index after the last printed line (0..totalLines)
     local startIndex = math.max(1, bottomIndex - maxLinesVisible + 1)
     local endIndex = bottomIndex
 
     local y = 0
     for i = startIndex, endIndex do
-        love.graphics.print(imoterm.lines[i], margin, y)
-        y = y + imoterm.line_height
+        love.graphics.print(lines[i], margin, y)
+        y = y + line_height
     end
 
     -- Draw input prompt right after last output line (y currently is next line).
-    local displayed = imoterm.last_output .. imoterm.prompt .. imoterm.input
+    local displayed = last_output .. prompt .. input
     love.graphics.print(displayed, margin, y)
 
     -- Cursor.
     local cursorX = game.fontMono:getWidth(displayed)
-    love.graphics.rectangle("fill", cursorX, y, 10, imoterm.line_height)
+    love.graphics.rectangle("fill", cursorX, y, 10, line_height)
 end
 
 function imoterm.textinput(t)
-    imoterm.input = imoterm.input .. t
+    input = input .. t
 end
 
 function imoterm.keypressed(key)
     if key == "backspace" then
         -- remove last UTF-8 char
         -- simple byte-safe approach for ASCII (works for most)
-        imoterm.input = imoterm.input:sub(1, -2)
+        input = input:sub(1, -2)
     elseif key == "return" or key == "kpenter" then
-        execute(imoterm.input)
-        imoterm.input = ""
+        execute(input)
+        input = ""
     elseif key == "up" then
-        if #imoterm.history > 0 then
-            if imoterm.hist_index == 0 then
-                imoterm.hist_index = #imoterm.history
+        if #history > 0 then
+            if hist_index == 0 then
+                hist_index = #history
             else
-                imoterm.hist_index = math.max(1, imoterm.hist_index - 1)
+                hist_index = math.max(1, hist_index - 1)
             end
-            imoterm.input = imoterm.history[imoterm.hist_index] or ""
+            input = history[hist_index] or ""
         end
     elseif key == "down" then
-        if #imoterm.history > 0 and imoterm.hist_index > 0 then
-            imoterm.hist_index = imoterm.hist_index + 1
-            if imoterm.hist_index > #imoterm.history then
-                imoterm.hist_index = 0
-                imoterm.input = ""
+        if #history > 0 and hist_index > 0 then
+            hist_index = hist_index + 1
+            if hist_index > #history then
+                hist_index = 0
+                input = ""
             else
-                imoterm.input = imoterm.history[imoterm.hist_index] or ""
+                input = history[hist_index] or ""
             end
         end
     elseif key == "tab" then
         -- Basic tab completion for builtins.
-        for name, _ in pairs(imoterm.builtins) do
-            if name:sub(1, #imoterm.input) == imoterm.input then
-                imoterm.input = name .. " "
+        for name, _ in pairs(builtins) do
+            if name:sub(1, #input) == input then
+                input = name .. " "
                 break
             end
         end
