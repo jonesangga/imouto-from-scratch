@@ -17,6 +17,7 @@ imoterm.last_output = ""    -- For handling program that doesn't write newline a
 imoterm.builtins = {}
 
 local maxLinesVisible = 21
+local cwd = "Ada"
 
 local function push_line(text)
     table.insert(imoterm.lines, text)
@@ -35,47 +36,6 @@ local function write(text)
 end
 
 -- Built-in commands.
-imoterm.builtins.help = function(args)
-    if #args == 0 then
-        push_line("ImoTerm. Type 'help name' for specific help. Available commands:")
-        push_line("  cat [file]")
-        push_line("  clear")
-        push_line("  echo [arg ...]")
-        push_line("  help [cmd]")
-        push_line("  imoscm [file]")
-    elseif #args == 1 then
-        local cmd = args[1]
-        if cmd == "imoscm" then
-            push_line("help: imoscm [file]")
-            push_line("  Run imoscm program.")
-        elseif cmd == "cat" then
-            push_line("help: cat [file]")
-            push_line("  Display content of file.")
-        elseif cmd == "help" then
-            push_line("help: help [cmd]")
-            push_line("  Display information about builtin command.")
-        else
-            push_line("help: no help for " .. cmd)
-        end
-    else
-        push_line("help: too much args. Try 'help help'.")
-    end
-end
-
-imoterm.builtins.clear = function(args)
-    imoterm.lines = {}
-end
-
-imoterm.builtins.echo = function(args)
-    push_line(table.concat(args, " "))
-end
-
-imoterm.builtins.imoscm = function(args)
-    local old_write = io.write
-    io.write = write
-    imoscm.run_file(args[1])
-    io.write = old_write
-end
 
 imoterm.builtins.cat = function(args)
     if #args == 0 then
@@ -121,6 +81,62 @@ imoterm.builtins.cat = function(args)
     -- TODO: Handle file without newline at the end.
     for line in contents:gmatch("(.-)\r?\n") do
         push_line(line)
+    end
+end
+
+imoterm.builtins.clear = function(args)
+    imoterm.lines = {}
+    imoterm.scroll = 0
+    imoterm.last_output = ""
+end
+
+imoterm.builtins.echo = function(args)
+    push_line(table.concat(args, " "))
+end
+
+imoterm.builtins.help = function(args)
+    if #args == 0 then
+        push_line("ImoTerm. Type 'help name' for specific help. Available commands:")
+        push_line("  cat [file]")
+        push_line("  clear")
+        push_line("  echo [arg ...]")
+        push_line("  help [cmd]")
+        push_line("  imoscm [file]")
+        push_line("  pwd")
+    elseif #args == 1 then
+        local cmd = args[1]
+        if cmd == "imoscm" then
+            push_line("help: imoscm [file]")
+            push_line("  Run imoscm program.")
+        elseif cmd == "cat" then
+            push_line("help: cat [file]")
+            push_line("  Display content of file.")
+        elseif cmd == "help" then
+            push_line("help: help [cmd]")
+            push_line("  Display information about builtin command.")
+        elseif cmd == "pwd" then
+            push_line("help: pwd")
+            push_line("  Print name of current directory.")
+        else
+            push_line("help: no help for " .. cmd)
+        end
+    else
+        push_line("help: too much args. See 'help help'.")
+    end
+end
+
+imoterm.builtins.imoscm = function(args)
+    local old_write = io.write
+    io.write = write
+    imoscm.run_file(args[1])
+    io.write = old_write
+end
+
+imoterm.builtins.pwd = function(args)
+    if #args == 0 then
+        push_line(cwd)
+    else
+        push_line("pwd: too much args. See 'help pwd'.")
     end
 end
 

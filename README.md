@@ -12,7 +12,7 @@ WIP.
 
 An In-game terminal. Only one instance supported.
 
-Available commands: `cat`, `clear`, `echo`, `help`, `imoscm`.
+Available commands: `cat`, `clear`, `echo`, `help`, `imoscm`, `pwd`.
 Type `help` for detail.
 
 
