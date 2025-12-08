@@ -2,6 +2,8 @@ local game   = require("game")
 local fsm    = require("fsm")
 local imoscm = require("imoscheme.main-ifs")
 
+local CAT_MAX_BYTES = 20 * 1024     -- Limit file size to avoid huge prints (20 KB).
+
 local imoterm = {
     name = "imoterm",
 }
@@ -39,38 +41,27 @@ end
 
 imoterm.builtins.cat = function(args)
     if #args == 0 then
-        push_line("Usage: cat <filename>")
+        push_line("Usage: cat [filename]")
         return
     end
-    local path = args[1]
-    -- limit file size to avoid huge prints (e.g., 200 KB)
-    local maxbytes = 20 * 1024
-    if not love.filesystem then
-        push_line("Error: love.filesystem not available")
+
+    local path = cwd .. '/' .. args[1]
+
+    local fp, err = io.open(path, "rb")
+    if not fp then
+        push_line("Error opening file: " .. tostring(err))
         return
     end
-    -- try love.filesystem (works in bundled LÖVE); fall back to io.open
-    local contents, err
-    if love.filesystem.getInfo and love.filesystem.getInfo(path) then
-        local info = love.filesystem.getInfo(path)
-        if info.size and info.size > maxbytes then
-            push_line("Error: file too large (" .. info.size .. " bytes)")
-            return
-        end
-        contents, err = love.filesystem.read(path)
-    else
-        local f, ferr = io.open(path, "rb")
-        if not f then
-            push_line("Error opening file: " .. tostring(ferr))
-            return
-        end
-        contents = f:read("*a")
-        f:close()
-        if #contents > maxbytes then
-            push_line("Error: file too large (" .. #contents .. " bytes)")
-            return
-        end
+
+    local size = fp:seek("end")
+    fp:seek("set")
+    if size > CAT_MAX_BYTES then
+        push_line("Error: file too large (" .. size .. " bytes)")
+        return
     end
+
+    local contents = fp:read("*a")
+    fp:close()
 
     if not contents then
         push_line("Error reading file: " .. tostring(err))
