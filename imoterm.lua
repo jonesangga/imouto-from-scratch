@@ -13,6 +13,7 @@ imoterm.history = {}
 imoterm.hist_index = 0
 imoterm.prompt = "> "
 imoterm.max_lines = 100
+imoterm.last_output = ""    -- For handling program that doesn't write newline at the end.
 imoterm.builtins = {}
 
 local maxLinesVisible = 21
@@ -21,6 +22,15 @@ local function push_line(text)
     table.insert(imoterm.lines, text)
     if #imoterm.lines > imoterm.max_lines then
         table.remove(imoterm.lines, 1)
+    end
+end
+
+local function write(text)
+    if text:match("\n$") then
+        push_line(imoterm.last_output)
+        imoterm.last_output = ""
+    else
+        imoterm.last_output = imoterm.last_output .. text
     end
 end
 
@@ -38,8 +48,10 @@ imoterm.builtins.echo = function(args)
 end
 
 imoterm.builtins.imoscm = function(args)
+    local old_write = io.write
+    io.write = write
     imoscm.run_file(args[1])
-    push_line(table.concat(args, " "))
+    io.write = old_write
 end
 
 imoterm.builtins.cat = function(args)
@@ -82,16 +94,18 @@ imoterm.builtins.cat = function(args)
         return
     end
 
-    -- split contents into lines and push each (preserve empty lines)
-    for line in (contents .. "\n"):gmatch("(.-)\r?\n") do
+    -- Split contents into lines and push each (preserve empty lines).
+    -- TODO: Handle file without newline at the end.
+    for line in contents:gmatch("(.-)\r?\n") do
         push_line(line)
     end
 end
 
 
 local function execute(cmdline)
+    push_line(imoterm.last_output .. imoterm.prompt .. cmdline)
+    imoterm.last_output = ""
     if cmdline:match("^%s*$") then return end
-    push_line(imoterm.prompt .. cmdline)
     table.insert(imoterm.history, cmdline)
     imoterm.hist_index = 0
 
@@ -147,7 +161,7 @@ function imoterm.draw()
     end
 
     -- Draw input prompt right after last output line (y currently is next line).
-    local displayed = imoterm.prompt .. imoterm.input
+    local displayed = imoterm.last_output .. imoterm.prompt .. imoterm.input
     love.graphics.print(displayed, margin, y)
 
     -- Cursor.
