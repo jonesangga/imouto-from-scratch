@@ -36,7 +36,30 @@ end
 
 -- Built-in commands.
 imoterm.builtins.help = function(args)
-    push_line("Built-in commands: help, clear, echo, cat, imoscm")
+    if #args == 0 then
+        push_line("ImoTerm. Type 'help name' for specific help. Available commands:")
+        push_line("  cat [file]")
+        push_line("  clear")
+        push_line("  echo [arg ...]")
+        push_line("  help [cmd]")
+        push_line("  imoscm [file]")
+    elseif #args == 1 then
+        local cmd = args[1]
+        if cmd == "imoscm" then
+            push_line("help: imoscm [file]")
+            push_line("  Run imoscm program.")
+        elseif cmd == "cat" then
+            push_line("help: cat [file]")
+            push_line("  Display content of file.")
+        elseif cmd == "help" then
+            push_line("help: help [cmd]")
+            push_line("  Display information about builtin command.")
+        else
+            push_line("help: no help for " .. cmd)
+        end
+    else
+        push_line("help: too much args. Try 'help help'.")
+    end
 end
 
 imoterm.builtins.clear = function(args)

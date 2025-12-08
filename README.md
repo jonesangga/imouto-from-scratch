@@ -7,7 +7,13 @@ WIP.
 
 1. Vimouto: in-game vim-like text editor.
 2. Imo Scheme: in-game R5RS implementation.
-3. ImoTerm: in-game terminal.
+
+### ImoTerm
+
+An In-game terminal. Only one instance supported.
+
+Available commands: `cat`, `clear`, `echo`, `help`, `imoscm`.
+Type `help` for detail.
 
 
 ## Installation
