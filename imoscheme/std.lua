@@ -1,6 +1,8 @@
-local eval  = require("eval")
-local state = require("state")
-local types = require("types")
+local cwd  = (...):gsub('%.?std$', '') .. "."
+
+local eval  = require(cwd .. "eval")
+local state = require(cwd .. "state")
+local types = require(cwd .. "types")
 
 local EMPTY     = types.EMPTY
 local list      = types.list

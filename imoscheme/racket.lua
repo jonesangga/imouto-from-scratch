@@ -1,4 +1,6 @@
-local eval  = require("eval")
+local cwd  = (...):gsub('%.?racket$', '') .. "."
+
+local eval  = require(cwd .. "eval")
 
 local procedures = {}
 

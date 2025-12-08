@@ -1,4 +1,4 @@
-local cwd = "."
+local cwd = "imoscheme."
 
 local tokenize = require(cwd .. "tokenize")
 local parse    = require(cwd .. "parse")
@@ -8,7 +8,12 @@ local std      = require(cwd .. "std")
 local racket   = require(cwd .. "racket")
 local state    = require(cwd .. "state")
 
-local function run_file(path, env)
+local imoscm = {}
+
+local env = envir.new(std)
+env:add_module(racket)
+
+function imoscm.run_file(path)
     local file   = assert(io.open(path, "r"), "failed to open file")
     state.push_base(path)
     local tokens = tokenize(file:read("*all"))
@@ -54,13 +59,4 @@ local function repl(env)
     end
 end
 
-do
-    local env = envir.new(std)
-    env:add_module(racket)
-
-    if #arg == 0 then
-        repl(env)
-    else
-        run_file(arg[1], env)
-    end
-end
+return imoscm

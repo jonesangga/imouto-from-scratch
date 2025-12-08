@@ -9,6 +9,7 @@ local ep2 = require("ep2")
 local ep3 = require("ep3")
 local pattern = require("pattern")
 local vimouto = require("vimouto")
+local imoterm = require("imoterm")
 
 local home = {
     name = "Home",
@@ -59,6 +60,12 @@ function home.enter()
             "Vimouto", function()
                 print("[home] Button Vimouto clicked!")
                 fsm.push(vimouto)
+            end
+        },
+        {
+            "ImoTerm", function()
+                print("[home] Button ImoTerm clicked!")
+                fsm.push(imoterm)
             end
         },
     })

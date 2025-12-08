@@ -8,6 +8,7 @@ local home = require("home")
 -- local ep3 = require("ep3")
 -- local pattern = require("pattern")
 -- local vimouto = require("vimouto")
+-- local imoterm = require("imoterm")
 
 function love.load(args)
     if #args > 0 and args[1] == "test" then
@@ -30,6 +31,7 @@ function love.load(args)
     -- fsm.push(ep3)
     -- fsm.push(pattern)
     -- fsm.push(vimouto)
+    -- fsm.push(imoterm)
 end
 
 function love.update(dt)

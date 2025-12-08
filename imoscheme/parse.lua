@@ -1,4 +1,6 @@
-local types = require("types")
+local cwd  = (...):gsub('%.?parse$', '') .. "."
+
+local types = require(cwd .. "types")
 local list, quote, symbol, char = types.list, types.quote, types.symbol, types.char
 
 local function parse(tokens)

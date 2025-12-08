@@ -1,4 +1,6 @@
-local types = require("types")
+local cwd  = (...):gsub('%.?eval$', '') .. "."
+
+local types = require(cwd .. "types")
 
 local is_pair   = types.is_pair
 local is_quote  = types.is_quote
