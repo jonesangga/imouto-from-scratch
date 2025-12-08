@@ -7,12 +7,15 @@ local imoterm = {
 }
 imoterm.line_height = nil
 imoterm.lines = {}
+imoterm.scroll = 0          -- lines scrolled up from bottom (0 = at bottom)
 imoterm.input = ""          -- Current input buffer.
 imoterm.history = {}
 imoterm.hist_index = 0
 imoterm.prompt = "> "
 imoterm.max_lines = 100
 imoterm.builtins = {}
+
+local maxLinesVisible = 21
 
 local function push_line(text)
     table.insert(imoterm.lines, text)
@@ -129,22 +132,27 @@ end
 function imoterm.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
+
     local w, h = love.graphics.getDimensions()
-    -- draw lines from bottom up
-    local max_visible = math.floor((h - 40) / imoterm.line_height)
-    local start = math.max(1, #imoterm.lines - max_visible + 1)
+
+    local totalLines = #imoterm.lines
+    local bottomIndex = math.max(0, totalLines - imoterm.scroll) -- index after the last printed line (0..totalLines)
+    local startIndex = math.max(1, bottomIndex - maxLinesVisible + 1)
+    local endIndex = bottomIndex
+
     local y = 0
-    for i = start, #imoterm.lines do
-        love.graphics.print(imoterm.lines[i], 0, y)
+    for i = startIndex, endIndex do
+        love.graphics.print(imoterm.lines[i], margin, y)
         y = y + imoterm.line_height
     end
 
-    -- Input box at bottom.
-    love.graphics.setColor(0.9, 0.9, 0.9)
-    love.graphics.rectangle("fill", 0, h - 30, w, 30)
-    love.graphics.setColor(0, 0, 0)
-    local display = imoterm.prompt .. imoterm.input
-    love.graphics.print(display, 0, h - 26)
+    -- Draw input prompt right after last output line (y currently is next line).
+    local displayed = imoterm.prompt .. imoterm.input
+    love.graphics.print(displayed, margin, y)
+
+    -- Cursor.
+    local cursorX = game.fontMono:getWidth(displayed)
+    love.graphics.rectangle("fill", cursorX, y, 10, imoterm.line_height)
 end
 
 function imoterm.textinput(t)
