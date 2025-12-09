@@ -1,3 +1,5 @@
+-- TODO: Fix state implementation.
+
 local cwd = "imoscheme."
 
 local tokenize = require(cwd .. "tokenize")
@@ -9,6 +11,7 @@ local racket   = require(cwd .. "racket")
 local state    = require(cwd .. "state")
 
 local imoscm = {}
+imoscm.print = print
 
 local env = envir.new(std)
 env:add_module(racket)
@@ -30,33 +33,28 @@ local function repr(x)
     if x == nil then
         return
     elseif x == true then
-        print("#t")
+        imoscm.print("#t")
     elseif x == false then
-        print("#f")
+        imoscm.print("#f")
     else
-        print(x)
+        imoscm.print(x)
     end
 end
 
-local function repl(env)
-    print("Imo Scheme. Ctrl+D to quit.")
-
+function imoscm.prepare_repl()
+    imoscm.print("Imo Scheme. Ctrl+D to quit.")
     state.push_base(".")
-    local line, tokens, exprs, result
+end
 
-    while true do
-        io.write("> ")
-        line = io.read()
-        if not line then break end
+function imoscm.line(line)
+    local tokens = tokenize(line)
+    local exprs = parse(tokens)
 
-        tokens = tokenize(line)
-        exprs = parse(tokens)
-
-        for _, expr in ipairs(exprs) do
-            result = eval(expr, env)
-        end
-        repr(result)
+    local result
+    for _, expr in ipairs(exprs) do
+        result = eval(expr, env)
     end
+    repr(result)
 end
 
 return imoscm

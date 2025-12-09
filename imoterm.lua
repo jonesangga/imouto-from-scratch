@@ -8,6 +8,7 @@ local imoterm = {
     name = "imoterm",
 }
 
+local mode = "NORMAL"        -- NORMAL, IMOSCM.
 local lines = {}
 local max_lines = 100
 local scroll = 0          -- lines scrolled up from bottom (0 = at bottom)
@@ -36,6 +37,10 @@ local function write(text)
     else
         last_output = last_output .. text
     end
+end
+
+local function print2(text)
+    push_line(text)
 end
 
 -- Built-in commands.
@@ -118,10 +123,21 @@ builtins.help = function(args)
 end
 
 builtins.imoscm = function(args)
-    local old_write = io.write
-    io.write = write
-    imoscm.run_file(args[1])
-    io.write = old_write
+    if #args == 0 then
+        mode = "IMOSCM"
+        prompt = "> "
+        local old_write = io.write
+        io.write = write
+        imoscm.print = print2
+        imoscm.prepare_repl()
+        io.write = old_write
+    elseif #args == 1 then
+        local path = cwd .. '/' .. args[1]
+        local old_write = io.write
+        io.write = write
+        imoscm.run_file(path)
+        io.write = old_write
+    end
 end
 
 builtins.pwd = function(args)
@@ -132,10 +148,18 @@ builtins.pwd = function(args)
     end
 end
 
+local function imoscm_repl(line)
+    print(line)
+    imoscm.line(line)
+end
 
 local function execute(cmdline)
     push_line(last_output .. prompt .. cmdline)
     last_output = ""
+    if mode == "IMOSCM" then
+        imoscm_repl(cmdline)
+        return
+    end
     if cmdline:match("^%s*$") then return end
     table.insert(history, cmdline)
     hist_index = 0
@@ -241,6 +265,13 @@ function imoterm.keypressed(key)
         end
     elseif key == "escape" then
         fsm.pop()
+    elseif key == "d" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
+        if mode == "IMOSCM" then
+            push_line("")
+            mode = "NORMAL"
+            prompt = "$ "
+            input = ""
+        end
     end
 end
 
