@@ -55,7 +55,7 @@ local function repl(env)
 end
 
 do
-    local env = envir.new(std)
+    local env = envir.new(std.procedures)
     env:add_module(racket)
 
     if #arg == 0 then

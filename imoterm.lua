@@ -39,10 +39,6 @@ local function write(text)
     end
 end
 
-local function print2(text)
-    push_line(text)
-end
-
 -- Built-in commands.
 
 builtins.cat = function(args)
@@ -126,17 +122,10 @@ builtins.imoscm = function(args)
     if #args == 0 then
         mode = "IMOSCM"
         prompt = "> "
-        local old_write = io.write
-        io.write = write
-        imoscm.print = print2
         imoscm.prepare_repl()
-        io.write = old_write
     elseif #args == 1 then
         local path = cwd .. '/' .. args[1]
-        local old_write = io.write
-        io.write = write
         imoscm.run_file(path)
-        io.write = old_write
     end
 end
 
@@ -188,6 +177,7 @@ function imoterm.enter()
     love.graphics.setFont(game.fontMono)
     line_height = game.fontMonoHeight
     push_line("ImoTerm. Type 'help' for commands.")
+    imoscm.setup(write, push_line)
 end
 
 function imoterm.exit()

@@ -13,6 +13,9 @@ local is_list   = types.is_list
 local is_pair   = types.is_pair
 local is_symbol = types.is_symbol
 
+local std = {}
+std.write = io.write
+
 local function compare_using(fn)
     return function(args, env)
         if is_empty(args) then
@@ -65,6 +68,7 @@ end
 
 
 local procedures = {}
+std.procedures = procedures
 
 procedures["define"] = function(args, env)
     local key = args.car
@@ -350,7 +354,7 @@ end
 -- NOTE: Doesn't support port argument.
 procedures["display"] = function(args, env)
     local obj = eval(args.car, env)
-    io.write(display(obj))
+    std.write(display(obj))
 end
 
 -- NOTE: Doesn't support port argument.
@@ -359,8 +363,8 @@ procedures["newline"] = function(args, env)
     if obj ~= nil then
         error("<newline> must not have argument")
     end
-    io.write("\n")
+    std.write("\n")
 end
 
 
-return procedures
+return std

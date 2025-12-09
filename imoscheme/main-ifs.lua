@@ -13,7 +13,7 @@ local state    = require(cwd .. "state")
 local imoscm = {}
 imoscm.print = print
 
-local env = envir.new(std)
+local env = envir.new(std.procedures)
 env:add_module(racket)
 
 function imoscm.run_file(path)
@@ -55,6 +55,11 @@ function imoscm.line(line)
         result = eval(expr, env)
     end
     repr(result)
+end
+
+function imoscm.setup(writefn, printfn)
+    std.write = writefn
+    imoscm.print = printfn
 end
 
 return imoscm
