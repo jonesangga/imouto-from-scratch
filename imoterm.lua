@@ -100,7 +100,8 @@ builtins.help = function(args)
         local cmd = args[1]
         if cmd == "imoscm" then
             push_line("help: imoscm [file]")
-            push_line("  Run imoscm program.")
+            push_line("  If file given, run the file.")
+            push_line("  If not, run imoscm repl.")
         elseif cmd == "cat" then
             push_line("help: cat [file]")
             push_line("  Display content of file.")
@@ -138,7 +139,6 @@ builtins.pwd = function(args)
 end
 
 local function imoscm_repl(line)
-    print(line)
     imoscm.line(line)
 end
 
@@ -257,7 +257,7 @@ function imoterm.keypressed(key)
         fsm.pop()
     elseif key == "d" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
         if mode == "IMOSCM" then
-            push_line("")
+            push_line(last_output .. prompt .. input)
             mode = "NORMAL"
             prompt = "$ "
             input = ""
