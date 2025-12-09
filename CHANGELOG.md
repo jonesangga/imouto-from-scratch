@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.9] - 2025-12-09
+
+### Added
+
+- Imoscm repl in ImoTerm.
+- pwd command.
+
+### Changed
+
+- Improve help command.
+- Not using love.filesystem for cat command.
+- Prompt from "> " to "$ ".
+- Make variables global.
+- Pass callback instead of patching.
+
+
 ## [0.0.8] - 2025-12-08
 
 ### Added
