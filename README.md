@@ -10,7 +10,7 @@ WIP.
 
 ### ImoTerm
 
-An In-game terminal. Only one instance supported.
+An in-game terminal. Only one instance is supported.
 
 Available commands: `cat`, `clear`, `echo`, `help`, `imoscm`, `pwd`.
 Type `help` for detail.
