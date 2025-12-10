@@ -1,14 +1,12 @@
 -- TODO: Fix state implementation.
 
-local cwd = "imoscheme."
-
-local tokenize = require(cwd .. "tokenize")
-local parse    = require(cwd .. "parse")
-local eval     = require(cwd .. "eval")
-local envir    = require(cwd .. "envir")
-local std      = require(cwd .. "std")
-local racket   = require(cwd .. "racket")
-local state    = require(cwd .. "state")
+local tokenize = require("imoscheme.tokenize")
+local parse    = require("imoscheme.parse")
+local eval     = require("imoscheme.eval")
+local envir    = require("imoscheme.envir")
+local std      = require("imoscheme.std")
+local racket   = require("imoscheme.racket")
+local state    = require("imoscheme.state")
 
 local imoscm = {}
 imoscm.print = print

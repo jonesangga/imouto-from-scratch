@@ -2,40 +2,42 @@ local game   = require("game")
 local fsm    = require("fsm")
 local imoscm = require("imoscheme.main-ifs")
 
-local CAT_MAX_BYTES = 20 * 1024     -- Limit file size to avoid huge prints (20 KB).
-
 local imoterm = {
     name = "imoterm",
 }
 
+local CAT_MAX_BYTES = 20 * 1024     -- Limit file size to avoid huge prints (20 KB).
+local MAX_LINES     = 100
+
 local mode = "NORMAL"        -- NORMAL, IMOSCM.
 local lines = {}
-local max_lines = 100
 local scroll = 0          -- lines scrolled up from bottom (0 = at bottom)
 local input = ""          -- Current input buffer.
 local prompt = "$ "
 local history = {}
 local hist_index = 0
-local last_output = ""    -- For handling program that doesn't write newline at the end.
+local no_newline_output = ""    -- For handling program that doesn't write newline at the end.
 local builtins = {}
 
 local cwd = "Ada"
-local line_height = nil
+local line_height = game.font_mono_height
 local maxLinesVisible = 21
 
 local function push_line(text)
     table.insert(lines, text)
-    if #lines > max_lines then
+    if #lines > MAX_LINES then
         table.remove(lines, 1)
     end
 end
 
+-- This is passed to imoscm module as substitute for io.write so that the stdout is ImoTerm.
+-- TODO: Create special function for newline write so we don't check it everytime.
 local function write(text)
     if text:match("\n$") then
-        push_line(last_output)
-        last_output = ""
+        push_line(no_newline_output)
+        no_newline_output = ""
     else
-        last_output = last_output .. text
+        no_newline_output = no_newline_output .. text
     end
 end
 
@@ -80,7 +82,6 @@ end
 builtins.clear = function(args)
     lines = {}
     scroll = 0
-    last_output = ""
 end
 
 builtins.echo = function(args)
@@ -138,17 +139,17 @@ builtins.pwd = function(args)
     end
 end
 
-local function imoscm_repl(line)
-    imoscm.line(line)
+-- TODO: Handle history separately.
+local function imoscm_repl(cmdline)
+    push_line(no_newline_output .. prompt .. cmdline)
+    no_newline_output = ""
+    imoscm.line(cmdline)
 end
 
 local function execute(cmdline)
-    push_line(last_output .. prompt .. cmdline)
-    last_output = ""
-    if mode == "IMOSCM" then
-        imoscm_repl(cmdline)
-        return
-    end
+    push_line(no_newline_output .. prompt .. cmdline)
+    no_newline_output = ""
+
     if cmdline:match("^%s*$") then return end
     table.insert(history, cmdline)
     hist_index = 0
@@ -169,13 +170,11 @@ local function execute(cmdline)
     else
         push_line("Unknown command: " .. cmd)
     end
-
 end
 
 function imoterm.enter()
     print("[imoterm] enter")
-    love.graphics.setFont(game.fontMono)
-    line_height = game.fontMonoHeight
+    love.graphics.setFont(game.font_mono)
     push_line("ImoTerm. Type 'help' for commands.")
     imoscm.setup(write, push_line)
 end
@@ -192,25 +191,23 @@ function imoterm.draw()
     love.graphics.clear(0.93, 0.93, 0.93)
     love.graphics.setColor(0, 0, 0)
 
-    local w, h = love.graphics.getDimensions()
-
     local totalLines = #lines
-    local bottomIndex = math.max(0, totalLines - scroll) -- index after the last printed line (0..totalLines)
+    local bottomIndex = math.max(0, totalLines - scroll)  -- Index after the last printed line (0..totalLines).
     local startIndex = math.max(1, bottomIndex - maxLinesVisible + 1)
     local endIndex = bottomIndex
 
     local y = 0
     for i = startIndex, endIndex do
-        love.graphics.print(lines[i], margin, y)
+        love.graphics.print(lines[i], 0, y)
         y = y + line_height
     end
 
     -- Draw input prompt right after last output line (y currently is next line).
-    local displayed = last_output .. prompt .. input
-    love.graphics.print(displayed, margin, y)
+    local displayed = no_newline_output .. prompt .. input
+    love.graphics.print(displayed, 0, y)
 
     -- Cursor.
-    local cursorX = game.fontMono:getWidth(displayed)
+    local cursorX = game.font_mono:getWidth(displayed)
     love.graphics.rectangle("fill", cursorX, y, 10, line_height)
 end
 
@@ -220,11 +217,13 @@ end
 
 function imoterm.keypressed(key)
     if key == "backspace" then
-        -- remove last UTF-8 char
-        -- simple byte-safe approach for ASCII (works for most)
         input = input:sub(1, -2)
     elseif key == "return" or key == "kpenter" then
-        execute(input)
+        if mode == "IMOSCM" then
+            imoscm_repl(input)
+        else
+            execute(input)
+        end
         input = ""
     elseif key == "up" then
         if #history > 0 then
@@ -257,7 +256,8 @@ function imoterm.keypressed(key)
         fsm.pop()
     elseif key == "d" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
         if mode == "IMOSCM" then
-            push_line(last_output .. prompt .. input)
+            push_line(no_newline_output .. prompt .. input)
+            no_newline_output = ""
             mode = "NORMAL"
             prompt = "$ "
             input = ""

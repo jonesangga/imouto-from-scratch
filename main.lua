@@ -1,5 +1,22 @@
+-- Make it error to access undeclared variable.
+do
+    local declared = {}  -- To handle assignment with nil.
+    setmetatable(_G, {
+        __newindex = function(t, k, v)
+            declared[k] = true
+            rawset(t, k, v)
+        end,
+
+        __index = function(t, k)
+            if not declared[k] then
+                error("undeclared variable '" .. k .. "'", 2)
+            end
+        end,
+    })
+end
+
 local game = require("game")
-local fsm = require("fsm")
+local fsm  = require("fsm")
 local home = require("home")
 
 -- Uncomment to test the state immediately.
@@ -22,7 +39,6 @@ function love.load(args)
     love.graphics.setBackgroundColor(1, 1, 1)
     love.keyboard.setKeyRepeat(true)
 
-    game.init()
     fsm.push(home)
 
     -- Uncomment to test the state immediately.

@@ -1,6 +1,22 @@
 local util = {}
 
-function util.getFileNames(path, includePath)
+-- Make it error when accessing undefined key or defining new key.
+-- NOTE: You should not do like t.a = nil.
+local StrictMT = {
+    __index = function(t, k)
+        error("access to undefined key '" .. tostring(k) .. "'", 2)
+    end,
+
+    __newindex = function(t, k, v)
+        error("assign to undefined key '" .. tostring(k) .. "'", 2)
+    end,
+}
+
+function util.strict(table)
+    return setmetatable(table or {}, StrictMT)
+end
+
+function util.get_file_names(path, includePath)
     local items = love.filesystem.getDirectoryItems(path)
     local filenames = {}
 
@@ -19,7 +35,7 @@ function util.getFileNames(path, includePath)
     return filenames
 end
 
-function util.splitLines(s)
+function util.split_lines(s)
     assert(type(s) == "string")
 
     local lines = {}
@@ -29,4 +45,4 @@ function util.splitLines(s)
     return lines
 end
 
-return util
+return util.strict(util)

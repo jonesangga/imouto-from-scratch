@@ -121,12 +121,12 @@ function home.draw()
     wall:draw()
 
     love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("fill", game.screenPadding,
-                                    game.screenPadding,
-                                    game.titleWidth + 2 * game.padding,
-                                    game.titleFontHeight + 2 * game.padding)
+    love.graphics.rectangle("fill", game.screen_padding,
+                                    game.screen_padding,
+                                    game.title_width + 2 * game.padding,
+                                    game.title_font_height + 2 * game.padding)
     love.graphics.setColor(1, 1, 1)
-    love.graphics.setFont(game.titleFont)
+    love.graphics.setFont(game.title_font)
     love.graphics.print("Imouto From Scratch", 10 + game.padding, 10 + game.padding)
 
     imouto:draw()

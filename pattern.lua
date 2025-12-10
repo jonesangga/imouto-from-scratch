@@ -95,7 +95,7 @@ function pattern.enter()
 
     if not initialized then
         initialized = true
-        local files = util.getFileNames("patterns/free", true)
+        local files = util.get_file_names("patterns/free", true)
         -- for i, f in ipairs(files) do
             -- print(i, f)
         -- end

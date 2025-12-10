@@ -16,7 +16,7 @@ function Button.new(x, y, text, onClick)
     return setmetatable({
         x = x, y = y,
         w       = game.font:getWidth(text) + 2 * game.padding,
-        h       = game.fontHeight + 2 * game.padding,
+        h       = game.font_height + 2 * game.padding,
         text    = text,
         onClick = onClick,
         padding = game.padding,
@@ -262,7 +262,7 @@ end
 
 function Dialogue:draw()
     -- Box for speaker name.
-    love.graphics.rectangle("fill", self.x, self.y - game.fontHeight - 5, 60, game.fontHeight)
+    love.graphics.rectangle("fill", self.x, self.y - game.font_height - 5, 60, game.font_height)
     -- Box for the text.
     love.graphics.rectangle("fill", self.x, self.y, self.w, self.h)
 
@@ -277,7 +277,7 @@ function Dialogue:draw()
         name = "..."
     end
 
-    love.graphics.print(name, self.x, self.y - game.fontHeight - 5)
+    love.graphics.print(name, self.x, self.y - game.font_height - 5)
     love.graphics.printf(self.displayed, self.x, self.y, self.w)
 end
 

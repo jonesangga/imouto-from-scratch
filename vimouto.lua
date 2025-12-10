@@ -1,19 +1,24 @@
-local game = require("game")
-local fsm = require("fsm")
-local util = require("util")
+local game   = require("game")
+local fsm    = require("fsm")
+local util   = require("util")
 local buffer = require("vimouto/buffer")
-local tree = require("vimouto/tree")
-local cmdBindings = require("vimouto/cmd_binding")
-local insertBindings = require("vimouto/insert_binding")
-local normalBindings = require("vimouto/normal_binding")
-local treeBindings = require("vimouto/tree_binding")
+local tree   = require("vimouto/tree")
 
-local pendings = normalBindings.pendings
+local cmd_bindings    = require("vimouto/cmd_binding")
+local insert_bindings = require("vimouto/insert_binding")
+local normal_bindings = require("vimouto/normal_binding")
+local tree_bindings   = require("vimouto/tree_binding")
+
+local pending_bindings = normal_bindings.pendings
 
 local vimouto = {
     name = "vimouto",
 }
 local active = nil
+
+local cwd = "Ada"
+
+-- TODO: These should not be constant when zoom feature added.
 local row = 22
 local col = 64
 
@@ -27,8 +32,8 @@ function vimouto:adjustViewport()
 end
 
 function vimouto:reset()
-    self.fontH = game.fontMonoHeight
-    self.fontW = game.fontMonoWidth
+    self.fontH = game.font_mono_height
+    self.fontW = game.font_mono_width
     self.showTree = false
     self.treeFocus = false
     self.tree = tree.new(vimouto)
@@ -50,12 +55,12 @@ function vimouto.quit()
 end
 
 function vimouto.loadTree()
-    local files = util.getFileNames("Ada")
+    local files = util.get_file_names(cwd)
     vimouto.tree.lines = files
 end
 
 function vimouto.open(path)
-    path = "Ada/" .. path
+    path = cwd .. '/' .. path
     if vimouto.buffers[path] then
         print("there already exist: " .. path)
         return
@@ -69,7 +74,7 @@ function vimouto.open(path)
 
     local content = fp:read("*a")
     fp:close()
-    local lines = util.splitLines(content)
+    local lines = util.split_lines(content)
     if #lines == 0 then
         lines = {""}
     end
@@ -109,7 +114,7 @@ end
 
 function vimouto.enter()
     print("[vimouto] enter")
-    love.graphics.setFont(game.fontMono)
+    love.graphics.setFont(game.font_mono)
 
     vimouto:reset()
     vimouto.loadTree()
@@ -213,7 +218,7 @@ function vimouto.draw()
     if vimouto.showMessage then
         if vimouto.feedbackError then
             love.graphics.setColor(0.84, 0, 0)
-            love.graphics.rectangle("fill", 0, (row - 1) * vimouto.fontH, game.fontMono:getWidth(vimouto.message), vimouto.fontH)
+            love.graphics.rectangle("fill", 0, (row - 1) * vimouto.fontH, game.font_mono:getWidth(vimouto.message), vimouto.fontH)
             love.graphics.setColor(1, 1, 1)
             love.graphics.print(vimouto.message, 0, (row - 1) * vimouto.fontH)
         else
@@ -278,31 +283,31 @@ end
 
 function vimouto.keypressed(key)
     if vimouto.mode == "INSERT" then
-        if insertBindings[key] then
-            insertBindings[key](active)
+        if insert_bindings[key] then
+            insert_bindings[key](active)
             return
         end
     elseif vimouto.mode == "NORMAL" then
         if active.cmdbuf ~= "" then
-            if pendings[active.cmdbuf] and pendings[active.cmdbuf][key] then
-                pendings[active.cmdbuf][key](active)
+            if pending_bindings[active.cmdbuf] and pending_bindings[active.cmdbuf][key] then
+                pending_bindings[active.cmdbuf][key](active)
             end
             active.cmdbuf = ""
             return
         end
 
-        if normalBindings[key] then
-            normalBindings[key](active)
+        if normal_bindings[key] then
+            normal_bindings[key](active)
             return
         end
     elseif vimouto.mode == "CMD" then
-        if cmdBindings[key] then
-            cmdBindings[key](active)
+        if cmd_bindings[key] then
+            cmd_bindings[key](active)
             return
         end
     else
-        if treeBindings[key] then
-            treeBindings[key](vimouto.tree)
+        if tree_bindings[key] then
+            tree_bindings[key](vimouto.tree)
             return
         end
     end

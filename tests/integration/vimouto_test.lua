@@ -19,7 +19,6 @@ love.graphics.setDefaultFilter("nearest", "nearest")  -- Nearest neighbor filter
 love.graphics.setBackgroundColor(1, 1, 1)
 love.keyboard.setKeyRepeat(true)
 
-game.init()
 fsm.push(vimouto)
 
 describe("i binding", function()
