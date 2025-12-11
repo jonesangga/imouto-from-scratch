@@ -26,6 +26,7 @@ local home = require("home")
 -- local pattern = require("pattern")
 -- local vimouto = require("vimouto")
 -- local imoterm = require("imoterm")
+-- local _15 = require("15")
 
 function love.load(args)
     if #args > 0 and args[1] == "test" then
@@ -48,6 +49,7 @@ function love.load(args)
     -- fsm.push(pattern)
     -- fsm.push(vimouto)
     -- fsm.push(imoterm)
+    -- fsm.push(_15)
 end
 
 function love.update(dt)

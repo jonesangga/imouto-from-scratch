@@ -10,6 +10,7 @@ local ep3 = require("ep3")
 local pattern = require("pattern")
 local vimouto = require("vimouto")
 local imoterm = require("imoterm")
+local _15 = require("15")
 
 local home = {
     name = "Home",
@@ -19,6 +20,7 @@ local imouto = nil
 local mainMenu = nil
 local stories = nil
 local areas = nil
+local mini_games = nil
 local current = nil
 local wall = nil
 local music = nil
@@ -70,6 +72,15 @@ function home.enter()
         },
     })
 
+    mini_games = ui.Menu.new(10, 100, "left", {
+        {
+            "15", function()
+                print("[home] Button 15 clicked!")
+                fsm.push(_15)
+            end
+        },
+    })
+
     mainMenu = ui.Radio.new(630, 100, "right", {
         {
             "Stories", function()
@@ -81,6 +92,12 @@ function home.enter()
             "Areas", function()
                 print("[home] Button Areas clicked!")
                 current = areas
+            end
+        },
+        {
+            "Mini Games", function()
+                print("[home] Button Mini Games clicked!")
+                current = mini_games
             end
         },
         {
