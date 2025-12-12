@@ -15,6 +15,10 @@ An in-game terminal. Only one instance is supported.
 Available commands: `cat`, `clear`, `echo`, `help`, `imoscm`, `pwd`.
 Type `help` for detail.
 
+### Mini Games
+
+1. 15 puzzle.
+
 
 ## Installation
 

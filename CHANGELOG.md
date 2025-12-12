@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.10] - 2025-12-12
+
+### Added
+
+- Mini game 15.
+- Utility to crete strict table (cannot access undefined field or create new field).
+- Make it error when accessing undefined global variable.
+
+### Changed
+
+- Make game and util module strict.
+- Make immutable field uppercase.
+- Change q binding for quit to escape.
+
+
 ## [0.0.9] - 2025-12-09
 
 ### Added
