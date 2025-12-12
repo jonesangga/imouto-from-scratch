@@ -5,18 +5,20 @@ local _15 = {
     name = "15",
 }
 
-local WIDTH = 480 - 2 * game.screen_padding
-local GAP = 4
-local GRID = 4
-local TILE_SIZE = (WIDTH - (GRID - 1) * GAP) / GRID
+local FONT  = game.font_mono
+local WIDTH = 480 - 2 * game.SCREEN_PADDING
+local GRID  = 4
+local GAP   = 4
 
-local tiles = {}                -- tile numbers; 0 for empty
-local er, ec = GRID, GRID
-local font = game.font_mono
-local moves = 0
-local is_shuffling = false
+local TILE_SIZE = math.floor((WIDTH - (GRID - 1) * GAP) / GRID)
+
+local tiles  = {}                -- Tile numbers, 0 for empty.
+local er, ec = GRID, GRID       -- Empty row and column index.
+local moves  = 0
+local time   = 0
 local solved = false
-local time = 0
+
+local is_shuffling = false
 
 local function index(r, c)
     return (r - 1) * GRID + c
@@ -25,32 +27,31 @@ end
 local function check_solved()
     for i = 1, GRID*GRID - 1 do
         if tiles[i] ~= i then
-            solved = false
             return
         end
     end
     solved = true
 end
 
-local function swap(_er, _ec, tr, tc)
-    local i1, i2 = index(_er, _ec), index(tr, tc)
+local function move_to(r, c)
+    local i1, i2 = index(er, ec), index(r, c)
     tiles[i1], tiles[i2] = tiles[i2], tiles[i1]
-    er, ec = tr, tc
+    er, ec = r, c
 end
 
-local function neighbors(r, c)
+local function neighbors()
     local n = {}
-    if r > 1 then
-        table.insert(n, {r-1, c})
+    if er > 1 then
+        table.insert(n, {er-1, ec})
     end
-    if r < GRID then
-        table.insert(n, {r+1, c})
+    if er < GRID then
+        table.insert(n, {er+1, ec})
     end
-    if c > 1 then
-        table.insert(n, {r, c-1})
+    if ec > 1 then
+        table.insert(n, {er, ec-1})
     end
-    if c < GRID then
-        table.insert(n, {r, c+1})
+    if ec < GRID then
+        table.insert(n, {er, ec+1})
     end
     return n
 end
@@ -59,9 +60,9 @@ end
 local function shuffle(count)
     is_shuffling = true
     for i = 1, count do
-        local n = neighbors(er, ec)
+        local n = neighbors()
         local choice = n[ love.math.random(#n) ]
-        swap(er, ec, choice[1], choice[2])
+        move_to(choice[1], choice[2])
     end
     is_shuffling = false
 end
@@ -82,7 +83,7 @@ end
 function _15.enter()
     print("[Pattern] enter")
 
-    love.graphics.setFont(game.font_mono)
+    love.graphics.setFont(FONT)
     new_game(300)
 end
 
@@ -104,8 +105,8 @@ local function tile_draw(x, y, w, h, number)
     love.graphics.rectangle("line", x, y, w, h)
     love.graphics.setColor(0, 0, 0)
     local txt = tostring(number)
-    local tw = font:getWidth(txt)
-    local th = font:getHeight()
+    local tw = FONT:getWidth(txt)
+    local th = FONT:getHeight()
     love.graphics.print(txt, x + (w-tw)/2, y + (h-th)/2)
 end
 
@@ -114,8 +115,8 @@ function _15.draw()
     for r = 1, GRID do
         for c = 1, GRID do
             local i = index(r, c)
-            local x = game.screen_padding + (c - 1) * (TILE_SIZE + GAP)
-            local y = game.screen_padding + (r - 1) * (TILE_SIZE + GAP)
+            local x = game.SCREEN_PADDING + (c - 1) * (TILE_SIZE + GAP)
+            local y = game.SCREEN_PADDING + (r - 1) * (TILE_SIZE + GAP)
             local v = tiles[i]
             if v ~= 0 then
                 tile_draw(x, y, TILE_SIZE, TILE_SIZE, v)
@@ -148,7 +149,7 @@ local function try_move(r, c)
     local dr = math.abs(er - r)
     local dc = math.abs(ec - c)
     if (dr == 1 and dc == 0) or (dr == 0 and dc == 1) then
-        swap(er, ec, r, c)
+        move_to(r, c)
         moves = moves + 1
         check_solved()
     end

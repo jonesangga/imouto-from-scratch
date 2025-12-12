@@ -88,7 +88,7 @@ function ep3.keypressed(key, scancode, isrepeat)
     if key == "v" then
         fsm.push(vimouto)
     end
-    if key == "q" then
+    if key == "escape" then
         fsm.pop()
     end
 end

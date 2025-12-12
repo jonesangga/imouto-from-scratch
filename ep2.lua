@@ -82,7 +82,7 @@ function ep2.keypressed(key, scancode, isrepeat)
     if key == "w" then
         wall:browse()
     end
-    if key == "q" then
+    if key == "escape" then
         fsm.pop()
     end
 end

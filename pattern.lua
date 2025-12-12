@@ -255,7 +255,7 @@ function pattern.keypressed(key, scancode, isrepeat)
     if key == "f" then
         full = not full
     end
-    if key == "q" then
+    if key == "escape" then
         fsm.pop()
     end
 end

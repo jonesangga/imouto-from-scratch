@@ -3,12 +3,13 @@ local util = require("util")
 local game = {}
 
 -- Only used for displaying game title in home screen.
-game.title_font        = love.graphics.newFont(26, "mono")
-game.title_font_height = game.title_font:getHeight()
-game.title_width       = game.title_font:getWidth(love.window.getTitle())
-game.title_font:setFilter("nearest")
+game.TITLE_FONT        = love.graphics.newFont(26, "mono")
+game.TITLE_FONT_HEIGHT = game.TITLE_FONT:getHeight()
+game.TITLE_WIDTH       = game.TITLE_FONT:getWidth(love.window.getTitle())
+game.TITLE_FONT:setFilter("nearest")
 
 -- General font setup.
+-- NOTE: This is not constant. Add feature to change font later.
 game.font        = love.graphics.newFont("fonts/FuzzyBubbles-Regular.ttf", 16)
 game.font_height = game.font:getHeight()
 game.font:setFilter("nearest")
@@ -20,7 +21,7 @@ game.font_mono_width  = game.font_mono:getWidth(".")
 game.font_mono_height = game.font_mono:getHeight()
 game.font_mono:setFilter("nearest")
 
-game.screen_padding = 10  -- NOTE: Vimouto and ImoTerm don't have padding.
-game.padding        = 5   -- For button, dialogue box, etc.
+game.SCREEN_PADDING = 10  -- NOTE: Vimouto and ImoTerm don't have this padding.
+game.PADDING        = 5   -- For button, dialogue box, etc.
 
 return util.strict(game)

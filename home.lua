@@ -17,7 +17,7 @@ local home = {
 }
 
 local imouto = nil
-local mainMenu = nil
+local main_menu = nil
 local stories = nil
 local areas = nil
 local mini_games = nil
@@ -81,7 +81,7 @@ function home.enter()
         },
     })
 
-    mainMenu = ui.Radio.new(630, 100, "right", {
+    main_menu = ui.Radio.new(630, 100, "right", {
         {
             "Stories", function()
                 print("[home] Button Stories clicked!")
@@ -107,7 +107,7 @@ function home.enter()
             end
         },
     })
-    mainMenu:select(1)
+    main_menu:select(1)
 
     current = stories
 
@@ -130,7 +130,7 @@ function home.pauseAudio()
 end
 
 function home.update()
-    mainMenu:update()
+    main_menu:update()
     current:update()
 end
 
@@ -138,27 +138,27 @@ function home.draw()
     wall:draw()
 
     love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("fill", game.screen_padding,
-                                    game.screen_padding,
-                                    game.title_width + 2 * game.padding,
-                                    game.title_font_height + 2 * game.padding)
+    love.graphics.rectangle("fill", game.SCREEN_PADDING,
+                                    game.SCREEN_PADDING,
+                                    game.TITLE_WIDTH + 2 * game.PADDING,
+                                    game.TITLE_FONT_HEIGHT + 2 * game.PADDING)
     love.graphics.setColor(1, 1, 1)
-    love.graphics.setFont(game.title_font)
-    love.graphics.print("Imouto From Scratch", 10 + game.padding, 10 + game.padding)
+    love.graphics.setFont(game.TITLE_FONT)
+    love.graphics.print("Imouto From Scratch", 10 + game.PADDING, 10 + game.PADDING)
 
     imouto:draw()
     love.graphics.setFont(game.font)
-    mainMenu:draw()
+    main_menu:draw()
     current:draw()
 end
 
 function home.mousepressed(x, y, button)
-    mainMenu:mousepressed(x, y, button)
+    main_menu:mousepressed(x, y, button)
     current:mousepressed(x, y, button)
 end
 
 function home.mousereleased(x, y, button)
-    mainMenu:mousereleased(x, y, button)
+    main_menu:mousereleased(x, y, button)
     current:mousereleased(x, y, button)
 end
 

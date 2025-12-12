@@ -15,11 +15,11 @@ ui.Button = Button
 function Button.new(x, y, text, onClick)
     return setmetatable({
         x = x, y = y,
-        w       = game.font:getWidth(text) + 2 * game.padding,
-        h       = game.font_height + 2 * game.padding,
+        w       = game.font:getWidth(text) + 2 * game.PADDING,
+        h       = game.font_height + 2 * game.PADDING,
         text    = text,
         onClick = onClick,
-        padding = game.padding,
+        padding = game.PADDING,
         hovered = false,
         pressed = false,
         enabled = true,
@@ -100,7 +100,7 @@ function Menu.new(x, y, align, entries)
         if align == "left" then
             button = Button.new(x, y, entry[1], entry[2])
         elseif align == "right" then
-            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.padding, y, entry[1], entry[2])
+            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.PADDING, y, entry[1], entry[2])
         end
         table.insert(buttons, button)
         y = button.y + button.h + 5 
@@ -150,7 +150,7 @@ function Radio.new(x, y, align, entries)
         if align == "left" then
             button = Button.new(x, y, entry[1], entry[2])
         elseif align == "right" then
-            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.padding, y, entry[1], entry[2])
+            button = Button.new(x - game.font:getWidth(entry[1]) - 2 * game.PADDING, y, entry[1], entry[2])
         end
         table.insert(buttons, button)
         y = button.y + button.h + 5
