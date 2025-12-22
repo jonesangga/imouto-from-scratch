@@ -30,6 +30,9 @@ function eval_expr(expr, env)
     elseif tag == NT.STRING then
         return String(expr.val)
 
+    elseif tag == NT.GROUP then
+        return eval_expr(expr.expr)
+
     elseif tag == NT.UNARY then
         local r = eval_expr(expr.expr, env)
         if expr.op == TT.MINUS then

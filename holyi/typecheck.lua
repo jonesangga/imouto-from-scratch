@@ -14,6 +14,9 @@ local function check_expr(node, tenv)
     if t == NT.INT or t == NT.BOOL or t == NT.STRING then
         return node.type
 
+    elseif t == NT.GROUP then
+        return check_expr(node.expr, tenv)
+
     elseif t == NT.BINARY then
         local lt = check_expr(node.left, tenv)
         local rt = check_expr(node.right, tenv)
