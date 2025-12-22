@@ -19,9 +19,18 @@ local function check_expr(node, tenv)
         local rt = check_expr(node.right, tenv)
         local op = node.op
 
-        if op == TT.PLUS or op == TT.MINUS then
-            assert_eq(lt, rt, "arithmetics on non-int")
-            return node.left.type  -- TODO: Think again.
+        if op == TT.PLUS or op == TT.MINUS or op == TT.STAR or op == TT.SLASH then
+            assert_eq(lt, IT.Int)
+            assert_eq(rt, IT.Int)
+            return IT.Int
+        elseif op == TT.EQ_EQ or op == TT.NOT_EQ then
+            assert_eq(lt, rt)
+            return IT.Bool
+        elseif op == TT.LESS or op == TT.LESS_EQ or op == TT.GREATER or op == TT.GREATER_EQ then
+            -- TODO: Support comparing string.
+            assert_eq(lt, IT.Int)
+            assert_eq(rt, IT.Int)
+            return IT.Bool
         else
             error("Unknown binop " .. op)
         end
