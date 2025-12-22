@@ -17,18 +17,18 @@ local TokenTypes = Enum{
     "IDENT", "PRINTLN",
 }
 
-local NodeTypes = Enum{
+local NodeTags = Enum{
     "PRINTLN", "EXPR_STMT",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP",
 }
 
 local InternalTypes = Enum{
-    "INT", "BOOL", "STRING",
+    "INT", "BOOL", "STRING", "NULL",
 }
 
 return {
     TT = TokenTypes,
-    NT = NodeTypes,
+    NT = NodeTags,
     IT = InternalTypes,
 }

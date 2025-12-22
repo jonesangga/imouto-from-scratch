@@ -1,6 +1,7 @@
 local inspect = require("libraries/inspect")
-local TT = require("types").TT
-local NT = require("types").NT
+local types   = require("types")
+
+local TT, NT, IT = types.TT, types.NT, types.IT
 
 local function make(tag, props)
     props = props or {}
@@ -143,11 +144,11 @@ function Parser:unary()
 end
 
 function Parser:primary()
-    if self:match(TT.FALSE)  then return make(NT.BOOL,   {val = false})        end
-    if self:match(TT.TRUE)   then return make(NT.BOOL,   {val = true})         end
-    if self:match(TT.NULL)   then return make(NT.NULL,   {val = nil})          end
-    if self:match(TT.INT)    then return make(NT.INT,    {val = self:prevv()}) end
-    if self:match(TT.STRING) then return make(NT.STRING, {val = self:prevv()}) end
+    if self:match(TT.FALSE)  then return make(NT.BOOL,   {type = IT.BOOL,   val = false})        end
+    if self:match(TT.TRUE)   then return make(NT.BOOL,   {type = IT.BOOL,   val = true})         end
+    if self:match(TT.NULL)   then return make(NT.NULL,   {type = IT.NULL,   val = nil})          end
+    if self:match(TT.INT)    then return make(NT.INT,    {type = IT.INT,    val = self:prevv()}) end
+    if self:match(TT.STRING) then return make(NT.STRING, {type = IT.STRING, val = self:prevv()}) end
 
     if self:match(TT.LPAREN) then
         local expr = self:expr()
