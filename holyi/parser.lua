@@ -291,7 +291,37 @@ function Parser:unary()
         left = make(NT.UNARY, {op = op, right = right})
     end
 
-    return self:primary()
+    return self:call()
+end
+
+function Parser:call()
+    local expr = self:primary()
+
+    -- NOTE: Don't simplify. It is to handle properties later.
+    while true do
+        if self:match(TT.LPAREN) then
+            expr = self:finish_call(expr)
+        else
+            break
+        end
+    end
+
+    return expr
+end
+
+function Parser:finish_call(callee)
+    local args = {}
+    if not self:check(TT.RPAREN) then
+        repeat
+            if #args > 10 then
+                error("cannot have more that 10 args")
+            end
+            table.insert(args, self:expr())
+        until not self:match(TT.COMMA)
+    end
+
+    self:consume(TT.RPAREN, "expect ')' after args")
+    return make(NT.CALL, {callee = callee, args = args})
 end
 
 function Parser:primary()

@@ -91,6 +91,16 @@ function eval_expr(expr, env)
         elseif op == TT.AMP2       then return Bool(l and r)
         elseif op == TT.PIPE2      then return Bool(l or r)
         end
+
+    elseif tag == NT.CALL then
+        local callee = eval_expr(expr.callee, env)
+
+        local args = {}
+        for _, arg in ipairs(expr.args) do
+            table.insert(args, eval_expr(arg, env))
+        end
+
+        callee.impl(args, env)
     end
 end
 

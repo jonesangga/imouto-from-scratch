@@ -23,11 +23,11 @@ local NodeTags = Enum{
     "PRINTLN", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "ASSIGN",
-    "IF", "WHILE",
+    "IF", "WHILE", "CALL",
 }
 
 local InternalTags = Enum{
-    "INT", "BOOL", "STRING", "NULL", "FN",
+    "INT", "BOOL", "STRING", "NULL", "ANY", "VOID", "FN",
 }
 
 -- TODO: Think again.
@@ -36,10 +36,18 @@ local InternalTypes = {
     Bool   = { tag = InternalTags.BOOL },
     String = { tag = InternalTags.STRING },
     Null   = { tag = InternalTags.NULL },
+    Void   = { tag = InternalTags.VOID },
+    Any    = { tag = InternalTags.ANY },
 }
+
+local function fntype(params, ret)
+    return { tag = InternalTags.FN, params = params, ret = ret }
+end
 
 return {
     TT = TokenTypes,
     NT = NodeTags,
     IT = InternalTypes,
+    InternalTags = InternalTags,
+    fntype = fntype,
 }

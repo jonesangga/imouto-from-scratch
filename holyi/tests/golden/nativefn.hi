@@ -1,0 +1,4 @@
+print("real");
+print(123);
+print(true);
+print(10 * 20);

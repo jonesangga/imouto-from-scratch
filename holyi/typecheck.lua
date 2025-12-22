@@ -1,9 +1,11 @@
 local types = require("types")
-local envir = require("envir")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
+local InternalTags = types.InternalTags
 
+-- TODO: Clean up.
 local function assert_eq(a, b, msg)
+    if a.tag == InternalTags.ANY or b.tag == InternalTags.ANY then return end
     if a.tag ~= b.tag then
         error(msg or "type not match")
     end
@@ -26,6 +28,23 @@ local function check_expr(node, tenv)
 
     elseif t == NT.GROUP then
         return check_expr(node.expr, tenv)
+
+    elseif t == NT.CALL then
+        local fty = check_expr(node.callee, tenv)
+        if not fty then
+            error("call of undefined function")
+        end
+        if fty.tag ~= InternalTags.FN then
+            error("trying to call non-function")
+        end
+        if #node.args ~= #fty.params then
+            error("arg count mismatch")
+        end
+        for i = 1, #node.args do
+            local at = check_expr(node.args[i], tenv)
+            assert_eq(at, fty.params[i], "arg " .. i .. " type mismatch")
+        end
+        return fty.ret
 
     elseif t == NT.BINARY then
         local lt = check_expr(node.left, tenv)
@@ -95,14 +114,10 @@ local function check_stmt(node, tenv, ret_ty)
     end
 end
 
-local function typecheck(ast)
-    local tenv = envir:new({})
-
+local function typecheck(ast, tenv)
     for _, stmt in ipairs(ast) do
         check_stmt(stmt, tenv, nil)
     end
-
-    return tenv
 end
 
 return typecheck
