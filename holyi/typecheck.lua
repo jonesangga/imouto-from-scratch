@@ -44,6 +44,10 @@ local function check_expr(node, tenv)
             assert_eq(lt, IT.Int)
             assert_eq(rt, IT.Int)
             return IT.Bool
+        elseif op == TT.AMP2 or op == TT.PIPE2 then
+            assert_eq(lt, IT.Bool)
+            assert_eq(rt, IT.Bool)
+            return IT.Bool
         else
             error("Unknown binop " .. op)
         end

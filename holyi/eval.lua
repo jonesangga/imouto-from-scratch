@@ -83,8 +83,8 @@ function eval_expr(expr, env)
         elseif op == TT.GREATER    then return Bool(l > r)
         elseif op == TT.LESS_EQ    then return Bool(l <= r)
         elseif op == TT.GREATER_EQ then return Bool(l >= r)
-        -- elseif op == "&&"          then return Bool((l.tag == NT.BOOL and l.val) and (r.tag == NT.BOOL and r.val))
-        -- elseif op == "||"          then return Bool((l.tag == NT.BOOL and l.val) or (r.tag == NT.BOOL and r.val))
+        elseif op == TT.AMP2       then return Bool(l and r)
+        elseif op == TT.PIPE2      then return Bool(l or r)
         end
     end
 end

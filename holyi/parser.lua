@@ -135,7 +135,7 @@ function Parser:expr()
 end
 
 function Parser:assignment()
-    local expr = self:equality()
+    local expr = self:or_()
 
     if self:match(TT.EQ) then
         local equals = self:prevt()
@@ -150,6 +150,30 @@ function Parser:assignment()
     end
 
     return expr
+end
+
+function Parser:or_()
+    local left = self:and_()
+
+    while self:match(TT.PIPE2) do
+        local op = self:prevt()
+        local right = self:and_()
+        left = make(NT.BINARY, {left = left, op = op, right = right})
+    end
+
+    return left
+end
+
+function Parser:and_()
+    local left = self:equality()
+
+    while self:match(TT.AMP2) do
+        local op = self:prevt()
+        local right = self:equality()
+        left = make(NT.BINARY, {left = left, op = op, right = right})
+    end
+
+    return left
 end
 
 function Parser:equality()

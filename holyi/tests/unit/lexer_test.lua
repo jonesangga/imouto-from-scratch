@@ -84,5 +84,11 @@ describe("lexer", function()
 
     it("if else", function()
         expect( lexer("if") ).to.equal( {t(TT.IF, "if")} )
+        expect( lexer("else") ).to.equal( {t(TT.ELSE, "else")} )
+    end)
+
+    it("&& ||", function()
+        expect( lexer("&&") ).to.equal( {t(TT.AMP2)} )
+        expect( lexer("||") ).to.equal( {t(TT.PIPE2)} )
     end)
 end)

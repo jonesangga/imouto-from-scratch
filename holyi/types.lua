@@ -15,7 +15,7 @@ local TokenTypes = Enum{
     "SEMICOLON", "COMMA", "DOT",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "PRINTLN",
-    "IF", "ELSE",
+    "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
 }
 
 local NodeTags = Enum{

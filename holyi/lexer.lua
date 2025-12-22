@@ -98,6 +98,8 @@ local function lexer(src)
     ops["!"] = function() token(match('=') and TT.NOT_EQ     or TT.NOT) end
     ops["<"] = function() token(match('=') and TT.LESS_EQ    or TT.LESS) end
     ops[">"] = function() token(match('=') and TT.GREATER_EQ or TT.GREATER) end
+    ops["&"] = function() token(match('&') and TT.AMP2       or TT.AMP) end
+    ops["|"] = function() token(match('|') and TT.PIPE2      or TT.PIPE) end
 
     while true do
         skip_whitespace()
