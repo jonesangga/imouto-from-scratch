@@ -24,6 +24,11 @@ function eval_stmt(stmt, env)
     elseif tag == NT.EXPR_STMT then
         eval_expr(stmt.expr, env)
 
+    elseif tag == NT.WHILE then
+        while eval_expr(stmt.cond, env).val do
+            eval_stmt(stmt.body, env)
+        end
+
     elseif tag == NT.BLOCK then
         local localenv = env:branch()
         for _, s in ipairs(stmt.stmts) do
@@ -31,7 +36,7 @@ function eval_stmt(stmt, env)
         end
 
     elseif tag == NT.VARDECL then
-        local init = eval_expr(stmt.init)
+        local init = eval_expr(stmt.init, env)
         env:define(stmt.name, init)
     end
 end
@@ -49,13 +54,13 @@ function eval_expr(expr, env)
         return String(expr.val)
 
     elseif tag == NT.GROUP then
-        return eval_expr(expr.expr)
+        return eval_expr(expr.expr, env)
 
     elseif tag == NT.VAR then
         return env:get(expr.name)
 
     elseif tag == NT.ASSIGN then
-        local value = eval_expr(expr.value)
+        local value = eval_expr(expr.value, env)
         env:set(expr.name, value)
         return value
 

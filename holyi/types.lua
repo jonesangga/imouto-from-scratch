@@ -16,13 +16,14 @@ local TokenTypes = Enum{
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "PRINTLN",
     "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
+    "WHILE",
 }
 
 local NodeTags = Enum{
     "PRINTLN", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "ASSIGN",
-    "IF",
+    "IF", "WHILE",
 }
 
 local InternalTags = Enum{

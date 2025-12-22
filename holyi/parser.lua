@@ -86,6 +86,8 @@ function Parser:stmt()
         return self:if_stmt()
     elseif self:match(TT.PRINTLN) then
         return self:print_stmt()
+    elseif self:match(TT.WHILE) then
+        return self:while_stmt()
     elseif self:match(TT.LBRACE) then
         return make(NT.BLOCK, {stmts = self:block()})
     else
@@ -105,6 +107,14 @@ function Parser:if_stmt()
     end
 
     return make(NT.IF, {cond = cond, then_ = then_, else_ = else_})
+end
+
+function Parser:while_stmt()
+    self:consume(TT.LPAREN, "expect '(' after 'while'")
+    local cond = self:expr()
+    self:consume(TT.RPAREN, "expect ')' after condition")
+    local body = self:stmt()
+    return make(NT.WHILE, {cond = cond, body = body})
 end
 
 function Parser:print_stmt()

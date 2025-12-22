@@ -6,6 +6,7 @@ local keywords = {
     ["if"]      = TT.IF,
     ["println"] = TT.PRINTLN,
     ["true"]    = TT.TRUE,
+    ["while"]   = TT.WHILE,
 }
 
 local function is_digit(c)

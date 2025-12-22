@@ -20,7 +20,7 @@ local function check_expr(node, tenv)
 
     elseif t == NT.ASSIGN then
         local type = tenv:get(node.name)
-        local et = check_expr(node.value)
+        local et = check_expr(node.value, tenv)
         assert_eq(type, et)
         return type
 
@@ -73,6 +73,11 @@ local function check_stmt(node, tenv, ret_ty)
 
     elseif t == NT.EXPR_STMT then
         check_expr(node.expr, tenv)
+
+    elseif t == NT.WHILE then
+        local ct = check_expr(node.cond, tenv)
+        assert_eq(ct, IT.Bool, "while condition not bool")
+        check_stmt(node.body, tenv, ret_ty)
 
     elseif t == NT.BLOCK then
         local localenv = tenv:branch()
