@@ -70,9 +70,9 @@ function Parser:stmt()
 end
 
 function Parser:print_stmt()
-    local value = self:expr()
-    self:consume(TT.SEMICOLON, "expect ';' after value")
-    return make(NT.PRINTLN, {value = value})
+    local expr = self:expr()
+    self:consume(TT.SEMICOLON, "expect ';' after expr")
+    return make(NT.PRINTLN, {expr = expr})
 end
 
 function Parser:expr_stmt()
@@ -144,11 +144,11 @@ function Parser:unary()
 end
 
 function Parser:primary()
-    if self:match(TT.FALSE)  then return make(NT.BOOL,   {type = IT.BOOL,   val = false})        end
-    if self:match(TT.TRUE)   then return make(NT.BOOL,   {type = IT.BOOL,   val = true})         end
-    if self:match(TT.NULL)   then return make(NT.NULL,   {type = IT.NULL,   val = nil})          end
-    if self:match(TT.INT)    then return make(NT.INT,    {type = IT.INT,    val = self:prevv()}) end
-    if self:match(TT.STRING) then return make(NT.STRING, {type = IT.STRING, val = self:prevv()}) end
+    if self:match(TT.FALSE)  then return make(NT.BOOL,   {type = IT.Bool,   val = false})        end
+    if self:match(TT.TRUE)   then return make(NT.BOOL,   {type = IT.Bool,   val = true})         end
+    if self:match(TT.NULL)   then return make(NT.NULL,   {type = IT.Null,   val = nil})          end
+    if self:match(TT.INT)    then return make(NT.INT,    {type = IT.Int,    val = self:prevv()}) end
+    if self:match(TT.STRING) then return make(NT.STRING, {type = IT.String, val = self:prevv()}) end
 
     if self:match(TT.LPAREN) then
         local expr = self:expr()

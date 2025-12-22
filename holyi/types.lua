@@ -23,8 +23,16 @@ local NodeTags = Enum{
     "BINARY", "UNARY", "GROUP",
 }
 
-local InternalTypes = Enum{
-    "INT", "BOOL", "STRING", "NULL",
+local InternalTags = Enum{
+    "INT", "BOOL", "STRING", "NULL", "FN",
+}
+
+-- TODO: Think again.
+local InternalTypes = {
+    Int    = { tag = InternalTags.INT },
+    Bool   = { tag = InternalTags.BOOL },
+    String = { tag = InternalTags.STRING },
+    Null   = { tag = InternalTags.NULL },
 }
 
 return {

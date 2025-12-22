@@ -1,6 +1,7 @@
 local lexer  = require("lexer")
 local parser = require("parser")
 local eval   = require("eval")
+local typecheck = require("typecheck")
 local inspect = require("libraries/inspect")
 
 -- local s = "print 1 + 2;"
@@ -19,8 +20,10 @@ local inspect = require("libraries/inspect")
 local function run_file(path, env)
     local file   = assert(io.open(path, "r"), "failed to open file")
     local tokens = lexer(file:read("*all"))
-    local ast  = parser(tokens)
     file:close()
+
+    local ast  = parser(tokens)
+    local ty_env = typecheck(ast)
 
     local result = eval(ast, env)
 end

@@ -17,7 +17,7 @@ function eval_stmt(stmt, env)
     local tag = stmt.tag
 
     if tag == NT.PRINTLN then
-        local value = eval_expr(stmt.value, env)
+        local value = eval_expr(stmt.expr, env)
         print(value.val)
 
     elseif tag == NT.EXPR_STMT then
