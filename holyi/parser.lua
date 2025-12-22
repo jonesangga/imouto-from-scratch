@@ -82,13 +82,29 @@ function Parser:vardecl()
 end
 
 function Parser:stmt()
-    if self:match(TT.PRINTLN) then
+    if self:match(TT.IF) then
+        return self:if_stmt()
+    elseif self:match(TT.PRINTLN) then
         return self:print_stmt()
     elseif self:match(TT.LBRACE) then
         return make(NT.BLOCK, {stmts = self:block()})
     else
         return self:expr_stmt()
     end
+end
+
+function Parser:if_stmt()
+    self:consume(TT.LPAREN, "expect '(' after 'if'")
+    local cond = self:expr()
+    self:consume(TT.RPAREN, "expect ')' after if condition")
+
+    local then_ = self:stmt()
+    local else_ = nil
+    if self:match(TT.ELSE) then
+        else_ = self:stmt()
+    end
+
+    return make(NT.IF, {cond = cond, then_ = then_, else_ = else_})
 end
 
 function Parser:print_stmt()

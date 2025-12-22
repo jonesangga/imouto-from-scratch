@@ -1,7 +1,9 @@
 local TT = require("types").TT
 
 local keywords = {
+    ["else"]    = TT.ELSE,
     ["false"]   = TT.FALSE,
+    ["if"]      = TT.IF,
     ["println"] = TT.PRINTLN,
     ["true"]    = TT.TRUE,
 }
@@ -158,6 +160,7 @@ local function lexer(src)
             if is_upper(c) then
                 token_literal(TT.TYPE, s)
             else
+                -- TODO: Check again. For keywords it should use token()?
                 token_literal(keywords[s] or TT.IDENT, s)
             end
         end

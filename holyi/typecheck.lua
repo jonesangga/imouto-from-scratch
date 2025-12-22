@@ -58,6 +58,15 @@ local function check_stmt(node, tenv, ret_ty)
     if t == NT.PRINTLN then
         check_expr(node.expr, tenv)
 
+    elseif t == NT.IF then
+        local ct = check_expr(node.cond, tenv)
+        assert_eq(ct, IT.Bool, "if condition not bool")
+
+        check_stmt(node.then_, tenv, ret_ty)
+        if node.else_ then
+            check_stmt(node.else_, tenv, ret_ty)
+        end
+
     elseif t == NT.EXPR_STMT then
         check_expr(node.expr, tenv)
 

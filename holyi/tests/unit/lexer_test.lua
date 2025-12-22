@@ -81,4 +81,8 @@ describe("lexer", function()
             t(TT.SEMICOLON),
         } )
     end)
+
+    it("if else", function()
+        expect( lexer("if") ).to.equal( {t(TT.IF, "if")} )
+    end)
 end)

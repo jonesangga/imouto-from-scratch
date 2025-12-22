@@ -13,6 +13,14 @@ function eval_stmt(stmt, env)
         local value = eval_expr(stmt.expr, env)
         print(value.val)
 
+    elseif tag == NT.IF then
+        local cond = eval_expr(stmt.cond, env)
+        if cond.val then
+            eval_stmt(stmt.then_, env)
+        elseif stmt.else_ then
+            eval_stmt(stmt.else_, env)
+        end
+
     elseif tag == NT.EXPR_STMT then
         eval_expr(stmt.expr, env)
 
