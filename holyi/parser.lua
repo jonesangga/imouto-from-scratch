@@ -2,9 +2,9 @@ local inspect = require("libraries/inspect")
 local TT = require("types").TT
 local NT = require("types").NT
 
-local function make(type, props)
+local function make(tag, props)
     props = props or {}
-    props.type = type
+    props.tag = tag
     return props
 end
 
