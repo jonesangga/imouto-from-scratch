@@ -3,6 +3,7 @@ local TT = require("types").TT
 local keywords = {
     ["else"]    = TT.ELSE,
     ["false"]   = TT.FALSE,
+    ["for"]     = TT.FOR,
     ["if"]      = TT.IF,
     ["println"] = TT.PRINTLN,
     ["true"]    = TT.TRUE,

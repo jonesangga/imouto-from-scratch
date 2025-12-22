@@ -86,6 +86,8 @@ function Parser:stmt()
         return self:if_stmt()
     elseif self:match(TT.PRINTLN) then
         return self:print_stmt()
+    elseif self:match(TT.FOR) then
+        return self:for_stmt()
     elseif self:match(TT.WHILE) then
         return self:while_stmt()
     elseif self:match(TT.LBRACE) then
@@ -107,6 +109,54 @@ function Parser:if_stmt()
     end
 
     return make(NT.IF, {cond = cond, then_ = then_, else_ = else_})
+end
+
+function Parser:for_stmt()
+    self:consume(TT.LPAREN, "expect '(' after 'for'")
+
+    local init
+    if self:match(TT.SEMICOLON) then
+        init = nil
+    elseif self:check(TT.TYPE) then
+        init = self:vardecl()
+    else
+        init = self:expr_stmt()
+    end
+
+    local cond = nil
+    if not self:check(TT.SEMICOLON) then
+        cond = self:expr()
+    end
+    self:consume(TT.SEMICOLON, "expect ';' after loop condition")
+
+    local incr = nil
+    if not self:check(TT.RPAREN) then
+        incr = self:expr()
+    end
+    self:consume(TT.RPAREN, "expect ')' after for clauses")
+
+    local body = self:stmt()
+
+    if incr ~= nil then
+        body = make(NT.BLOCK, {stmts = {
+            body,
+            make(NT.EXPR_STMT, {expr = incr}),
+        }})
+    end
+
+    if cond == nil then
+        cond = make(NT.BOOL, {type = IT.Bool, val = true})
+    end
+    body = make(NT.WHILE, {cond = cond, body = body})
+
+    if init ~= nil then
+        body = make(NT.BLOCK, {stmts = {
+            init,
+            body,
+        }})
+    end
+
+    return body
 end
 
 function Parser:while_stmt()
