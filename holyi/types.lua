@@ -9,7 +9,7 @@ local function Enum(list)
 end
 
 local TokenTypes = Enum{
-    "INT", "STRING", "TRUE", "FALSE", "NULL",
+    "TYPE", "INT", "STRING", "TRUE", "FALSE", "NULL",
     "PLUS", "MINUS", "STAR", "SLASH",
     "LPAREN", "RPAREN", "LBRACE", "RBRACE",
     "SEMICOLON", "COMMA", "DOT",
@@ -20,7 +20,7 @@ local TokenTypes = Enum{
 local NodeTags = Enum{
     "PRINTLN", "EXPR_STMT",
     "INT", "BOOL", "STRING", "NULL",
-    "BINARY", "UNARY", "GROUP",
+    "BINARY", "UNARY", "GROUP", "VAR", "VARDECL",
 }
 
 local InternalTags = Enum{

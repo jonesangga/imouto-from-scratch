@@ -1,0 +1,5 @@
+Int a = 2;
+println a;
+
+Int b = 3;
+println a + b;

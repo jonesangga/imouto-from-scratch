@@ -21,6 +21,11 @@ describe("lexer", function()
         expect( lexer("123 // this is a comment\n 45") ).to.equal( {t(TT.INT, 123), t(TT.INT, 45)} )
     end)
 
+    it("type", function()
+        expect( lexer("Int") ).to.equal( {t(TT.TYPE, "Int")} )
+        expect( lexer("Real") ).to.equal( {t(TT.TYPE, "Real")} )
+    end)
+
     it("number", function()
         expect( lexer("123") ).to.equal( {t(TT.INT, 123)} )
         expect( lexer("123 45") ).to.equal( {t(TT.INT, 123), t(TT.INT, 45)} )

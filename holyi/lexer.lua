@@ -18,6 +18,11 @@ local function is_alpha(c)
            or b == 95)                   -- underscore (_)
 end
 
+local function is_upper(c)
+    local b = (c or ""):byte()
+    return b and 65 <= b and b <= 90  -- A-Z
+end
+
 local function is_alnum(c)
     return is_alpha(c) or is_digit(c)
 end
@@ -148,8 +153,13 @@ local function lexer(src)
             while is_alnum(peek()) do
                 advance()
             end
+
             local s = src:sub(start, current - 1)
-            token_literal(keywords[s] or TT.IDENT, s)
+            if is_upper(c) then
+                token_literal(TT.TYPE, s)
+            else
+                token_literal(keywords[s] or TT.IDENT, s)
+            end
         end
     end
 

@@ -1,4 +1,5 @@
 local types = require("types")
+local envir = require("envir")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 
@@ -13,6 +14,9 @@ local function check_expr(node, tenv)
 
     if t == NT.INT or t == NT.BOOL or t == NT.STRING then
         return node.type
+
+    elseif t == NT.VAR then
+        return tenv:get(node.name)
 
     elseif t == NT.GROUP then
         return check_expr(node.expr, tenv)
@@ -47,19 +51,28 @@ local function check_stmt(node, tenv, ret_ty)
 
     if t == NT.PRINTLN then
         check_expr(node.expr, tenv)
+
     elseif t == NT.EXPR_STMT then
         check_expr(node.expr, tenv)
+
+    elseif t == NT.VARDECL then
+        local vartype = IT[node.vartype]
+        local et = check_expr(node.init, tenv)
+        assert_eq(vartype, et)
+        tenv:define(node.name, et)
     else
         error("Stmt typecheck not implemented: " .. t)
     end
 end
 
 local function typecheck(ast)
+    local tenv = envir:new({})
+
     for _, stmt in ipairs(ast) do
-        check_stmt(stmt, {}, nil)
+        check_stmt(stmt, tenv, nil)
     end
 
-    return global
+    return tenv
 end
 
 return typecheck

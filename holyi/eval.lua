@@ -15,6 +15,10 @@ function eval_stmt(stmt, env)
 
     elseif tag == NT.EXPR_STMT then
         eval_expr(stmt.expr, env)
+
+    elseif tag == NT.VARDECL then
+        local init = eval_expr(stmt.init)
+        env:define(stmt.name, init)
     end
 end
 
@@ -32,6 +36,9 @@ function eval_expr(expr, env)
 
     elseif tag == NT.GROUP then
         return eval_expr(expr.expr)
+
+    elseif tag == NT.VAR then
+        return env:get(expr.name)
 
     elseif tag == NT.UNARY then
         local r = eval_expr(expr.expr, env)
@@ -63,9 +70,9 @@ function eval_expr(expr, env)
     end
 end
 
-local function eval(stmts)
+local function eval(stmts, env)
     for _, stmt in ipairs(stmts) do
-        eval_stmt(stmt)
+        eval_stmt(stmt, env)
     end
 end
 

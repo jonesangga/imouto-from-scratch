@@ -56,9 +56,29 @@ end
 function Parser:parse()
     local stmts = {}
     while not self:eof() do
-        table.insert(stmts, self:stmt())
+        table.insert(stmts, self:declaration())
     end
     return stmts
+end
+
+function Parser:declaration()
+    if self:check(TT.TYPE) then
+        return self:vardecl()
+    end
+    return self:stmt()
+end
+
+function Parser:vardecl()
+    self:advance()
+    local vartype = self:prevv()
+    self:consume(TT.IDENT, "expect variable name")
+    local name = self:prevv()
+    local init = nil
+    if self:match(TT.EQ) then
+        init = self:expr()
+    end
+    self:consume(TT.SEMICOLON, "expect ';' after var decl")
+    return make(NT.VARDECL, {vartype = vartype, name = name, init = init})
 end
 
 function Parser:stmt()
@@ -149,6 +169,10 @@ function Parser:primary()
     if self:match(TT.NULL)   then return make(NT.NULL,   {type = IT.Null,   val = nil})          end
     if self:match(TT.INT)    then return make(NT.INT,    {type = IT.Int,    val = self:prevv()}) end
     if self:match(TT.STRING) then return make(NT.STRING, {type = IT.String, val = self:prevv()}) end
+
+    if self:match(TT.IDENT) then
+        return make(NT.VAR, {name = self:prevv()})
+    end
 
     if self:match(TT.LPAREN) then
         local expr = self:expr()

@@ -1,6 +1,7 @@
 local lexer  = require("lexer")
 local parser = require("parser")
 local eval   = require("eval")
+local envir  = require("envir")
 local typecheck = require("typecheck")
 local inspect = require("libraries/inspect")
 
@@ -29,9 +30,11 @@ local function run_file(path, env)
 end
 
 do
+    local env = envir:new({})
+
     if #arg == 0 then
         print("Usage: lua main.lua <file>")
     else
-        run_file(arg[1], {})
+        run_file(arg[1], env)
     end
 end
