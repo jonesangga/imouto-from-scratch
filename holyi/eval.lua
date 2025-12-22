@@ -16,6 +16,12 @@ function eval_stmt(stmt, env)
     elseif tag == NT.EXPR_STMT then
         eval_expr(stmt.expr, env)
 
+    elseif tag == NT.BLOCK then
+        local localenv = env:branch()
+        for _, s in ipairs(stmt.stmts) do
+            eval_stmt(s, localenv)
+        end
+
     elseif tag == NT.VARDECL then
         local init = eval_expr(stmt.init)
         env:define(stmt.name, init)

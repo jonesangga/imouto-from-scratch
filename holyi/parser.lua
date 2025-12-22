@@ -84,6 +84,8 @@ end
 function Parser:stmt()
     if self:match(TT.PRINTLN) then
         return self:print_stmt()
+    elseif self:match(TT.LBRACE) then
+        return make(NT.BLOCK, {stmts = self:block()})
     else
         return self:expr_stmt()
     end
@@ -93,6 +95,17 @@ function Parser:print_stmt()
     local expr = self:expr()
     self:consume(TT.SEMICOLON, "expect ';' after expr")
     return make(NT.PRINTLN, {expr = expr})
+end
+
+function Parser:block()
+    local stmts = {}
+
+    while not self:check(TT.RBRACE) and not self:eof() do
+        table.insert(stmts, self:declaration())
+    end
+
+    self:consume(TT.RBRACE, "expect '}' after block")
+    return stmts
 end
 
 function Parser:expr_stmt()

@@ -61,6 +61,12 @@ local function check_stmt(node, tenv, ret_ty)
     elseif t == NT.EXPR_STMT then
         check_expr(node.expr, tenv)
 
+    elseif t == NT.BLOCK then
+        local localenv = tenv:branch()
+        for _, s in ipairs(node.stmts) do
+            check_stmt(s, localenv, ret_ty)
+        end
+
     elseif t == NT.VARDECL then
         local vartype = IT[node.vartype]
         local et = check_expr(node.init, tenv)

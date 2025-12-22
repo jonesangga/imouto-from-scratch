@@ -18,7 +18,7 @@ local TokenTypes = Enum{
 }
 
 local NodeTags = Enum{
-    "PRINTLN", "EXPR_STMT",
+    "PRINTLN", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "ASSIGN",
 }
