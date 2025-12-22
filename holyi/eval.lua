@@ -40,6 +40,11 @@ function eval_expr(expr, env)
     elseif tag == NT.VAR then
         return env:get(expr.name)
 
+    elseif tag == NT.ASSIGN then
+        local value = eval_expr(expr.value)
+        env:set(expr.name, value)
+        return value
+
     elseif tag == NT.UNARY then
         local r = eval_expr(expr.expr, env)
         if expr.op == TT.MINUS then

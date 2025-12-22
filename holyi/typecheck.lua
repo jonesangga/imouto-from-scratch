@@ -18,6 +18,12 @@ local function check_expr(node, tenv)
     elseif t == NT.VAR then
         return tenv:get(node.name)
 
+    elseif t == NT.ASSIGN then
+        local type = tenv:get(node.name)
+        local et = check_expr(node.value)
+        assert_eq(type, et)
+        return type
+
     elseif t == NT.GROUP then
         return check_expr(node.expr, tenv)
 

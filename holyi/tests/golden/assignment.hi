@@ -1,0 +1,7 @@
+Int a = 2;
+println a;
+
+a = 3;
+println a;
+
+println a = 4;

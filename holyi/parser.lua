@@ -102,7 +102,25 @@ function Parser:expr_stmt()
 end
 
 function Parser:expr()
-    return self:equality()
+    return self:assignment()
+end
+
+function Parser:assignment()
+    local expr = self:equality()
+
+    if self:match(TT.EQ) then
+        local equals = self:prevt()
+        local value = self:assignment()
+
+        if expr.tag == NT.VAR then
+            local name = expr.name
+            return make(NT.ASSIGN, {name = name, value = value})
+        end
+
+        error("invalid assignment target")
+    end
+
+    return expr
 end
 
 function Parser:equality()
