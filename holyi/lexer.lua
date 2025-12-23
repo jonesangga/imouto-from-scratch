@@ -1,3 +1,4 @@
+local LexerError = require("error").LexerError
 local TT = require("types").TT
 
 local keywords = {
@@ -158,7 +159,10 @@ local function lexer(src)
                 end
             end
 
-            if eof() then error("unterminated string") end
+            if eof() then
+                LexerError("unterminated string")
+            end
+
             advance()  -- Closing quote.
             token_literal(TT.STRING, s)
 

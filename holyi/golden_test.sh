@@ -10,7 +10,7 @@ for in_file in "$golden_dir"/*.hi; do
     expect_file="$golden_dir/$name.expect"
     out_file="$golden_dir/out/$name.out"
 
-    eval "$interpreter \"$in_file\" > \"$out_file\""  # To support literal * in file name.
+    eval "$interpreter \"$in_file\" > \"$out_file\"" 2>&1  # To support literal * in file name.
 
     if ! cmp -s "$out_file" "$expect_file"; then
         echo "FAIL: $name"

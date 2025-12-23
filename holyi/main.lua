@@ -29,10 +29,16 @@ local function run_file(path, env, tenv)
         error("failed to open file: " .. path)
     end
 
-    local tokens = lexer(file:read("*all"))
+    local src = file:read("*all")
     file:close()
 
-    local ast = parser(tokens)
+    local ok, lexer_result = pcall(function() return lexer(src) end)
+    if not ok then
+        print(lexer_result)
+        return;
+    end
+
+    local ast = parser(lexer_result)
     typecheck(ast, tenv)
     eval(ast, env)
 end

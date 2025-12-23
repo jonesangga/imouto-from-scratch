@@ -3,6 +3,7 @@ local inspect = require("libraries/inspect")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 
+-- TODO: The types are wrong.
 local function Int(n)    return { type = IT.INT,    val = n } end
 local function Bool(b)   return { type = IT.BOOL,   val = b } end
 local function String(s) return { type = IT.STRING, val = s } end
@@ -134,13 +135,11 @@ function eval_expr(node, env)
 
     elseif tag == NT.CALL then
         local callee = eval_expr(node.callee, env)
-        -- inspect(callee)
 
         local args = {}
         for _, arg in ipairs(node.args) do
             table.insert(args, eval_expr(arg, env))
         end
-        -- inspect(args)
 
         return callee.impl(args, env)
     end
