@@ -269,7 +269,7 @@ end
 function Parser:term()
     local left = self:factor()
 
-    while self:match(TT.MINUS, TT.PLUS) do
+    while self:match(TT.MINUS, TT.PLUS, TT.DOT2) do
         local op = self:prevt()
         local right = self:factor()
         left = make(NT.BINARY, {left = left, op = op, right = right})

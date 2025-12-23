@@ -60,6 +60,10 @@ local function check_expr(node, tenv)
             assert_eq(lt, IT.Bool)
             assert_eq(rt, IT.Bool)
             return IT.Bool
+        elseif op == TT.DOT2 then
+            assert_eq(lt, IT.String)
+            assert_eq(rt, IT.String)
+            return lt
         else
             error("unknown binop " .. op)
         end

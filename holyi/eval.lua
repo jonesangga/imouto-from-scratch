@@ -90,6 +90,7 @@ function eval_expr(node, env)
         elseif op == TT.GREATER_EQ then return Bool(l >= r)
         elseif op == TT.AMP2       then return Bool(l and r)
         elseif op == TT.PIPE2      then return Bool(l or r)
+        elseif op == TT.DOT2       then return String(l .. r)
         end
 
     elseif tag == NT.CALL then

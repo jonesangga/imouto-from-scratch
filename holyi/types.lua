@@ -22,7 +22,7 @@ local TokenTypes = Enum{
     "TYPE", "INT", "STRING", "TRUE", "FALSE", "NULL",
     "PLUS", "MINUS", "STAR", "SLASH",
     "LPAREN", "RPAREN", "LBRACE", "RBRACE",
-    "SEMICOLON", "COMMA", "DOT",
+    "SEMICOLON", "COMMA", "DOT", "DOT2",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "SHOW",
     "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
@@ -41,7 +41,7 @@ local InternalTags = Enum{
     "INT", "BOOL", "STRING", "NULL", "ANY", "VOID", "FN",
 }
 
--- These are fixed.
+-- These are fixed. These are indexed to get the type in vardecl.
 -- TODO: Think again.
 local InternalTypes = {
     Int    = { tag = InternalTags.INT },

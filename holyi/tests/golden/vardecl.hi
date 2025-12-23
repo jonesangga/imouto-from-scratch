@@ -3,3 +3,20 @@ show a;
 
 Int b = 3;
 show a + b;
+
+Bool t = true;
+show t;
+
+Bool f = false;
+show f;
+
+show f && t;
+show f || t;
+
+String s1 = "so ";
+show s1;
+
+String s2 = "real";
+show s2;
+
+show s1 .. s2;

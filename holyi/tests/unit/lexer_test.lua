@@ -64,6 +64,7 @@ describe("lexer", function()
         expect( lexer(";") ).to.equal( {t(TT.SEMICOLON)} )
         expect( lexer(",") ).to.equal( {t(TT.COMMA)} )
         expect( lexer(".") ).to.equal( {t(TT.DOT)} )
+        expect( lexer("..") ).to.equal( {t(TT.DOT2)} )
     end)
 
     it("show", function()
