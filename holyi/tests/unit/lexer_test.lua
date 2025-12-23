@@ -5,8 +5,8 @@ local TT    = require("types").TT
 local describe, it, expect = lust.describe, lust.it, lust.expect
 
 -- Helper.
-local function t(type, value)
-    return { type = type, val = value }
+local function t(type, val)
+    return { type = type, val = val }
 end
 
 describe("lexer", function()
@@ -35,12 +35,9 @@ describe("lexer", function()
         expect( lexer('"real"') ).to.equal( {t(TT.STRING, "real")} )
     end)
 
-    it("parens", function()
+    it("brackets", function()
         expect( lexer("(") ).to.equal( {t(TT.LPAREN)} )
         expect( lexer(")") ).to.equal( {t(TT.RPAREN)} )
-    end)
-
-    it("braces", function()
         expect( lexer("{") ).to.equal( {t(TT.LBRACE)} )
         expect( lexer("}") ).to.equal( {t(TT.RBRACE)} )
     end)
@@ -69,21 +66,21 @@ describe("lexer", function()
         expect( lexer(".") ).to.equal( {t(TT.DOT)} )
     end)
 
-    it("println", function()
-        expect( lexer("println 2;") ).to.equal( {
-            t(TT.PRINTLN, "println"),
+    it("show", function()
+        expect( lexer("show 2;") ).to.equal( {
+            t(TT.SHOW),
             t(TT.INT, 2),
             t(TT.SEMICOLON),
         } )
     end)
 
     it("keywords", function()
-        expect( lexer("else") ).to.equal( {t(TT.ELSE, "else")} )
-        expect( lexer("false") ).to.equal( {t(TT.FALSE, "false")} )
-        expect( lexer("for") ).to.equal( {t(TT.FOR, "for")} )
-        expect( lexer("if") ).to.equal( {t(TT.IF, "if")} )
-        expect( lexer("true") ).to.equal( {t(TT.TRUE, "true")} )
-        expect( lexer("while") ).to.equal( {t(TT.WHILE, "while")} )
+        expect( lexer("else") ).to.equal( {t(TT.ELSE)} )
+        expect( lexer("false") ).to.equal( {t(TT.FALSE)} )
+        expect( lexer("for") ).to.equal( {t(TT.FOR)} )
+        expect( lexer("if") ).to.equal( {t(TT.IF)} )
+        expect( lexer("true") ).to.equal( {t(TT.TRUE)} )
+        expect( lexer("while") ).to.equal( {t(TT.WHILE)} )
     end)
 
     it("&& ||", function()

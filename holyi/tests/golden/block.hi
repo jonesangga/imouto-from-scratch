@@ -1,9 +1,9 @@
 Int a = 2;
-println a;
+show a;
 
 {
     Int a = 3;
-    println a;
+    show a;
 }
 
-println a;
+show a;

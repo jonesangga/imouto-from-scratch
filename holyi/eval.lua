@@ -3,79 +3,79 @@ local types = require("types")
 local TT, NT, IT = types.TT, types.NT, types.IT
 
 local function Int(n)    return { type = IT.INT,    val = n } end
-local function Bool(b)   return { type = IT.BOOL,   val = not not b } end
-local function String(s) return { type = IT.STRING, val = s} end
+local function Bool(b)   return { type = IT.BOOL,   val = b } end
+local function String(s) return { type = IT.STRING, val = s } end
 
-function eval_stmt(stmt, env)
-    local tag = stmt.tag
+function eval_stmt(node, env)
+    local tag = node.tag
 
-    if tag == NT.PRINTLN then
-        local value = eval_expr(stmt.expr, env)
+    if tag == NT.SHOW then
+        local value = eval_expr(node.expr, env)
         print(value.val)
 
     elseif tag == NT.IF then
-        local cond = eval_expr(stmt.cond, env)
+        local cond = eval_expr(node.cond, env)
         if cond.val then
-            eval_stmt(stmt.then_, env)
-        elseif stmt.else_ then
-            eval_stmt(stmt.else_, env)
+            eval_stmt(node.then_, env)
+        elseif node.else_ then
+            eval_stmt(node.else_, env)
         end
 
     elseif tag == NT.EXPR_STMT then
-        eval_expr(stmt.expr, env)
+        eval_expr(node.expr, env)
 
     elseif tag == NT.WHILE then
-        while eval_expr(stmt.cond, env).val do
-            eval_stmt(stmt.body, env)
+        while eval_expr(node.cond, env).val do
+            eval_stmt(node.body, env)
         end
 
     elseif tag == NT.BLOCK then
         local localenv = env:branch()
-        for _, s in ipairs(stmt.stmts) do
+        for _, s in ipairs(node.stmts) do
             eval_stmt(s, localenv)
         end
 
     elseif tag == NT.VARDECL then
-        local init = eval_expr(stmt.init, env)
-        env:define(stmt.name, init)
+        local init = eval_expr(node.init, env)
+        env:define(node.name, init)
     end
 end
 
-function eval_expr(expr, env)
-    local tag = expr.tag
+function eval_expr(node, env)
+    local tag = node.tag
 
     if tag == NT.INT then
-        return Int(expr.val)
+        return Int(node.val)
 
     elseif tag == NT.BOOL then
-        return Bool(expr.val)
+        return Bool(node.val)
 
     elseif tag == NT.STRING then
-        return String(expr.val)
+        return String(node.val)
 
     elseif tag == NT.GROUP then
-        return eval_expr(expr.expr, env)
+        return eval_expr(node.expr, env)
 
     elseif tag == NT.VAR then
-        return env:get(expr.name)
+        return env:get(node.name)
 
     elseif tag == NT.ASSIGN then
-        local value = eval_expr(expr.value, env)
-        env:set(expr.name, value)
+        local value = eval_expr(node.value, env)
+        env:set(node.name, value)
         return value
 
     elseif tag == NT.UNARY then
-        local r = eval_expr(expr.expr, env)
-        if expr.op == TT.MINUS then
+        local r = eval_expr(node.expr, env).val
+        if node.op == TT.MINUS then
             return Int(-r)
-        elseif expr.op == TT.NOT then
-            return Bool(not (r.tag == NT.BOOL and r.val) and r.tag ~= IT.INT or not r.val)
+        elseif node.op == TT.NOT then
+            return Bool(not r)
         end
 
     elseif tag == NT.BINARY then
-        local l = eval_expr(expr.left, env).val
-        local r = eval_expr(expr.right, env).val
-        local op = expr.op
+        local l = eval_expr(node.left, env).val
+        local r = eval_expr(node.right, env).val
+        local op = node.op
 
         if     op == TT.PLUS       then return Int(l + r)
         elseif op == TT.MINUS      then return Int(l - r)
@@ -93,10 +93,10 @@ function eval_expr(expr, env)
         end
 
     elseif tag == NT.CALL then
-        local callee = eval_expr(expr.callee, env)
+        local callee = eval_expr(node.callee, env)
 
         local args = {}
-        for _, arg in ipairs(expr.args) do
+        for _, arg in ipairs(node.args) do
             table.insert(args, eval_expr(arg, env))
         end
 

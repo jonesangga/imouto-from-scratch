@@ -1,5 +1,5 @@
 Int a = 2;
-println a;
+show a;
 
 Int b = 3;
-println a + b;
+show a + b;

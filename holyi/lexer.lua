@@ -1,29 +1,33 @@
 local TT = require("types").TT
 
 local keywords = {
-    ["else"]    = TT.ELSE,
-    ["false"]   = TT.FALSE,
-    ["for"]     = TT.FOR,
-    ["if"]      = TT.IF,
-    ["println"] = TT.PRINTLN,
-    ["true"]    = TT.TRUE,
-    ["while"]   = TT.WHILE,
+    ["else"]  = TT.ELSE,
+    ["false"] = TT.FALSE,
+    ["for"]   = TT.FOR,
+    ["if"]    = TT.IF,
+    ["show"]  = TT.SHOW,
+    ["true"]  = TT.TRUE,
+    ["while"] = TT.WHILE,
 }
 
+--[[ NOTE ]
+| Below 3 functions work because the argument is guaranteed to be a string.
+`--------------------------------------------------------------------------]]
+
 local function is_digit(c)
-    local b = (c or ""):byte()
-    return b and 48 <= b and b <= 57
+    local b = c:byte()
+    return b and 48 <= b and b <= 57  -- 0-9
 end
 
 local function is_alpha(c)
-    local b = (c or ""):byte()
-    return b and ((65 <= b and b <= 90)  -- A-Z
-           or (97 <= b and b <= 122)     -- a-z
-           or b == 95)                   -- underscore (_)
+    local b = c:byte()
+    return b and ((65 <= b and b <= 90)      -- A-Z
+                  or (97 <= b and b <= 122)  -- a-z
+                  or b == 95)                -- underscore (_)
 end
 
 local function is_upper(c)
-    local b = (c or ""):byte()
+    local b = c:byte()
     return b and 65 <= b and b <= 90  -- A-Z
 end
 
@@ -31,11 +35,17 @@ local function is_alnum(c)
     return is_alpha(c) or is_digit(c)
 end
 
+
+--[[ TODO ]
+| + Add line number to token.
+| + Support multiline comment.
+`-----------------------------]]
+
 local function lexer(src)
     local start   = 1
     local current = 1
     local length  = #src
-    local line    = 1
+    -- local line    = 1
     local tokens  = {}
 
     local function eof()       return current > length                                              end
@@ -52,14 +62,11 @@ local function lexer(src)
     end
 
     local function token(type)
-        table.insert(tokens, {type = type})
+        table.insert(tokens, { type = type })
     end
 
-    local function token_literal(type, literal)
-        table.insert(tokens, {
-            type = type,
-            val  = literal,
-        })
+    local function token_literal(type, val)
+        table.insert(tokens, { type = type, val  = val })
     end
 
     local function skip_whitespace()
@@ -68,7 +75,7 @@ local function lexer(src)
             if c == ' ' or c == '\t' or c == '\r' then
                 advance()
             elseif c == '\n' then
-                line = line + 1
+                -- line = line + 1
                 advance()
             elseif c == '/' then
                 if peek_next() == '/' then
@@ -154,7 +161,7 @@ local function lexer(src)
             advance()  -- Closing quote.
             token_literal(TT.STRING, s)
 
-        -- Keyword or identifier.
+        -- Keywords, types, and identifiers.
         elseif is_alpha(c) then
             while is_alnum(peek()) do
                 advance()
@@ -164,8 +171,11 @@ local function lexer(src)
             if is_upper(c) then
                 token_literal(TT.TYPE, s)
             else
-                -- TODO: Check again. For keywords it should use token()?
-                token_literal(keywords[s] or TT.IDENT, s)
+                if keywords[s] then
+                    token(keywords[s])
+                else
+                    token_literal(TT.IDENT, s)
+                end
             end
         end
     end

@@ -1,3 +1,13 @@
+local StrictMT = {
+    __index = function(t, k)
+        error("access to undefined key '" .. tostring(k) .. "'", 2)
+    end,
+
+    __newindex = function(t, k, v)
+        error("assign to undefined key '" .. tostring(k) .. "'", 2)
+    end,
+}
+
 -- Create enum with reverse lookup.
 local function Enum(list)
     local t = {}
@@ -5,7 +15,7 @@ local function Enum(list)
         t[name] = i
         t[i] = name
     end
-    return t
+    return setmetatable(t, StrictMT)
 end
 
 local TokenTypes = Enum{
@@ -14,22 +24,24 @@ local TokenTypes = Enum{
     "LPAREN", "RPAREN", "LBRACE", "RBRACE",
     "SEMICOLON", "COMMA", "DOT",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
-    "IDENT", "PRINTLN",
+    "IDENT", "SHOW",
     "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
     "WHILE", "FOR",
 }
 
 local NodeTags = Enum{
-    "PRINTLN", "EXPR_STMT", "BLOCK",
+    "SHOW", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "ASSIGN",
     "IF", "WHILE", "CALL",
 }
 
+-- TODO: Think a better name.
 local InternalTags = Enum{
     "INT", "BOOL", "STRING", "NULL", "ANY", "VOID", "FN",
 }
 
+-- These are fixed.
 -- TODO: Think again.
 local InternalTypes = {
     Int    = { tag = InternalTags.INT },
@@ -40,8 +52,17 @@ local InternalTypes = {
     Any    = { tag = InternalTags.ANY },
 }
 
-local function fntype(params, ret)
+local function FnType(params, ret)
     return { tag = InternalTags.FN, params = params, ret = ret }
+end
+
+local function assert_eq(a, b, msg)
+    if a.tag == InternalTags.ANY or b.tag == InternalTags.ANY then
+        return
+    end
+    if a.tag ~= b.tag then
+        error(msg or "type not match")
+    end
 end
 
 return {
@@ -49,5 +70,6 @@ return {
     NT = NodeTags,
     IT = InternalTypes,
     InternalTags = InternalTags,
-    fntype = fntype,
+    FnType = FnType,
+    assert_eq = assert_eq,
 }

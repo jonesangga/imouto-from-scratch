@@ -362,18 +362,19 @@ function inspect.inspect(root, options)
    return table.concat(inspector.buf)
 end
 
-local remove_metatables = function(item, path)
-    if path[#path] ~= inspect.METATABLE then return item end
-end
-
 setmetatable(inspect, {
-   __call = function(_, root)
-      return inspect.inspect(root, {process = remove_metatables})
-   end,
-
-   mt = function(root)
-      return inspect.inspect(root)
+   __call = function(_, root, options)
+      return inspect.inspect(root, options)
    end,
 })
 
-return inspect
+-- NOTE: Not original. My addition.
+local function my_inspect(root)
+    local remove_mt = function(item, path)
+        if path[#path] ~= inspect.METATABLE then return item end
+    end
+
+    print(inspect.inspect(root, {process = remove_mt}))
+end
+
+return my_inspect

@@ -1,5 +1,4 @@
 # HolyImouto
 
 Types must start with uppercase.
-Variable and function name must start with lowercase.
-Assignment is a statement.
+Identifiers must start with lowercase.

@@ -1,17 +1,18 @@
 local types = require("types")
 
-local IT = types.IT
+local IT, FnType = types.IT, types.FnType
 
 local procedures = {}
 
-procedures["print"] = {
-    arity = 1,
-    sig   = types.fntype({IT.Any}, IT.Void),
-
-    impl  = function(args, env)
-        print(args[1].val)
-        return nil
-    end,
+procedures["println"] = {
+    type  = FnType({IT.Any}, IT.Void),
+    data = {
+        arity = 1,
+        impl  = function(args, env)
+            print(args[1].val)
+            return nil
+        end,
+    }
 }
 
 return {

@@ -1,4 +1,4 @@
-print("real");
-print(123);
-print(true);
-print(10 * 20);
+println("real");
+println(123);
+println(true);
+println(10 * 20);

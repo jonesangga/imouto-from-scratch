@@ -1,10 +1,10 @@
-println true || false;
-println false || true;
-println true && false;
-println false && true;
+show true || false;
+show false || true;
+show true && false;
+show false && true;
 
-println (1 < 2) || false;
+show (1 < 2) || false;
 
-println (1 < 2) && false;
+show (1 < 2) && false;
 
-println (1 > 2) || (2 > 3);
+show (1 > 2) || (2 > 3);

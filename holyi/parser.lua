@@ -1,5 +1,4 @@
-local inspect = require("libraries/inspect")
-local types   = require("types")
+local types = require("types")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 
@@ -73,10 +72,12 @@ function Parser:vardecl()
     local vartype = self:prevv()
     self:consume(TT.IDENT, "expect variable name")
     local name = self:prevv()
+
     local init = nil
     if self:match(TT.EQ) then
         init = self:expr()
     end
+
     self:consume(TT.SEMICOLON, "expect ';' after var decl")
     return make(NT.VARDECL, {vartype = vartype, name = name, init = init})
 end
@@ -84,14 +85,19 @@ end
 function Parser:stmt()
     if self:match(TT.IF) then
         return self:if_stmt()
-    elseif self:match(TT.PRINTLN) then
-        return self:print_stmt()
+
+    elseif self:match(TT.SHOW) then
+        return self:show_stmt()
+
     elseif self:match(TT.FOR) then
         return self:for_stmt()
+
     elseif self:match(TT.WHILE) then
         return self:while_stmt()
+
     elseif self:match(TT.LBRACE) then
         return make(NT.BLOCK, {stmts = self:block()})
+
     else
         return self:expr_stmt()
     end
@@ -167,10 +173,10 @@ function Parser:while_stmt()
     return make(NT.WHILE, {cond = cond, body = body})
 end
 
-function Parser:print_stmt()
+function Parser:show_stmt()
     local expr = self:expr()
     self:consume(TT.SEMICOLON, "expect ';' after expr")
-    return make(NT.PRINTLN, {expr = expr})
+    return make(NT.SHOW, {expr = expr})
 end
 
 function Parser:block()

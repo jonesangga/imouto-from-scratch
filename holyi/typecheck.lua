@@ -2,14 +2,7 @@ local types = require("types")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 local InternalTags = types.InternalTags
-
--- TODO: Clean up.
-local function assert_eq(a, b, msg)
-    if a.tag == InternalTags.ANY or b.tag == InternalTags.ANY then return end
-    if a.tag ~= b.tag then
-        error(msg or "type not match")
-    end
-end
+local assert_eq = types.assert_eq
 
 local function check_expr(node, tenv)
     local t = node.tag
@@ -56,7 +49,7 @@ local function check_expr(node, tenv)
             assert_eq(rt, IT.Int)
             return IT.Int
         elseif op == TT.EQ_EQ or op == TT.NOT_EQ then
-            assert_eq(lt, rt)
+            assert_eq(lt, rt)  -- TODO: Do it have to be the same type?
             return IT.Bool
         elseif op == TT.LESS or op == TT.LESS_EQ or op == TT.GREATER or op == TT.GREATER_EQ then
             -- TODO: Support comparing string.
@@ -68,17 +61,17 @@ local function check_expr(node, tenv)
             assert_eq(rt, IT.Bool)
             return IT.Bool
         else
-            error("Unknown binop " .. op)
+            error("unknown binop " .. op)
         end
     else
-        error("Expr type not implemented: " .. tostring(t))
+        error("expr type not implemented: " .. tostring(t))
     end
 end
 
 local function check_stmt(node, tenv, ret_ty)
     local t = node.tag
 
-    if t == NT.PRINTLN then
+    if t == NT.SHOW then
         check_expr(node.expr, tenv)
 
     elseif t == NT.IF then
@@ -110,7 +103,7 @@ local function check_stmt(node, tenv, ret_ty)
         assert_eq(vartype, et)
         tenv:define(node.name, et)
     else
-        error("Stmt typecheck not implemented: " .. t)
+        error("stmt typecheck not implemented: " .. t)
     end
 end
 

@@ -1,41 +1,48 @@
-local lexer  = require("lexer")
-local parser = require("parser")
-local eval   = require("eval")
-local envir  = require("envir")
-local std    = require("std")
+-- Make it error to access undeclared variable.
+-- TODO: Make a check. Do this only if not used as module.
+do
+    local declared = {}  -- To handle assignment with nil.
+    setmetatable(_G, {
+        __newindex = function(t, k, v)
+            declared[k] = true
+            rawset(t, k, v)
+        end,
+
+        __index = function(t, k)
+            if not declared[k] then
+                error("undeclared variable '" .. k .. "'", 2)
+            end
+        end,
+    })
+end
+
+local lexer     = require("lexer")
+local parser    = require("parser")
 local typecheck = require("typecheck")
-local inspect = require("libraries/inspect")
-
--- local s = "print 1 + 2;"
-
--- local t = lexer(s)
--- print(inspect(t))
-
--- -- local p = parser.new(t)
--- local ast = parser(t)
-
--- print(inspect(ast))
-
--- local r = eval(ast, {})
--- print(inspect(r))
+local eval      = require("eval")
+local envir     = require("envir")
+local std       = require("std")
 
 local function run_file(path, env, tenv)
-    local file   = assert(io.open(path, "r"), "failed to open file")
+    local file = io.open(path, "r")
+    if not file then
+        error("failed to open file: " .. path)
+    end
+
     local tokens = lexer(file:read("*all"))
     file:close()
 
-    local ast  = parser(tokens)
+    local ast = parser(tokens)
     typecheck(ast, tenv)
-
-    local result = eval(ast, env)
+    eval(ast, env)
 end
 
 do
     local env, tenv = {}, {}
 
-    for name, data in pairs(std.procedures) do
-        env[name]  = { arity = data.arity, impl = data.impl }
-        tenv[name] = data.sig
+    for name, proc in pairs(std.procedures) do
+        env[name]  = proc.data
+        tenv[name] = proc.type
     end
 
     env, tenv = envir.new(env), envir.new(tenv)

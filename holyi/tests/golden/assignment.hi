@@ -1,7 +1,7 @@
 Int a = 2;
-println a;
+show a;
 
 a = 3;
-println a;
+show a;
 
-println a = 4;
+show a = 4;

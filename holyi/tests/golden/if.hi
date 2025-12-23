@@ -1,11 +1,11 @@
 if (1 < 2) {
-    println "yes";
+    show "yes";
 } else {
-    println "no";
+    show "no";
 }
 
 if (1 > 2) {
-    println "yes";
+    show "yes";
 } else {
-    println "no";
+    show "no";
 }
