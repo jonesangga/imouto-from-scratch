@@ -1,0 +1,5 @@
+Int double(Int n) {
+    return n * 2;
+}
+
+show double(10);

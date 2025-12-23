@@ -1,13 +1,14 @@
 local TT = require("types").TT
 
 local keywords = {
-    ["else"]  = TT.ELSE,
-    ["false"] = TT.FALSE,
-    ["for"]   = TT.FOR,
-    ["if"]    = TT.IF,
-    ["show"]  = TT.SHOW,
-    ["true"]  = TT.TRUE,
-    ["while"] = TT.WHILE,
+    ["else"]   = TT.ELSE,
+    ["false"]  = TT.FALSE,
+    ["for"]    = TT.FOR,
+    ["if"]     = TT.IF,
+    ["return"] = TT.RETURN,
+    ["show"]   = TT.SHOW,
+    ["true"]   = TT.TRUE,
+    ["while"]  = TT.WHILE,
 }
 
 --[[ NOTE ]

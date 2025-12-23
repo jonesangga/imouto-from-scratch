@@ -138,6 +138,9 @@ function Parser:stmt()
     elseif self:match(TT.SHOW) then
         return self:show_stmt()
 
+    elseif self:match(TT.RETURN) then
+        return self:return_stmt()
+
     elseif self:match(TT.FOR) then
         return self:for_stmt()
 
@@ -226,6 +229,15 @@ function Parser:show_stmt()
     local expr = self:expr()
     self:consume(TT.SEMICOLON, "expect ';' after expr")
     return make(NT.SHOW, {expr = expr})
+end
+
+function Parser:return_stmt()
+    local expr = nil
+    if not self:check(TT.SEMICOLON) then
+        expr = self:expr()
+    end
+    self:consume(TT.SEMICOLON, "expect ';' after return expr")
+    return make(NT.RETURN, {expr = expr})
 end
 
 function Parser:block()

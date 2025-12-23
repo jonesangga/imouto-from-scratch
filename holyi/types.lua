@@ -26,14 +26,14 @@ local TokenTypes = Enum{
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "SHOW",
     "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
-    "WHILE", "FOR",
+    "WHILE", "FOR", "RETURN",
 }
 
 local NodeTags = Enum{
     "SHOW", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "ASSIGN",
-    "IF", "WHILE", "CALL",
+    "IF", "WHILE", "CALL", "RETURN",
 }
 
 -- TODO: Think a better name.

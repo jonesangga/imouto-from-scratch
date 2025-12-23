@@ -6,6 +6,7 @@ local TT, NT, IT = types.TT, types.NT, types.IT
 local function Int(n)    return { type = IT.INT,    val = n } end
 local function Bool(b)   return { type = IT.BOOL,   val = b } end
 local function String(s) return { type = IT.STRING, val = s } end
+local function Null()    return { type = IT.NULL }            end
 
 function eval_stmt(node, env)
     local tag = node.tag
@@ -43,6 +44,10 @@ function eval_stmt(node, env)
     elseif tag == NT.FUNDECL then
         local fn = Function(node)
         env:define(node.name, fn)
+
+    elseif tag == NT.RETURN then
+        local val = node.expr and eval_expr(node.expr, env) or Null()
+        error({_return = val})
     end
 end
 
@@ -54,10 +59,22 @@ function Function(node)
         for i = 1, #node.params do
             localenv:define(node.params[i].name, args[i])
         end
-        for _, s in ipairs(node.body) do
-            eval_stmt(s, localenv)
+
+        local ok, ret = pcall(function()
+            for _, s in ipairs(node.body) do
+                eval_stmt(s, localenv)
+            end
+        end)
+
+        if not ok then
+            -- Check for return signal.
+            if type(ret) == "table" and ret._return ~= nil then
+                return ret._return
+            end
+            error(ret)
         end
-        return nil
+
+        return Null()
     end
 
     return { arity = arity, impl = impl }

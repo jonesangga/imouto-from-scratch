@@ -110,6 +110,14 @@ local function check_stmt(node, tenv, ret_ty)
         local et = check_expr(node.init, tenv)
         assert_eq(vartype, et)
         tenv:define(node.name, et)
+
+    elseif t == NT.RETURN then
+        local et = node.expr and check_expr(node.expr, tenv) or IT.Void
+        if ret_ty == nil then
+            error("return outside function")
+        end
+        assert_eq(et, ret_ty)
+
     else
         error("stmt typecheck not implemented: " .. t)
     end
@@ -123,7 +131,7 @@ local function typecheck(ast, tenv)
             for i = 1, #stmt.params do
                 ptypes[i] = IT[stmt.params[i].type]
             end
-            local fty = FnType(ptypes, stmt.rettype)
+            local fty = FnType(ptypes, IT[stmt.rettype])    -- TODO: Clean up.
             stmt.type = fty
             tenv:define(stmt.name, fty)
         end
