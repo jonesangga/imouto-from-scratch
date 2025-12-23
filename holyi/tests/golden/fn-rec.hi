@@ -1,0 +1,6 @@
+Int count(Int n) {
+    if (n > 1) count(n - 1);
+    show n;
+}
+
+count(3);

@@ -61,12 +61,61 @@ function Parser:parse()
 end
 
 function Parser:declaration()
-    if self:check(TT.TYPE) then
-        return self:vardecl()
+    if self:match(TT.TYPE) then  -- TODO: Should it use match() or check()?
+        return self:decl()
     end
     return self:stmt()
 end
 
+-- TODO: Refactor. Clean up.
+function Parser:decl()
+    local type = self:type()
+
+    self:consume(TT.IDENT, "expect variable name")
+    local name = self:prevv()
+
+    -- check if next is LParen
+    if self:match(TT.LPAREN) then
+        -- This is function declaration.
+        local params = {}
+        if not self:check(TT.RPAREN) then
+            repeat
+                if #params > 10 then
+                    error("too much param")
+                end
+
+                self:consume(TT.TYPE, "expect param type")
+                local t = self:type()
+                self:consume(TT.IDENT, "expect param name")
+                local n = self:prevv()
+
+                table.insert(params, {type = t, name = n})
+            until not self:match(TT.COMMA)
+        end
+
+        self:consume(TT.RPAREN, "expect ')' after arg list")
+        self:consume(TT.LBRACE, "expect '{' after function body")
+        local body = self:block()
+        return make(NT.FUNDECL, {rettype = type, name = name, params = params, body = body})
+    else
+        -- This is variable declaration.
+        local init = nil
+        if self:match(TT.EQ) then
+            init = self:expr()
+        end
+
+        self:consume(TT.SEMICOLON, "expect ';' after var decl")
+        return make(NT.VARDECL, {vartype = type, name = name, init = init})
+    end
+end
+
+-- TODO: Fix this. Rename. Support union. Should consume the type here?
+function Parser:type()
+    local type = self:prevv()
+    return type
+end
+
+-- TODO: This is only used by init statement in for loop. Refactor.
 function Parser:vardecl()
     self:advance()
     local vartype = self:prevv()
@@ -124,7 +173,7 @@ function Parser:for_stmt()
     if self:match(TT.SEMICOLON) then
         init = nil
     elseif self:check(TT.TYPE) then
-        init = self:vardecl()
+        init = self:vardecl()  -- TODO: Think again.
     else
         init = self:expr_stmt()
     end

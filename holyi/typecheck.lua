@@ -1,8 +1,10 @@
+local inspect = require("libraries/inspect")
 local types = require("types")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 local InternalTags = types.InternalTags
 local assert_eq = types.assert_eq
+local FnType = types.FnType
 
 local function check_expr(node, tenv)
     local t = node.tag
@@ -47,7 +49,7 @@ local function check_expr(node, tenv)
         if op == TT.PLUS or op == TT.MINUS or op == TT.STAR or op == TT.SLASH then
             assert_eq(lt, IT.Int)
             assert_eq(rt, IT.Int)
-            return IT.Int
+            return lt
         elseif op == TT.EQ_EQ or op == TT.NOT_EQ then
             assert_eq(lt, rt)  -- TODO: Do it have to be the same type?
             return IT.Bool
@@ -59,7 +61,7 @@ local function check_expr(node, tenv)
         elseif op == TT.AMP2 or op == TT.PIPE2 then
             assert_eq(lt, IT.Bool)
             assert_eq(rt, IT.Bool)
-            return IT.Bool
+            return lt
         elseif op == TT.DOT2 then
             assert_eq(lt, IT.String)
             assert_eq(rt, IT.String)
@@ -73,6 +75,7 @@ local function check_expr(node, tenv)
 end
 
 local function check_stmt(node, tenv, ret_ty)
+    -- inspect(node)
     local t = node.tag
 
     if t == NT.SHOW then
@@ -101,6 +104,7 @@ local function check_stmt(node, tenv, ret_ty)
             check_stmt(s, localenv, ret_ty)
         end
 
+    -- TODO: Support non builtins type.
     elseif t == NT.VARDECL then
         local vartype = IT[node.vartype]
         local et = check_expr(node.init, tenv)
@@ -112,8 +116,33 @@ local function check_stmt(node, tenv, ret_ty)
 end
 
 local function typecheck(ast, tenv)
+    -- Register function signatures.
     for _, stmt in ipairs(ast) do
-        check_stmt(stmt, tenv, nil)
+        if stmt.tag == NT.FUNDECL then
+            local ptypes = {}
+            for i = 1, #stmt.params do
+                ptypes[i] = IT[stmt.params[i].type]
+            end
+            local fty = FnType(ptypes, stmt.rettype)
+            stmt.type = fty
+            tenv:define(stmt.name, fty)
+        end
+    end
+
+    -- Typecheck function bodies and annotate nodes.
+    for _, stmt in ipairs(ast) do
+        if stmt.tag == NT.FUNDECL then
+            local fty = stmt.type
+            local localenv = tenv:branch()
+            for i, p in ipairs(stmt.params) do
+                localenv:define(p.name, fty.params[i])
+            end
+            for _, s in ipairs(stmt.body) do
+                check_stmt(s, localenv, fty.ret)
+            end
+        else
+            check_stmt(stmt, tenv, nil)
+        end
     end
 end
 

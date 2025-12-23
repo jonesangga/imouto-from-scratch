@@ -1,0 +1,5 @@
+Int sayhi(String first, String last) {
+    show "Hi, " .. first .. " " .. last .. "!";
+}
+
+sayhi("Dear", "Reader");

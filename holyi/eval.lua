@@ -1,4 +1,5 @@
 local types = require("types")
+local inspect = require("libraries/inspect")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
 
@@ -38,7 +39,28 @@ function eval_stmt(node, env)
     elseif tag == NT.VARDECL then
         local init = eval_expr(node.init, env)
         env:define(node.name, init)
+
+    elseif tag == NT.FUNDECL then
+        local fn = Function(node)
+        env:define(node.name, fn)
     end
+end
+
+-- TODO: Fix return value in impl.
+function Function(node)
+    local arity = #node.params
+    local impl = function(args, env)
+        local localenv = env:branch()
+        for i = 1, #node.params do
+            localenv:define(node.params[i].name, args[i])
+        end
+        for _, s in ipairs(node.body) do
+            eval_stmt(s, localenv)
+        end
+        return nil
+    end
+
+    return { arity = arity, impl = impl }
 end
 
 function eval_expr(node, env)
@@ -95,13 +117,15 @@ function eval_expr(node, env)
 
     elseif tag == NT.CALL then
         local callee = eval_expr(node.callee, env)
+        -- inspect(callee)
 
         local args = {}
         for _, arg in ipairs(node.args) do
             table.insert(args, eval_expr(arg, env))
         end
+        -- inspect(args)
 
-        callee.impl(args, env)
+        return callee.impl(args, env)
     end
 end
 
