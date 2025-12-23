@@ -1,0 +1,3 @@
+Int f(String) {
+    show name;
+}

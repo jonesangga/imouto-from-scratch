@@ -19,6 +19,12 @@ local function LexerError(msg)
     error(e, 0)
 end
 
+local function ParserError(msg)
+    local e = Error.new("ParserError", msg)
+    error(e, 0)
+end
+
 return {
-    LexerError = LexerError,
+    LexerError  = LexerError,
+    ParserError = ParserError,
 }

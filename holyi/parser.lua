@@ -1,3 +1,4 @@
+local ParserError = require("error").ParserError
 local types = require("types")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
@@ -48,7 +49,7 @@ function Parser:consume(type, msg)
         self:advance()
         return
     end
-    error(msg)
+    ParserError(msg)
 end
 
 
@@ -71,7 +72,7 @@ end
 function Parser:decl()
     local type = self:type()
 
-    self:consume(TT.IDENT, "expect variable name")
+    self:consume(TT.IDENT, "expect identifier")
     local name = self:prevv()
 
     -- check if next is LParen

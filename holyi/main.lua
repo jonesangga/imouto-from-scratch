@@ -38,9 +38,14 @@ local function run_file(path, env, tenv)
         return;
     end
 
-    local ast = parser(lexer_result)
-    typecheck(ast, tenv)
-    eval(ast, env)
+    local ok, parser_result = pcall(function() return parser(lexer_result) end)
+    if not ok then
+        print(parser_result)
+        return;
+    end
+
+    typecheck(parser_result, tenv)
+    eval(parser_result, env)
 end
 
 do
