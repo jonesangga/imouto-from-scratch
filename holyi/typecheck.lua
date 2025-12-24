@@ -123,12 +123,38 @@ local function check_stmt(node, tenv, ret_ty)
     end
 end
 
+-- TODO: Think how to do it by just passing a stmt, not a table.
+-- TODO: How to pass specific error like in if stmt? Should it be the first fallthrough?
 function analyze_stmt_list(stmt_list, tenv, returns)
     for i, stmt in ipairs(stmt_list) do
         if stmt.tag == NT.RETURN then
             local et = stmt.expr and check_expr(stmt.expr, tenv) or IT.Void
             table.insert(returns, et)
             return true
+        end
+
+        if stmt.tag == NT.IF then
+            local ct = check_expr(stmt.cond, tenv)
+            assert_eq(ct, IT.Bool, "if condition not bool")
+
+            local then_returns = analyze_stmt_list({stmt.then_}, tenv, returns)
+            if stmt.else_ then
+                else_returns = analyze_stmt_list({stmt.else_}, tenv, returns)
+                if then_returns and else_returns then
+                    return true
+                end
+            end
+            -- Fallthrough.
+
+        elseif stmt.tag == NT.BLOCK then
+            local localenv = tenv:branch()
+            local block_returns = analyze_stmt_list(node.stmts, localenv, returns)
+            if block_returns then
+                return true
+            end
+
+        elseif stmt.tag == NT.EXPR_STMT then
+            check_expr(stmt.expr, tenv)
         end
     end
 

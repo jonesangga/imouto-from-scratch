@@ -1,0 +1,11 @@
+String tell(String first, String last, Int age) {
+    String desc = "";
+    if (age >= 20)
+        desc = "adult";
+    else
+        desc = "kid";
+
+    return first .. " " .. last .. " is " .. desc;
+}
+
+show tell("John", "Monad", 15);

@@ -1,0 +1,7 @@
+String tell(String first, String last, Int age) {
+    String desc = "";
+    if (age >= 20)
+        desc = "adult";
+    else
+        desc = "kid";
+}

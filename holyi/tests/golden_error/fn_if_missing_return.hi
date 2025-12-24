@@ -1,0 +1,6 @@
+Bool is_zero(Int n) {
+    if (n == 0)
+        show true;
+    else
+        return false;
+}
