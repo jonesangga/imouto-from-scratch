@@ -32,19 +32,19 @@ local function run_file(path, env, tenv)
     local src = file:read("*all")
     file:close()
 
-    local ok, lexer_result = pcall(function() return lexer(src) end)
+    local ok, lexer_result = pcall(lexer, src)
     if not ok then
         print(lexer_result)
         return;
     end
 
-    local ok, parser_result = pcall(function() return parser(lexer_result) end)
+    local ok, parser_result = pcall(parser, lexer_result)
     if not ok then
         print(parser_result)
         return;
     end
 
-    local ok, err = pcall(function() return typecheck(parser_result, tenv) end)
+    local ok, err = pcall(typecheck, parser_result, tenv)
     if not ok then
         print(err)
         return;
