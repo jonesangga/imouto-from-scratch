@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 interpreter="lua main.lua"
-golden_dir="tests/golden"
+golden_dir="$1"
 fail=0
 
 for in_file in "$golden_dir"/*.hi; do
