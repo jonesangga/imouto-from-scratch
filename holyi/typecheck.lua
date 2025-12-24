@@ -1,3 +1,4 @@
+local TypeCheckError = require("error").TypeCheckError
 local inspect = require("libraries/inspect")
 local types = require("types")
 
@@ -151,8 +152,10 @@ local function check_function_returns(stmt, tenv)
     local always = analyze_stmt_list(stmt.body, localenv, returns)
 
     if not always then
-        -- Either the fn must have Void type or error.
-        assert_eq(fty.ret, IT.Void, "fn ret type should be Void")
+        -- NOTE: Not necessary an error if the return type is Void.
+        if fty.ret.tag ~= InternalTags.VOID then
+            TypeCheckError("function may not return")
+        end
     end
 
     for _, type in ipairs(returns) do

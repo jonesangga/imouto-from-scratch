@@ -24,7 +24,13 @@ local function ParserError(msg)
     error(e, 0)
 end
 
+local function TypeCheckError(msg)
+    local e = Error.new("TypeCheckError", msg)
+    error(e, 0)
+end
+
 return {
-    LexerError  = LexerError,
-    ParserError = ParserError,
+    LexerError     = LexerError,
+    ParserError    = ParserError,
+    TypeCheckError = TypeCheckError,
 }

@@ -44,7 +44,12 @@ local function run_file(path, env, tenv)
         return;
     end
 
-    typecheck(parser_result, tenv)
+    local ok, err = pcall(function() return typecheck(parser_result, tenv) end)
+    if not ok then
+        print(err)
+        return;
+    end
+
     eval(parser_result, env)
 end
 
