@@ -150,7 +150,7 @@ local function lexer(src)
                     break
                 end
                 if eof() or next == '\n' then
-                    LexerError("unterminated string")
+                    LexerError("unterminated string", line)
                 end
 
                 local d = advance()
@@ -162,7 +162,7 @@ local function lexer(src)
                     elseif e == 't'  then s = s .. '\t'
                     elseif e == '"'  then s = s .. '"'
                     elseif e == '\\' then s = s .. '\\'
-                    else                  LexerError("invalid escape sequence")
+                    else                  LexerError("invalid escape sequence", line)
                     end
                 else
                     s = s .. d
