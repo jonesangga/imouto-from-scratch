@@ -39,7 +39,6 @@ end
 
 
 --[[ TODO ]
-| + Add line number to token.
 | + Support multiline comment.
 `-----------------------------]]
 
@@ -47,7 +46,7 @@ local function lexer(src)
     local start   = 1
     local current = 1
     local length  = #src
-    -- local line    = 1
+    local line    = 1
     local tokens  = {}
 
     local function eof()       return current > length                                              end
@@ -64,11 +63,11 @@ local function lexer(src)
     end
 
     local function token(type)
-        table.insert(tokens, { type = type })
+        table.insert(tokens, { type = type, line = line })
     end
 
     local function token_literal(type, val)
-        table.insert(tokens, { type = type, val  = val })
+        table.insert(tokens, { type = type, val  = val, line = line })
     end
 
     local function skip_whitespace()
@@ -77,7 +76,7 @@ local function lexer(src)
             if c == ' ' or c == '\t' or c == '\r' then
                 advance()
             elseif c == '\n' then
-                -- line = line + 1
+                line = line + 1
                 advance()
             elseif c == '/' then
                 if peek_next() == '/' then
