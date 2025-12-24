@@ -141,26 +141,35 @@ local function lexer(src)
             -- end
             token_literal(TT.INT, tonumber(src:sub(start, current - 1)))
 
-        -- String type.
+        -- String literal. Doesn't support multiline string.
         elseif c == '"' then
             local s = ""
-            while not eof() and peek() ~= '"' do
+            local next = peek()
+
+            while true do
+                if next == '"' then
+                    break
+                end
+                if eof() or next == '\n' then
+                    LexerError("unterminated string")
+                end
+
                 local d = advance()
                 if d == '\\' then
+                    -- Got escape sequences.
                     local e = advance()
-                    if e == 'n' then s = s .. '\n'
-                    elseif e == 't' then s = s .. '\t'
-                    elseif e == '"' then s = s .. '"'
+
+                    if     e == 'n'  then s = s .. '\n'
+                    elseif e == 't'  then s = s .. '\t'
+                    elseif e == '"'  then s = s .. '"'
                     elseif e == '\\' then s = s .. '\\'
-                    else s = s .. e  -- Implementation defined.
+                    else                  LexerError("invalid escape sequence")
                     end
                 else
                     s = s .. d
                 end
-            end
 
-            if eof() then
-                LexerError("unterminated string")
+                next = peek()
             end
 
             advance()  -- Closing quote.
