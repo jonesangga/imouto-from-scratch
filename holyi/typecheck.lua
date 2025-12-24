@@ -75,7 +75,6 @@ local function check_expr(node, tenv)
 end
 
 local function check_stmt(node, tenv, ret_ty)
-    -- inspect(node)
     local t = node.tag
 
     if t == NT.SHOW then
@@ -123,15 +122,53 @@ local function check_stmt(node, tenv, ret_ty)
     end
 end
 
+function analyze_stmt_list(stmt_list, tenv, returns)
+    for i, stmt in ipairs(stmt_list) do
+        if stmt.tag == NT.RETURN then
+            local et = stmt.expr and check_expr(stmt.expr, tenv) or IT.Void
+            table.insert(returns, et)
+            return true
+        end
+    end
+
+    return false
+end
+
+-- TODO: Clean up. Rename.
+local function check_function_returns(stmt, tenv)
+    local fty = stmt.type
+    local localenv = tenv:branch()
+    for i, p in ipairs(stmt.params) do
+        localenv:define(p.name, fty.params[i])
+    end
+
+    for _, s in ipairs(stmt.body) do
+        check_stmt(s, localenv, fty.ret)
+    end
+
+    -- Collect returns while typechecking body.
+    local returns = {}
+    local always = analyze_stmt_list(stmt.body, localenv, returns)
+
+    if not always then
+        -- Either the fn must have Void type or error.
+        assert_eq(fty.ret, IT.Void, "fn ret type should be Void")
+    end
+
+    for _, type in ipairs(returns) do
+        assert_eq(type, fty.ret)
+    end
+end
+
 local function typecheck(ast, tenv)
     -- Register function signatures.
     for _, stmt in ipairs(ast) do
         if stmt.tag == NT.FUNDECL then
-            local ptypes = {}
+            local param_types = {}
             for i = 1, #stmt.params do
-                ptypes[i] = IT[stmt.params[i].type]
+                param_types[i] = IT[stmt.params[i].type]
             end
-            local fty = FnType(ptypes, IT[stmt.rettype])    -- TODO: Clean up.
+            local fty = FnType(param_types, IT[stmt.rettype])    -- TODO: Clean up.
             stmt.type = fty
             tenv:define(stmt.name, fty)
         end
@@ -140,14 +177,7 @@ local function typecheck(ast, tenv)
     -- Typecheck function bodies and annotate nodes.
     for _, stmt in ipairs(ast) do
         if stmt.tag == NT.FUNDECL then
-            local fty = stmt.type
-            local localenv = tenv:branch()
-            for i, p in ipairs(stmt.params) do
-                localenv:define(p.name, fty.params[i])
-            end
-            for _, s in ipairs(stmt.body) do
-                check_stmt(s, localenv, fty.ret)
-            end
+            check_function_returns(stmt, tenv)
         else
             check_stmt(stmt, tenv, nil)
         end

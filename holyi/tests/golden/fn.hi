@@ -1,4 +1,4 @@
-Int double(Int n) {
+Void double(Int n) {
     show n * 2;
 }
 
@@ -6,7 +6,7 @@ double(3);
 double(10);
 
 Int add(Int a, Int b, Int c) {
-    show a + b + c;
+    return a + b + c;
 }
 
-add(1, 2, 3);
+show add(1, 2, 3);

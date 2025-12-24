@@ -1,4 +1,4 @@
-Int count(Int n) {
+Void count(Int n) {
     if (n > 1) count(n - 1);
     show n;
 }
