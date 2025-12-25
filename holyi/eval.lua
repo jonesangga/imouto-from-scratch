@@ -2,12 +2,7 @@ local types = require("types")
 local inspect = require("libraries/inspect")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
-
--- TODO: The types are wrong.
-local function Int(n)    return { type = IT.INT,    val = n } end
-local function Bool(b)   return { type = IT.BOOL,   val = b } end
-local function String(s) return { type = IT.STRING, val = s } end
-local function Null()    return { type = IT.NULL }            end
+local Int, Bool, String, Null = types.Int, types.Bool, types.String, types.Null
 
 function eval_stmt(node, env)
     local tag = node.tag

@@ -1,0 +1,9 @@
+String s = itos(123);
+show s;
+
+String t = itos(456);
+show t;
+
+show s .. " .. " .. t .. " = " ..  s .. t;
+
+

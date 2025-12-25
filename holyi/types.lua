@@ -65,6 +65,12 @@ local function assert_eq(a, b, msg)
     end
 end
 
+-- Value constructor.
+local function Int(n)    return { type = InternalTags.INT,    val = n } end
+local function Bool(b)   return { type = InternalTags.BOOL,   val = b } end
+local function String(s) return { type = InternalTags.STRING, val = s } end
+local function Null()    return { type = InternalTags.NULL }            end
+
 return {
     TT = TokenTypes,
     NT = NodeTags,
@@ -72,4 +78,8 @@ return {
     InternalTags = InternalTags,
     FnType = FnType,
     assert_eq = assert_eq,
+    Int = Int,
+    Bool = Bool,
+    String = String,
+    Null = Null,
 }
