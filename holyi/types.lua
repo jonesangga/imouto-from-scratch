@@ -1,3 +1,5 @@
+local TypeCheckError = require("error").TypeCheckError
+
 local StrictMT = {
     __index = function(t, k)
         error("access to undefined key '" .. tostring(k) .. "'", 2)
@@ -61,7 +63,7 @@ local function assert_eq(a, b, msg)
         return
     end
     if a.tag ~= b.tag then
-        error(msg or "type not match")
+        TypeCheckError(msg .. ", expect " .. InternalTags[b.tag] .. " got " .. InternalTags[a.tag])
     end
 end
 
