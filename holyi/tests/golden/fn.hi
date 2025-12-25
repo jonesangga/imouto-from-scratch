@@ -1,4 +1,4 @@
-Void double(Int n) {
+Unit double(Int n) {
     show n * 2;
 }
 

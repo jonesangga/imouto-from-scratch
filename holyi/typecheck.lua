@@ -112,7 +112,7 @@ local function check_stmt(node, tenv, ret_ty)
         tenv:define(node.name, et)
 
     elseif t == NT.RETURN then
-        local et = node.expr and check_expr(node.expr, tenv) or IT.Void
+        local et = node.expr and check_expr(node.expr, tenv) or IT.Unit
         if ret_ty == nil then
             error("return outside function")
         end
@@ -128,7 +128,7 @@ end
 function analyze_stmt_list(stmt_list, tenv, returns)
     for i, stmt in ipairs(stmt_list) do
         if stmt.tag == NT.RETURN then
-            local et = stmt.expr and check_expr(stmt.expr, tenv) or IT.Void
+            local et = stmt.expr and check_expr(stmt.expr, tenv) or IT.Unit
             table.insert(returns, et)
             return true
         end
@@ -192,8 +192,8 @@ local function check_function_returns(stmt, tenv)
     local always = analyze_stmt_list(stmt.body, localenv, returns)
 
     if not always then
-        -- NOTE: Not necessary an error if the return type is Void.
-        if fty.ret.tag ~= InternalTags.VOID then
+        -- NOTE: Not necessary an error if the return type is Unit.
+        if fty.ret.tag ~= InternalTags.UNIT then
             TypeCheckError("function may not return")
         end
     end

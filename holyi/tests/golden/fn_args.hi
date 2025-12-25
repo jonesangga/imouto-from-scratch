@@ -1,4 +1,4 @@
-Void sayhi(String first, String last) {
+Unit sayhi(String first, String last) {
     show "Hi, " .. first .. " " .. last .. "!";
 }
 

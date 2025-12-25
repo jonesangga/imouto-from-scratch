@@ -40,7 +40,7 @@ local NodeTags = Enum{
 
 -- TODO: Think a better name.
 local InternalTags = Enum{
-    "INT", "BOOL", "STRING", "NULL", "ANY", "VOID", "FN",
+    "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN",
 }
 
 -- These are fixed. These are indexed to get the type in vardecl.
@@ -50,7 +50,7 @@ local InternalTypes = {
     Bool   = { tag = InternalTags.BOOL },
     String = { tag = InternalTags.STRING },
     Null   = { tag = InternalTags.NULL },
-    Void   = { tag = InternalTags.VOID },
+    Unit   = { tag = InternalTags.UNIT },
     Any    = { tag = InternalTags.ANY },
 }
 
@@ -68,10 +68,11 @@ local function assert_eq(a, b, msg)
 end
 
 -- Value constructor.
-local function Int(n)    return { type = InternalTags.INT,    val = n } end
-local function Bool(b)   return { type = InternalTags.BOOL,   val = b } end
-local function String(s) return { type = InternalTags.STRING, val = s } end
-local function Null()    return { type = InternalTags.NULL }            end
+local function Int(n)    return { type = InternalTags.INT,    val = n }    end
+local function Bool(b)   return { type = InternalTags.BOOL,   val = b }    end
+local function String(s) return { type = InternalTags.STRING, val = s }    end
+local function Unit()    return { type = InternalTags.UNIT,   val = "()" } end
+local function Null()    return { type = InternalTags.NULL }               end
 
 return {
     TT = TokenTypes,
@@ -84,4 +85,5 @@ return {
     Bool = Bool,
     String = String,
     Null = Null,
+    Unit = Unit,
 }

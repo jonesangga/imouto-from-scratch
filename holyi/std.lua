@@ -6,7 +6,7 @@ local Int, Bool, String, Null = types.Int, types.Bool, types.String, types.Null
 local procedures = {}
 
 procedures["println"] = {
-    type  = FnType({IT.Any}, IT.Void),
+    type  = FnType({IT.Any}, IT.Unit),
     data = {
         arity = 1,
         impl  = function(args, env)
