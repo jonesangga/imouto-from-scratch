@@ -1,7 +1,7 @@
 local types = require("types")
 
 local IT, FnType = types.IT, types.FnType
-local Int, Bool, String, Null = types.Int, types.Bool, types.String, types.Null
+local Int, Bool, String, Null, Unit = types.Int, types.Bool, types.String, types.Null, types.Unit
 
 local procedures = {}
 
@@ -11,7 +11,7 @@ procedures["println"] = {
         arity = 1,
         impl  = function(args, env)
             print(args[1].val)
-            return nil
+            return Unit()
         end,
     }
 }
