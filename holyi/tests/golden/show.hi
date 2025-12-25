@@ -2,6 +2,7 @@ show 123;
 show true;
 show false;
 show "real";
+show ();
 
 show 10 + 20;
 show 10 - 20;
@@ -15,6 +16,9 @@ show 1 >= 2;
 
 show 1 == 1;
 show 1 != 1;
+
+show () == ();
+show () == "()";
 
 show 1 + 2 * 3;
 show (1 + 2) * 3;

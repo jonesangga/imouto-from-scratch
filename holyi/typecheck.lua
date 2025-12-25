@@ -10,7 +10,7 @@ local FnType = types.FnType
 local function check_expr(node, tenv)
     local t = node.tag
 
-    if t == NT.INT or t == NT.BOOL or t == NT.STRING then
+    if t == NT.INT or t == NT.BOOL or t == NT.STRING or t == NT.UNIT then
         return node.type
 
     elseif t == NT.VAR then
@@ -52,7 +52,6 @@ local function check_expr(node, tenv)
             assert_eq(rt, IT.Int)
             return lt
         elseif op == TT.EQ_EQ or op == TT.NOT_EQ then
-            assert_eq(lt, rt)  -- TODO: Do it have to be the same type?
             return IT.Bool
         elseif op == TT.LESS or op == TT.LESS_EQ or op == TT.GREATER or op == TT.GREATER_EQ then
             -- TODO: Support comparing string.

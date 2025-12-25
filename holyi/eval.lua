@@ -2,7 +2,7 @@ local types = require("types")
 local inspect = require("libraries/inspect")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
-local Int, Bool, String, Null = types.Int, types.Bool, types.String, types.Null
+local Int, Bool, String, Null, Unit = types.Int, types.Bool, types.String, types.Null, types.Unit
 
 function eval_stmt(node, env)
     local tag = node.tag
@@ -88,6 +88,9 @@ function eval_expr(node, env)
     elseif tag == NT.STRING then
         return String(node.val)
 
+    elseif tag == NT.UNIT then
+        return Unit()
+
     elseif tag == NT.GROUP then
         return eval_expr(node.expr, env)
 
@@ -108,24 +111,24 @@ function eval_expr(node, env)
         end
 
     elseif tag == NT.BINARY then
-        local l = eval_expr(node.left, env).val
-        local r = eval_expr(node.right, env).val
+        local l = eval_expr(node.left, env)
+        local r = eval_expr(node.right, env)
         local op = node.op
 
-        if     op == TT.PLUS       then return Int(l + r)
-        elseif op == TT.MINUS      then return Int(l - r)
-        elseif op == TT.STAR       then return Int(l * r)
-        elseif op == TT.SLASH      then return Int(math.floor(l / r))
+        if     op == TT.PLUS       then return Int(l.val + r.val)
+        elseif op == TT.MINUS      then return Int(l.val - r.val)
+        elseif op == TT.STAR       then return Int(l.val * r.val)
+        elseif op == TT.SLASH      then return Int(math.floor(l.val / r.val))
         -- elseif op == "%"           then return Int(l % r)
-        elseif op == TT.EQ_EQ      then return Bool(l == r)
-        elseif op == TT.NOT_EQ     then return Bool(l ~= r)
-        elseif op == TT.LESS       then return Bool(l < r)
-        elseif op == TT.GREATER    then return Bool(l > r)
-        elseif op == TT.LESS_EQ    then return Bool(l <= r)
-        elseif op == TT.GREATER_EQ then return Bool(l >= r)
-        elseif op == TT.AMP2       then return Bool(l and r)
-        elseif op == TT.PIPE2      then return Bool(l or r)
-        elseif op == TT.DOT2       then return String(l .. r)
+        elseif op == TT.EQ_EQ      then return Bool(l.type == r.type and l.val == r.val)
+        elseif op == TT.NOT_EQ     then return Bool(l.type == r.type and l.val ~= r.val)
+        elseif op == TT.LESS       then return Bool(l.val < r.val)
+        elseif op == TT.GREATER    then return Bool(l.val > r.val)
+        elseif op == TT.LESS_EQ    then return Bool(l.val <= r.val)
+        elseif op == TT.GREATER_EQ then return Bool(l.val >= r.val)
+        elseif op == TT.AMP2       then return Bool(l.val and r.val)
+        elseif op == TT.PIPE2      then return Bool(l.val or r.val)
+        elseif op == TT.DOT2       then return String(l.val .. r.val)
         end
 
     elseif tag == NT.CALL then

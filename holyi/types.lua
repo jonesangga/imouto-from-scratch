@@ -23,7 +23,7 @@ end
 local TokenTypes = Enum{
     "TYPE", "INT", "STRING", "TRUE", "FALSE", "NULL",
     "PLUS", "MINUS", "STAR", "SLASH",
-    "LPAREN", "RPAREN", "LBRACE", "RBRACE",
+    "LPAREN", "RPAREN", "LRPAREN", "LBRACE", "RBRACE",
     "SEMICOLON", "COMMA", "DOT", "DOT2",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "SHOW",
@@ -33,7 +33,7 @@ local TokenTypes = Enum{
 
 local NodeTags = Enum{
     "SHOW", "EXPR_STMT", "BLOCK",
-    "INT", "BOOL", "STRING", "NULL",
+    "INT", "BOOL", "STRING", "NULL", "UNIT",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "ASSIGN",
     "IF", "WHILE", "CALL", "RETURN",
 }

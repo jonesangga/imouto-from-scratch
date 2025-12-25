@@ -93,7 +93,6 @@ local function lexer(src)
     end
 
     local ops = {}
-    ops["("] = function() token(TT.LPAREN) end
     ops[")"] = function() token(TT.RPAREN) end
     ops["{"] = function() token(TT.LBRACE) end
     ops["}"] = function() token(TT.RBRACE) end
@@ -103,6 +102,7 @@ local function lexer(src)
     ops["-"] = function() token(TT.MINUS) end
     ops["*"] = function() token(TT.STAR) end
     ops["/"] = function() token(TT.SLASH) end
+    ops["("] = function() token(match(')') and TT.LRPAREN    or TT.LPAREN) end
     ops["."] = function() token(match('.') and TT.DOT2       or TT.DOT) end
     ops["="] = function() token(match('=') and TT.EQ_EQ      or TT.EQ) end
     ops["!"] = function() token(match('=') and TT.NOT_EQ     or TT.NOT) end

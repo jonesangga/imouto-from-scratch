@@ -20,3 +20,6 @@ String s2 = "real";
 show s2;
 
 show s1 .. s2;
+
+Unit u = ();
+show u;
