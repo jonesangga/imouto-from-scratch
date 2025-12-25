@@ -1,7 +1,7 @@
 local ParserError = require("error").ParserError
 local types = require("types")
 
-local TT, NT, IT = types.TT, types.NT, types.IT
+local TT, NT, primitives = types.TT, types.NT, types.primitives
 
 local function make(tag, props)
     props = props or {}
@@ -204,7 +204,7 @@ function Parser:for_stmt()
     end
 
     if cond == nil then
-        cond = make(NT.BOOL, {type = IT.Bool, val = true})
+        cond = make(NT.BOOL, {type = primitives.Bool, val = true})
     end
     body = make(NT.WHILE, {cond = cond, body = body})
 
@@ -390,12 +390,12 @@ function Parser:finish_call(callee)
 end
 
 function Parser:primary()
-    if self:match(TT.FALSE)   then return make(NT.BOOL,   {type = IT.Bool,   val = false})        end
-    if self:match(TT.TRUE)    then return make(NT.BOOL,   {type = IT.Bool,   val = true})         end
-    if self:match(TT.NULL)    then return make(NT.NULL,   {type = IT.Null})                       end
-    if self:match(TT.INT)     then return make(NT.INT,    {type = IT.Int,    val = self:prevv()}) end
-    if self:match(TT.STRING)  then return make(NT.STRING, {type = IT.String, val = self:prevv()}) end
-    if self:match(TT.LRPAREN) then return make(NT.UNIT,   {type = IT.Unit})                       end
+    if self:match(TT.FALSE)   then return make(NT.BOOL,   {type = primitives.Bool,   val = false})        end
+    if self:match(TT.TRUE)    then return make(NT.BOOL,   {type = primitives.Bool,   val = true})         end
+    if self:match(TT.NULL)    then return make(NT.NULL,   {type = primitives.Null})                       end
+    if self:match(TT.INT)     then return make(NT.INT,    {type = primitives.Int,    val = self:prevv()}) end
+    if self:match(TT.STRING)  then return make(NT.STRING, {type = primitives.String, val = self:prevv()}) end
+    if self:match(TT.LRPAREN) then return make(NT.UNIT,   {type = primitives.Unit})                       end
 
     if self:match(TT.IDENT) then
         return make(NT.VAR, {name = self:prevv()})

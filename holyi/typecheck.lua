@@ -2,7 +2,7 @@ local TypeCheckError = require("error").TypeCheckError
 local inspect = require("libraries/inspect")
 local types = require("types")
 
-local TT, NT, IT = types.TT, types.NT, types.IT
+local TT, NT, primitives = types.TT, types.NT, types.primitives
 local InternalTags = types.InternalTags
 local assert_eq = types.assert_eq
 local FnType = types.FnType
@@ -48,23 +48,23 @@ local function check_expr(node, tenv)
         local op = node.op
 
         if op == TT.PLUS or op == TT.MINUS or op == TT.STAR or op == TT.SLASH then
-            assert_eq(lt, IT.Int)
-            assert_eq(rt, IT.Int)
+            assert_eq(lt, primitives.Int)
+            assert_eq(rt, primitives.Int)
             return lt
         elseif op == TT.EQ_EQ or op == TT.NOT_EQ then
-            return IT.Bool
+            return primitives.Bool
         elseif op == TT.LESS or op == TT.LESS_EQ or op == TT.GREATER or op == TT.GREATER_EQ then
             -- TODO: Support comparing string.
-            assert_eq(lt, IT.Int)
-            assert_eq(rt, IT.Int)
-            return IT.Bool
+            assert_eq(lt, primitives.Int)
+            assert_eq(rt, primitives.Int)
+            return primitives.Bool
         elseif op == TT.AMP2 or op == TT.PIPE2 then
-            assert_eq(lt, IT.Bool)
-            assert_eq(rt, IT.Bool)
+            assert_eq(lt, primitives.Bool)
+            assert_eq(rt, primitives.Bool)
             return lt
         elseif op == TT.DOT2 then
-            assert_eq(lt, IT.String)
-            assert_eq(rt, IT.String)
+            assert_eq(lt, primitives.String)
+            assert_eq(rt, primitives.String)
             return lt
         else
             error("unknown binop " .. op)
@@ -82,7 +82,7 @@ local function check_stmt(node, tenv, ret_ty)
 
     elseif t == NT.IF then
         local ct = check_expr(node.cond, tenv)
-        assert_eq(ct, IT.Bool, "if condition not bool")
+        assert_eq(ct, primitives.Bool, "if condition not bool")
 
         check_stmt(node.then_, tenv, ret_ty)
         if node.else_ then
@@ -94,7 +94,7 @@ local function check_stmt(node, tenv, ret_ty)
 
     elseif t == NT.WHILE then
         local ct = check_expr(node.cond, tenv)
-        assert_eq(ct, IT.Bool, "while condition not bool")
+        assert_eq(ct, primitives.Bool, "while condition not bool")
         check_stmt(node.body, tenv, ret_ty)
 
     elseif t == NT.BLOCK then
@@ -105,13 +105,13 @@ local function check_stmt(node, tenv, ret_ty)
 
     -- TODO: Support non builtins type.
     elseif t == NT.VARDECL then
-        local vartype = IT[node.vartype]
+        local vartype = primitives[node.vartype]
         local et = check_expr(node.init, tenv)
         assert_eq(vartype, et)
         tenv:define(node.name, et)
 
     elseif t == NT.RETURN then
-        local et = node.expr and check_expr(node.expr, tenv) or IT.Unit
+        local et = node.expr and check_expr(node.expr, tenv) or primitives.Unit
         if ret_ty == nil then
             error("return outside function")
         end
@@ -127,14 +127,14 @@ end
 function analyze_stmt_list(stmt_list, tenv, returns)
     for i, stmt in ipairs(stmt_list) do
         if stmt.tag == NT.RETURN then
-            local et = stmt.expr and check_expr(stmt.expr, tenv) or IT.Unit
+            local et = stmt.expr and check_expr(stmt.expr, tenv) or primitives.Unit
             table.insert(returns, et)
             return true
         end
 
         if stmt.tag == NT.IF then
             local ct = check_expr(stmt.cond, tenv)
-            assert_eq(ct, IT.Bool, "if condition not bool")
+            assert_eq(ct, primitives.Bool, "if condition not bool")
 
             local then_returns = analyze_stmt_list({stmt.then_}, tenv, returns)
             if stmt.else_ then
@@ -154,7 +154,7 @@ function analyze_stmt_list(stmt_list, tenv, returns)
             -- Fallthrough.
 
         elseif stmt.tag == NT.VARDECL then
-            local vartype = IT[stmt.vartype]
+            local vartype = primitives[stmt.vartype]
             local et = check_expr(stmt.init, tenv)
             assert_eq(vartype, et)
             tenv:define(stmt.name, et)
@@ -162,7 +162,7 @@ function analyze_stmt_list(stmt_list, tenv, returns)
 
         elseif stmt.tag == NT.WHILE then
             local ct = check_expr(stmt.cond, tenv)
-            assert_eq(ct, IT.Bool, "while condition not bool")
+            assert_eq(ct, primitives.Bool, "while condition not bool")
             analyze_stmt_list({stmt.body}, tenv, returns)
             -- Fallthrough.
 
@@ -208,9 +208,9 @@ local function typecheck(ast, tenv)
         if stmt.tag == NT.FUNDECL then
             local param_types = {}
             for i = 1, #stmt.params do
-                param_types[i] = IT[stmt.params[i].type]
+                param_types[i] = primitives[stmt.params[i].type]
             end
-            local fty = FnType(param_types, IT[stmt.rettype])    -- TODO: Clean up.
+            local fty = FnType(param_types, primitives[stmt.rettype])    -- TODO: Clean up.
             stmt.type = fty
             tenv:define(stmt.name, fty)
         end

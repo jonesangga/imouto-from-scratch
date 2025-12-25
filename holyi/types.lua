@@ -43,15 +43,13 @@ local InternalTags = Enum{
     "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN",
 }
 
--- These are fixed. These are indexed to get the type in vardecl.
--- TODO: Think again.
-local InternalTypes = {
-    Int    = { tag = InternalTags.INT },
-    Bool   = { tag = InternalTags.BOOL },
-    String = { tag = InternalTags.STRING },
-    Null   = { tag = InternalTags.NULL },
-    Unit   = { tag = InternalTags.UNIT },
+local primitives = {
     Any    = { tag = InternalTags.ANY },
+    Bool   = { tag = InternalTags.BOOL },
+    Int    = { tag = InternalTags.INT },
+    Null   = { tag = InternalTags.NULL },
+    String = { tag = InternalTags.STRING },
+    Unit   = { tag = InternalTags.UNIT },
 }
 
 local function FnType(params, ret)
@@ -77,7 +75,6 @@ local function Null()    return { type = InternalTags.NULL }               end
 return {
     TT = TokenTypes,
     NT = NodeTags,
-    IT = InternalTypes,
     InternalTags = InternalTags,
     FnType = FnType,
     assert_eq = assert_eq,
@@ -86,4 +83,5 @@ return {
     String = String,
     Null = Null,
     Unit = Unit,
+    primitives = primitives,
 }
