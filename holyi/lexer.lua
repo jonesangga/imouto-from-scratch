@@ -98,10 +98,10 @@ local function lexer(src)
     ops["}"] = function() token(TT.RBRACE) end
     ops[";"] = function() token(TT.SEMICOLON) end
     ops[","] = function() token(TT.COMMA) end
-    ops["+"] = function() token(TT.PLUS) end
-    ops["-"] = function() token(TT.MINUS) end
-    ops["*"] = function() token(TT.STAR) end
-    ops["/"] = function() token(TT.SLASH) end
+    ops["+"] = function() token(match('=') and TT.PLUS_EQ    or TT.PLUS) end
+    ops["-"] = function() token(match('=') and TT.MINUS_EQ   or TT.MINUS) end
+    ops["*"] = function() token(match('=') and TT.STAR_EQ    or TT.STAR) end
+    ops["/"] = function() token(match('=') and TT.SLASH_EQ   or TT.SLASH) end
     ops["("] = function() token(match(')') and TT.LRPAREN    or TT.LPAREN) end
     ops["."] = function() token(match('.') and TT.DOT2       or TT.DOT) end
     ops["="] = function() token(match('=') and TT.EQ_EQ      or TT.EQ) end

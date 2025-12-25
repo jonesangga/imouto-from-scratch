@@ -56,6 +56,13 @@ describe("lexer", function()
         expect( lexer("/") ).to.equal( {t(TT.SLASH, nil, 1)} )
     end)
 
+    it("compound assignment", function()
+        expect( lexer("+=") ).to.equal( {t(TT.PLUS_EQ, nil, 1)} )
+        expect( lexer("-=") ).to.equal( {t(TT.MINUS_EQ, nil, 1)} )
+        expect( lexer("*=") ).to.equal( {t(TT.STAR_EQ, nil, 1)} )
+        expect( lexer("/=") ).to.equal( {t(TT.SLASH_EQ, nil, 1)} )
+    end)
+
     it("comparison", function()
         expect( lexer("!") ).to.equal( {t(TT.NOT, nil, 1)} )
         expect( lexer("!=") ).to.equal( {t(TT.NOT_EQ, nil, 1)} )

@@ -23,6 +23,7 @@ end
 local TokenTypes = Enum{
     "TYPE", "INT", "STRING", "TRUE", "FALSE", "NULL",
     "PLUS", "MINUS", "STAR", "SLASH",
+    "PLUS_EQ", "MINUS_EQ", "STAR_EQ", "SLASH_EQ",
     "LPAREN", "RPAREN", "LRPAREN", "LBRACE", "RBRACE",
     "SEMICOLON", "COMMA", "DOT", "DOT2",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",

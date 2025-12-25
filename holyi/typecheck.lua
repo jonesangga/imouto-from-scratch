@@ -20,6 +20,10 @@ local function check_expr(node, tenv)
         local type = tenv:get(node.name)
         local et = check_expr(node.value, tenv)
         assert_eq(type, et)
+        local op = node.op
+        if op ~= TT.EQ then
+            assert_eq(type, primitives.Int)
+        end
         return type
 
     elseif t == NT.GROUP then

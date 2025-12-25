@@ -1,0 +1,13 @@
+Int a = 1;
+
+a += 2;
+show a;
+
+a -= 1;
+show a;
+
+a *= 10;
+show a;
+
+a /= 10;
+show a;

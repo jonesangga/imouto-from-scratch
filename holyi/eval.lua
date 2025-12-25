@@ -98,9 +98,21 @@ function eval_expr(node, env)
         return env:get(node.name)
 
     elseif tag == NT.ASSIGN then
-        local value = eval_expr(node.value, env)
-        env:set(node.name, value)
-        return value
+        local rhs = eval_expr(node.value, env)
+        local op = node.op
+        if op == TT.EQ then
+            env:set(node.name, rhs)
+            return rhs
+        end
+
+        local lhs = env:get(node.name)
+        local result
+        if     op == TT.PLUS_EQ  then result = lhs.val + rhs.val
+        elseif op == TT.MINUS_EQ then result = lhs.val - rhs.val
+        elseif op == TT.STAR_EQ  then result = lhs.val * rhs.val
+        elseif op == TT.SLASH_EQ then result = math.floor(lhs.val / rhs.val)
+        end
+        env:set(node.name, Int(result))
 
     elseif tag == NT.UNARY then
         local r = eval_expr(node.expr, env).val

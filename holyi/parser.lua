@@ -262,13 +262,13 @@ end
 function Parser:assignment()
     local expr = self:or_()
 
-    if self:match(TT.EQ) then
-        local equals = self:prevt()
+    if self:match(TT.EQ, TT.PLUS_EQ, TT.MINUS_EQ, TT.STAR_EQ, TT.SLASH_EQ) then
+        local op = self:prevt()
         local value = self:assignment()
 
         if expr.tag == NT.VAR then
             local name = expr.name
-            return make(NT.ASSIGN, {name = name, value = value})
+            return make(NT.ASSIGN, {name = name, value = value, op = op})
         end
 
         error("invalid assignment target")
