@@ -148,10 +148,24 @@ function analyze_stmt_list(stmt_list, tenv, returns)
 
         elseif stmt.tag == NT.BLOCK then
             local localenv = tenv:branch()
-            local block_returns = analyze_stmt_list(node.stmts, localenv, returns)
+            local block_returns = analyze_stmt_list(stmt.stmts, localenv, returns)
             if block_returns then
                 return true
             end
+            -- Fallthrough.
+
+        elseif stmt.tag == NT.VARDECL then
+            local vartype = IT[stmt.vartype]
+            local et = check_expr(stmt.init, tenv)
+            assert_eq(vartype, et)
+            tenv:define(stmt.name, et)
+            -- Fallthrough.
+
+        elseif stmt.tag == NT.WHILE then
+            local ct = check_expr(stmt.cond, tenv)
+            assert_eq(ct, IT.Bool, "while condition not bool")
+            analyze_stmt_list({stmt.body}, tenv, returns)
+            -- Fallthrough.
 
         elseif stmt.tag == NT.EXPR_STMT then
             check_expr(stmt.expr, tenv)

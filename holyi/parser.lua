@@ -209,10 +209,7 @@ function Parser:for_stmt()
     body = make(NT.WHILE, {cond = cond, body = body})
 
     if init ~= nil then
-        body = make(NT.BLOCK, {stmts = {
-            init,
-            body,
-        }})
+        body = make(NT.BLOCK, {stmts = {init, body}})
     end
 
     return body
