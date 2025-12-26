@@ -50,7 +50,11 @@ local function run_file(path, env, tenv)
         return;
     end
 
-    eval(parser_result, env)
+    local ok, err = pcall(eval, parser_result, env)
+    if not ok then
+        print(err)
+        return;
+    end
 end
 
 do

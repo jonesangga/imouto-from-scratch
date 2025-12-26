@@ -1,3 +1,4 @@
+local RuntimeError = require("error").RuntimeError
 local types = require("types")
 local inspect = require("libraries/inspect")
 
@@ -154,7 +155,7 @@ function eval_expr(node, env)
         local array = eval_expr(node.base, env).val
         local index = eval_expr(node.index, env).val
         if index > #array then
-            error("RuntimeError: out of bound index")
+            RuntimeError("out of bound index")
         end
         return array[index]
 

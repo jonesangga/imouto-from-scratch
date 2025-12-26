@@ -34,8 +34,14 @@ local function TypeCheckError(msg)
     error(e, 0)
 end
 
+local function RuntimeError(msg)
+    local e = Error.new("RuntimeError", msg)
+    error(e, 0)
+end
+
 return {
     LexerError     = LexerError,
     ParserError    = ParserError,
     TypeCheckError = TypeCheckError,
+    RuntimeError   = RuntimeError,
 }
