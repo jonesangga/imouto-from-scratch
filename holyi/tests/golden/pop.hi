@@ -1,0 +1,10 @@
+Int[] a = [1, 2, 3];
+show a;
+
+Int b = pop(a);
+show a;
+show b;
+
+Int c = pop(a);
+show a;
+show c;

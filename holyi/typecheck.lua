@@ -8,6 +8,21 @@ local assert_eq = types.assert_eq
 local FnType = types.FnType
 local ArrayType = types.ArrayType
 
+function resolve(arg, param, subst)
+    if param.tag == InternalTags.TYPEVAR then
+        if subst[param.name] then
+            assert_eq(arg, subst[param.name], "type variable mismatch")
+        else
+            subst[param.name] = arg
+        end
+    elseif param.tag == InternalTags.ARRAY then
+        if arg.tag ~= InternalTags.ARRAY then
+            TypeCheckError("expect array got non array")
+        end
+        resolve(arg.eltype, param.eltype, subst)
+    end
+end
+
 local function check_expr(node, tenv)
     local t = node.tag
 
@@ -46,17 +61,45 @@ local function check_expr(node, tenv)
         if not fty then
             error("call of undefined function")
         end
-        if fty.tag ~= InternalTags.FN then
+
+        if fty.tag == InternalTags.FN then
+            if #node.args ~= #fty.params then
+                error("arg count mismatch")
+            end
+            for i = 1, #node.args do
+                local at = check_expr(node.args[i], tenv)
+                assert_eq(at, fty.params[i], "arg " .. i .. " type mismatch")
+            end
+            return fty.ret
+
+        elseif fty.tag == InternalTags.GENERIC_FN then
+            if #node.args ~= #fty.params then
+                error("arg count mismatch")
+            end
+
+            local tparams = fty.tparams
+            local gparams = fty.params
+            local args = node.args
+
+            local subst = {}
+            for i = 1, #gparams do
+                local at = check_expr(args[i], tenv)
+                resolve(at, gparams[i], subst)
+            end
+
+            if fty.ret.tag == InternalTags.TYPEVAR then
+                local ret = subst[fty.ret.name]
+                if not ret then
+                    TypeCheckError("return type mismatch")
+                end
+                return ret
+            else
+                return fty.ret
+            end
+
+        else
             error("trying to call non-function")
         end
-        if #node.args ~= #fty.params then
-            error("arg count mismatch")
-        end
-        for i = 1, #node.args do
-            local at = check_expr(node.args[i], tenv)
-            assert_eq(at, fty.params[i], "arg " .. i .. " type mismatch")
-        end
-        return fty.ret
 
     elseif t == NT.BINARY then
         local lt = check_expr(node.left, tenv)
@@ -133,7 +176,7 @@ local function check_stmt(node, tenv, ret_ty)
     elseif t == NT.VARDECL then
         local vartype = resolve_type(node.vartype)
         local et = check_expr(node.init, tenv)
-        assert_eq(et, vartype)
+        assert_eq(et, vartype, "vardecl mismatch")
         tenv:define(node.name, et)
 
     elseif t == NT.RETURN then

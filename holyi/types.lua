@@ -41,7 +41,7 @@ local NodeTags = Enum{
 
 -- TODO: Think a better name.
 local InternalTags = Enum{
-    "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN", "ARRAY",
+    "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN", "GENERIC_FN", "ARRAY", "TYPEVAR",
 }
 
 local primitives = {
@@ -55,6 +55,14 @@ local primitives = {
 
 local function FnType(params, ret)
     return { tag = InternalTags.FN, params = params, ret = ret }
+end
+
+local function TypeVar(name)
+    return { tag = InternalTags.TYPEVAR, name = name }
+end
+
+local function GenericFnType(tparams, params, ret)
+    return { tag = InternalTags.GENERIC_FN, tparams = tparams, params = params, ret = ret }
 end
 
 local function ArrayType(eltype)
@@ -145,6 +153,8 @@ return {
     NT = NodeTags,
     InternalTags = InternalTags,
     FnType = FnType,
+    GenericFnType = GenericFnType,
+    TypeVar = TypeVar,
     ArrayType = ArrayType,
     assert_eq = assert_eq,
     Int = Int,

@@ -1,0 +1,4 @@
+Int[] a = [1, 2, 3];
+show a;
+
+String b = pop(a);
