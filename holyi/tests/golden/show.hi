@@ -11,6 +11,8 @@ show 10 + 20;
 show 10 - 20;
 show 10 * 20;
 show 20 / 10;
+show 10 % 3;
+show -10 % 3;
 
 show 1 < 2;
 show 1 > 2;

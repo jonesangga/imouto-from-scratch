@@ -132,7 +132,7 @@ local function check_expr(node, tenv)
         local rt = check_expr(node.right, tenv)
         local op = node.op
 
-        if op == TT.PLUS or op == TT.MINUS or op == TT.STAR or op == TT.SLASH then
+        if op == TT.PLUS or op == TT.MINUS or op == TT.STAR or op == TT.SLASH or op == TT.PERCENT then
             assert_eq(lt, primitives.Int)
             assert_eq(rt, primitives.Int)
             return lt

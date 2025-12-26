@@ -347,7 +347,7 @@ end
 function Parser:factor()
     local left = self:unary()
 
-    while self:match(TT.SLASH, TT.STAR) do
+    while self:match(TT.SLASH, TT.STAR, TT.PERCENT) do
         local op = self:prevt()
         local right = self:unary()
         left = make(NT.BINARY, {left = left, op = op, right = right})

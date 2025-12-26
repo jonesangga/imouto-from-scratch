@@ -25,7 +25,7 @@ local TokenTypes = Enum{
     "PLUS", "MINUS", "STAR", "SLASH",
     "PLUS_EQ", "MINUS_EQ", "STAR_EQ", "SLASH_EQ",
     "LPAREN", "RPAREN", "LRPAREN", "LBRACE", "RBRACE", "LSQUARE", "RSQUARE",
-    "SEMICOLON", "COMMA", "HASH", "DOT", "DOT2",
+    "SEMICOLON", "COMMA", "HASH", "PERCENT", "DOT", "DOT2",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "SHOW",
     "IF", "ELSE", "AMP", "AMP2", "PIPE", "PIPE2",
