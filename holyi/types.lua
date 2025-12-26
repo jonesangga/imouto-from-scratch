@@ -24,7 +24,7 @@ local TokenTypes = Enum{
     "TYPE", "INT", "STRING", "TRUE", "FALSE", "NULL",
     "PLUS", "MINUS", "STAR", "SLASH",
     "PLUS_EQ", "MINUS_EQ", "STAR_EQ", "SLASH_EQ",
-    "LPAREN", "RPAREN", "LRPAREN", "LBRACE", "RBRACE",
+    "LPAREN", "RPAREN", "LRPAREN", "LBRACE", "RBRACE", "LSQUARE", "RSQUARE",
     "SEMICOLON", "COMMA", "DOT", "DOT2",
     "EQ", "EQ_EQ", "NOT", "NOT_EQ", "LESS", "LESS_EQ", "GREATER", "GREATER_EQ",
     "IDENT", "SHOW",
@@ -34,14 +34,14 @@ local TokenTypes = Enum{
 
 local NodeTags = Enum{
     "SHOW", "EXPR_STMT", "BLOCK",
-    "INT", "BOOL", "STRING", "NULL", "UNIT",
+    "INT", "BOOL", "STRING", "NULL", "UNIT", "ARRAY",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "ASSIGN",
     "IF", "WHILE", "CALL", "RETURN",
 }
 
 -- TODO: Think a better name.
 local InternalTags = Enum{
-    "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN",
+    "INT", "BOOL", "STRING", "NULL", "UNIT", "ANY", "FN", "ARRAY",
 }
 
 local primitives = {
@@ -57,6 +57,10 @@ local function FnType(params, ret)
     return { tag = InternalTags.FN, params = params, ret = ret }
 end
 
+local function ArrayType(eltype)
+    return { tag = InternalTags.ARRAY, eltype = eltype }
+end
+
 local function assert_eq(a, b, msg)
     if a.tag == InternalTags.ANY or b.tag == InternalTags.ANY then
         return
@@ -66,23 +70,84 @@ local function assert_eq(a, b, msg)
     end
 end
 
--- Value constructor.
-local function Int(n)    return { type = InternalTags.INT,    val = n }    end
-local function Bool(b)   return { type = InternalTags.BOOL,   val = b }    end
-local function String(s) return { type = InternalTags.STRING, val = s }    end
-local function Unit()    return { type = InternalTags.UNIT,   val = "()" } end
-local function Null()    return { type = InternalTags.NULL }               end
+
+-- Value Classes.
+
+local Int = {
+    __tostring = function(o)
+        return o.val
+    end
+}
+Int.__index = Int
+
+function Int.new(n)
+    return setmetatable({ type = InternalTags.INT, val = n }, Int)
+end
+
+local String = {
+    __tostring = function(o)
+        return o.val
+    end
+}
+String.__index = String
+
+function String.new(s)
+    return setmetatable({ type = InternalTags.STRING, val = s }, String)
+end
+
+local Bool = {
+    __tostring = function(o)
+        return tostring(o.val)
+    end
+}
+Bool.__index = Bool
+
+function Bool.new(b)
+    return setmetatable({ type = InternalTags.BOOL, val = b }, Bool)
+end
+
+local Unit = {
+    __tostring = function(o)
+        return o.val
+    end
+}
+Unit.__index = Unit
+
+-- Unit only has one value. We don't need constructor.
+local unit = setmetatable({ type = InternalTags.UNIT, val = "()" }, Unit)
+
+local Array = {
+    __tostring = function(a)
+        if #a.val == 0 then
+            return "[]"
+        end
+
+        local array = a.val
+
+        local text = "[" .. tostring(array[1])
+        for i = 2, #array do
+            text = text .. ", " .. tostring(array[i])
+        end
+        return text .. "]"
+    end
+}
+Array.__index = Array
+
+function Array.new(t)
+    return setmetatable({ type = InternalTags.ARRAY, val = t }, Array)
+end
 
 return {
     TT = TokenTypes,
     NT = NodeTags,
     InternalTags = InternalTags,
     FnType = FnType,
+    ArrayType = ArrayType,
     assert_eq = assert_eq,
     Int = Int,
     Bool = Bool,
     String = String,
-    Null = Null,
-    Unit = Unit,
+    Array = Array,
+    unit = unit,
     primitives = primitives,
 }

@@ -2,14 +2,14 @@ local types = require("types")
 local inspect = require("libraries/inspect")
 
 local TT, NT, IT = types.TT, types.NT, types.IT
-local Int, Bool, String, Null, Unit = types.Int, types.Bool, types.String, types.Null, types.Unit
+local Int, Bool, String, unit, Array = types.Int, types.Bool, types.String, types.unit, types.Array
 
 function eval_stmt(node, env)
     local tag = node.tag
 
     if tag == NT.SHOW then
         local value = eval_expr(node.expr, env)
-        print(value.val)
+        print(value)
 
     elseif tag == NT.IF then
         local cond = eval_expr(node.cond, env)
@@ -42,7 +42,7 @@ function eval_stmt(node, env)
         env:define(node.name, fn)
 
     elseif tag == NT.RETURN then
-        local val = node.expr and eval_expr(node.expr, env) or Null()
+        local val = node.expr and eval_expr(node.expr, env) or unit
         error({_return = val})
     end
 end
@@ -70,7 +70,7 @@ function Function(node)
             error(ret)
         end
 
-        return Null()
+        return unit
     end
 
     return { arity = arity, impl = impl }
@@ -80,16 +80,23 @@ function eval_expr(node, env)
     local tag = node.tag
 
     if tag == NT.INT then
-        return Int(node.val)
+        return Int.new(node.val)
 
     elseif tag == NT.BOOL then
-        return Bool(node.val)
+        return Bool.new(node.val)
 
     elseif tag == NT.STRING then
-        return String(node.val)
+        return String.new(node.val)
+
+    elseif tag == NT.ARRAY then
+        local t = {}
+        for _, el in ipairs(node.array) do
+            table.insert(t, eval_expr(el))
+        end
+        return Array.new(t)
 
     elseif tag == NT.UNIT then
-        return Unit()
+        return unit
 
     elseif tag == NT.GROUP then
         return eval_expr(node.expr, env)
@@ -112,14 +119,14 @@ function eval_expr(node, env)
         elseif op == TT.STAR_EQ  then result = lhs.val * rhs.val
         elseif op == TT.SLASH_EQ then result = math.floor(lhs.val / rhs.val)
         end
-        env:set(node.name, Int(result))
+        env:set(node.name, Int.new(result))
 
     elseif tag == NT.UNARY then
         local r = eval_expr(node.expr, env).val
         if node.op == TT.MINUS then
-            return Int(-r)
+            return Int.new(-r)
         elseif node.op == TT.NOT then
-            return Bool(not r)
+            return Bool.new(not r)
         end
 
     elseif tag == NT.BINARY then
@@ -127,20 +134,20 @@ function eval_expr(node, env)
         local r = eval_expr(node.right, env)
         local op = node.op
 
-        if     op == TT.PLUS       then return Int(l.val + r.val)
-        elseif op == TT.MINUS      then return Int(l.val - r.val)
-        elseif op == TT.STAR       then return Int(l.val * r.val)
-        elseif op == TT.SLASH      then return Int(math.floor(l.val / r.val))
+        if     op == TT.PLUS       then return Int.new(l.val + r.val)
+        elseif op == TT.MINUS      then return Int.new(l.val - r.val)
+        elseif op == TT.STAR       then return Int.new(l.val * r.val)
+        elseif op == TT.SLASH      then return Int.new(math.floor(l.val / r.val))
         -- elseif op == "%"           then return Int(l % r)
-        elseif op == TT.EQ_EQ      then return Bool(l.type == r.type and l.val == r.val)
-        elseif op == TT.NOT_EQ     then return Bool(l.type == r.type and l.val ~= r.val)
-        elseif op == TT.LESS       then return Bool(l.val < r.val)
-        elseif op == TT.GREATER    then return Bool(l.val > r.val)
-        elseif op == TT.LESS_EQ    then return Bool(l.val <= r.val)
-        elseif op == TT.GREATER_EQ then return Bool(l.val >= r.val)
-        elseif op == TT.AMP2       then return Bool(l.val and r.val)
-        elseif op == TT.PIPE2      then return Bool(l.val or r.val)
-        elseif op == TT.DOT2       then return String(l.val .. r.val)
+        elseif op == TT.EQ_EQ      then return Bool.new(l.type == r.type and l.val == r.val)
+        elseif op == TT.NOT_EQ     then return Bool.new(l.type == r.type and l.val ~= r.val)
+        elseif op == TT.LESS       then return Bool.new(l.val < r.val)
+        elseif op == TT.GREATER    then return Bool.new(l.val > r.val)
+        elseif op == TT.LESS_EQ    then return Bool.new(l.val <= r.val)
+        elseif op == TT.GREATER_EQ then return Bool.new(l.val >= r.val)
+        elseif op == TT.AMP2       then return Bool.new(l.val and r.val)
+        elseif op == TT.PIPE2      then return Bool.new(l.val or r.val)
+        elseif op == TT.DOT2       then return String.new(l.val .. r.val)
         end
 
     elseif tag == NT.CALL then

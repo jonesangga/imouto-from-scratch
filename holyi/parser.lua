@@ -113,13 +113,20 @@ end
 -- TODO: Fix this. Rename. Support union. Should consume the type here?
 function Parser:type()
     local type = self:prevv()
-    return type
+
+    -- Only one dimensional array for now.
+    if self:match(TT.LSQUARE) then
+        self:consume(TT.RSQUARE, "expect ']' after array '['")
+        return { kind = "array", name = type }
+    end
+
+    return { kind = "primitive", name = type }
 end
 
 -- TODO: This is only used by init statement in for loop. Refactor.
 function Parser:vardecl()
-    self:advance()
-    local vartype = self:prevv()
+    local type = self:type()
+
     self:consume(TT.IDENT, "expect variable name")
     local name = self:prevv()
 
@@ -129,7 +136,7 @@ function Parser:vardecl()
     end
 
     self:consume(TT.SEMICOLON, "expect ';' after var decl")
-    return make(NT.VARDECL, {vartype = vartype, name = name, init = init})
+    return make(NT.VARDECL, {vartype = type, name = name, init = init})
 end
 
 function Parser:stmt()
@@ -176,7 +183,7 @@ function Parser:for_stmt()
     local init
     if self:match(TT.SEMICOLON) then
         init = nil
-    elseif self:check(TT.TYPE) then
+    elseif self:match(TT.TYPE) then
         init = self:vardecl()  -- TODO: Think again.
     else
         init = self:expr_stmt()
@@ -405,6 +412,19 @@ function Parser:primary()
         local expr = self:expr()
         self:consume(TT.RPAREN, "expect ')' after expression")
         return make(NT.GROUP, {expr = expr})
+    end
+
+    if self:match(TT.LSQUARE) then
+        local array = {}
+        if not self:check(TT.RSQUARE) then
+            repeat
+                local element = self:expr()
+                table.insert(array, element)
+            until not self:match(TT.COMMA)
+        end
+
+        self:consume(TT.RSQUARE, "expect ']' after array literal")
+        return make(NT.ARRAY, {array = array})
     end
 
     error("expect expression")

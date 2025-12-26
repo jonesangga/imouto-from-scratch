@@ -6,12 +6,21 @@ local TT, NT, primitives = types.TT, types.NT, types.primitives
 local InternalTags = types.InternalTags
 local assert_eq = types.assert_eq
 local FnType = types.FnType
+local ArrayType = types.ArrayType
 
 local function check_expr(node, tenv)
     local t = node.tag
 
     if t == NT.INT or t == NT.BOOL or t == NT.STRING or t == NT.UNIT then
         return node.type
+
+    -- TODO: Fix this later.
+    elseif t == NT.ARRAY then
+        -- local eltypes = {}
+        -- for _, el in ipairs(node.array) do
+            -- table.insert(eltypes, check_expr(el, tenv))
+        -- end
+        return ArrayType(primitives.Int)
 
     elseif t == NT.VAR then
         return tenv:get(node.name)
@@ -78,6 +87,17 @@ local function check_expr(node, tenv)
     end
 end
 
+function resolve_type(t)
+    if t.kind == "primitive" then
+        if primitives[t.name] then
+            return primitives[t.name]
+        end
+        TypeCheckError("unresolved type " .. t.name)
+    elseif t.kind == "array" then
+        return ArrayType(resolve_type(t.name))
+    end
+end
+
 local function check_stmt(node, tenv, ret_ty)
     local t = node.tag
 
@@ -107,9 +127,8 @@ local function check_stmt(node, tenv, ret_ty)
             check_stmt(s, localenv, ret_ty)
         end
 
-    -- TODO: Support non builtins type.
     elseif t == NT.VARDECL then
-        local vartype = primitives[node.vartype]
+        local vartype = resolve_type(node.vartype)
         local et = check_expr(node.init, tenv)
         assert_eq(vartype, et)
         tenv:define(node.name, et)
@@ -158,7 +177,7 @@ function analyze_stmt_list(stmt_list, tenv, returns)
             -- Fallthrough.
 
         elseif stmt.tag == NT.VARDECL then
-            local vartype = primitives[stmt.vartype]
+            local vartype = resolve_type(stmt.vartype)
             local et = check_expr(stmt.init, tenv)
             assert_eq(vartype, et)
             tenv:define(stmt.name, et)
@@ -212,9 +231,9 @@ local function typecheck(ast, tenv)
         if stmt.tag == NT.FUNDECL then
             local param_types = {}
             for i = 1, #stmt.params do
-                param_types[i] = primitives[stmt.params[i].type]
+                param_types[i] = resolve_type(stmt.params[i].type)
             end
-            local fty = FnType(param_types, primitives[stmt.rettype])    -- TODO: Clean up.
+            local fty = FnType(param_types, resolve_type(stmt.rettype))    -- TODO: Clean up.
             stmt.type = fty
             tenv:define(stmt.name, fty)
         end

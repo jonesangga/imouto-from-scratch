@@ -1,7 +1,7 @@
 local types = require("types")
 
 local primitives, FnType = types.primitives, types.FnType
-local Int, Bool, String, Null, Unit = types.Int, types.Bool, types.String, types.Null, types.Unit
+local Int, Bool, String, Null, unit = types.Int, types.Bool, types.String, types.Null, types.unit
 
 local procedures = {}
 
@@ -11,7 +11,7 @@ procedures["println"] = {
         arity = 1,
         impl  = function(args, env)
             print(args[1].val)
-            return Unit()
+            return unit
         end,
     }
 }
@@ -21,7 +21,7 @@ procedures["itos"] = {
     data = {
         arity = 1,
         impl  = function(args, env)
-            return String(tostring(args[1].val))
+            return String.new(tostring(args[1].val))
         end,
     }
 }

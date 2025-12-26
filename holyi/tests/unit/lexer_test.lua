@@ -46,6 +46,8 @@ describe("lexer", function()
         expect( lexer(")") ).to.equal( {t(TT.RPAREN, nil, 1)} )
         expect( lexer("{") ).to.equal( {t(TT.LBRACE, nil, 1)} )
         expect( lexer("}") ).to.equal( {t(TT.RBRACE, nil, 1)} )
+        expect( lexer("[") ).to.equal( {t(TT.LSQUARE, nil, 1)} )
+        expect( lexer("]") ).to.equal( {t(TT.RSQUARE, nil, 1)} )
         expect( lexer("()") ).to.equal( {t(TT.LRPAREN, nil, 1)} )
     end)
 

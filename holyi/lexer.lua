@@ -96,6 +96,8 @@ local function lexer(src)
     ops[")"] = function() token(TT.RPAREN) end
     ops["{"] = function() token(TT.LBRACE) end
     ops["}"] = function() token(TT.RBRACE) end
+    ops["["] = function() token(TT.LSQUARE) end
+    ops["]"] = function() token(TT.RSQUARE) end
     ops[";"] = function() token(TT.SEMICOLON) end
     ops[","] = function() token(TT.COMMA) end
     ops["+"] = function() token(match('=') and TT.PLUS_EQ    or TT.PLUS) end
