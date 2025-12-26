@@ -4,6 +4,9 @@ show false;
 show "real";
 show ();
 
+show -123;
+show !false;
+
 show 10 + 20;
 show 10 - 20;
 show 10 * 20;

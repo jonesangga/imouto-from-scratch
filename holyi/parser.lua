@@ -357,10 +357,10 @@ function Parser:factor()
 end
 
 function Parser:unary()
-    if self:match(TT.NOT, TT.MINUS) then
+    if self:match(TT.NOT, TT.MINUS, TT.HASH) then
         local op = self:prevt()
         local right = self:unary()
-        left = make(NT.UNARY, {op = op, right = right})
+        return make(NT.UNARY, {op = op, right = right})
     end
 
     return self:postfix()

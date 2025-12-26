@@ -1,0 +1,6 @@
+String s = "so real";
+show #s;
+
+show #"real";
+
+show #"";

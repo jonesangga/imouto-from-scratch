@@ -110,6 +110,23 @@ local function check_expr(node, tenv)
             error("trying to call non-function")
         end
 
+    elseif t == NT.UNARY then
+        local rt = check_expr(node.right, tenv)
+        local op = node.op
+
+        if op == TT.MINUS then
+            assert_eq(rt, primitives.Int)
+            return rt
+        elseif op == TT.NOT then
+            assert_eq(rt, primitives.Bool)
+            return rt
+        elseif op == TT.HASH then
+            if rt.tag ~= InternalTags.STRING and rt.tag ~= InternalTags.ARRAY then
+                TypeCheckError("operator # only for String and Array")
+            end
+            return primitives.Int
+        end
+
     elseif t == NT.BINARY then
         local lt = check_expr(node.left, tenv)
         local rt = check_expr(node.right, tenv)

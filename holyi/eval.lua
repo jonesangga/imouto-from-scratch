@@ -123,11 +123,13 @@ function eval_expr(node, env)
         env:set(node.name, Int.new(result))
 
     elseif tag == NT.UNARY then
-        local r = eval_expr(node.expr, env).val
+        local r = eval_expr(node.right, env).val
         if node.op == TT.MINUS then
             return Int.new(-r)
         elseif node.op == TT.NOT then
             return Bool.new(not r)
+        elseif node.op == TT.HASH then
+            return #r
         end
 
     elseif tag == NT.BINARY then

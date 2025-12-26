@@ -100,6 +100,7 @@ local function lexer(src)
     ops["]"] = function() token(TT.RSQUARE) end
     ops[";"] = function() token(TT.SEMICOLON) end
     ops[","] = function() token(TT.COMMA) end
+    ops["#"] = function() token(TT.HASH) end
     ops["+"] = function() token(match('=') and TT.PLUS_EQ    or TT.PLUS) end
     ops["-"] = function() token(match('=') and TT.MINUS_EQ   or TT.MINUS) end
     ops["*"] = function() token(match('=') and TT.STAR_EQ    or TT.STAR) end
