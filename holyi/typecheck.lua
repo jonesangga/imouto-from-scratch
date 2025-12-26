@@ -6,7 +6,10 @@ local TT, NT, primitives = types.TT, types.NT, types.primitives
 local InternalTags = types.InternalTags
 local assert_eq = types.assert_eq
 local FnType = types.FnType
+local GenericFnType = types.GenericFnType
 local ArrayType = types.ArrayType
+local TypeVar = types.TypeVar
+local TypeVar = types.TypeVar
 
 function resolve(arg, param, subst)
     if param.tag == InternalTags.TYPEVAR then
@@ -159,6 +162,7 @@ local function check_expr(node, tenv)
     end
 end
 
+-- TODO: Rename.
 function resolve_type(t)
     if type(t) == "string" then
         if primitives[t] then
@@ -167,6 +171,29 @@ function resolve_type(t)
         TypeCheckError("unresolved type " .. t)
     elseif t.kind == "array" then
         return ArrayType(resolve_type(t.name))
+    end
+end
+
+-- TODO: Do better.
+local function contains(arr, value)
+    for i = 1, #arr do
+        if arr[i] == value then return true end
+    end
+    return false
+end
+
+-- TODO: Rename. Is this actually working?
+function resolve_type_generic(t, tparams)
+    if type(t) == "string" then
+        if contains(tparams, t) then
+            return TypeVar(t)
+        end
+        if primitives[t] then
+            return primitives[t]
+        end
+        TypeCheckError("unresolved type " .. t)
+    elseif t.kind == "array" then
+        return ArrayType(resolve_type_generic(t.name, tparams))
     end
 end
 
@@ -213,7 +240,7 @@ local function check_stmt(node, tenv, ret_ty)
         assert_eq(et, ret_ty)
 
     else
-        error("stmt typecheck not implemented: " .. t)
+        error("stmt typecheck not implemented: " .. NT[t])
     end
 end
 
@@ -277,10 +304,6 @@ local function check_function_returns(stmt, tenv)
         localenv:define(p.name, fty.params[i])
     end
 
-    for _, s in ipairs(stmt.body) do
-        check_stmt(s, localenv, fty.ret)
-    end
-
     -- Collect returns while typechecking body.
     local returns = {}
     local always = analyze_stmt_list(stmt.body, localenv, returns)
@@ -308,12 +331,28 @@ local function typecheck(ast, tenv)
             local fty = FnType(param_types, resolve_type(stmt.rettype))    -- TODO: Clean up.
             stmt.type = fty
             tenv:define(stmt.name, fty)
+
+        -- TODO: Clean up. Refactor.
+        elseif stmt.tag == NT.GENFUNDECL then
+            local tparams = stmt.tparams
+
+            local param_types = {}
+            for i = 1, #stmt.params do
+                param_types[i] = resolve_type_generic(stmt.params[i].type, tparams)
+            end
+
+            local fty = GenericFnType(stmt.tparams, param_types, resolve_type_generic(stmt.rettype, tparams))  -- This assume the return type is no typevar.
+            stmt.type = fty
+            tenv:define(stmt.name, fty)
         end
     end
 
     -- Typecheck function bodies and annotate nodes.
     for _, stmt in ipairs(ast) do
         if stmt.tag == NT.FUNDECL then
+            check_function_returns(stmt, tenv)
+        elseif stmt.tag == NT.GENFUNDECL then
+            -- TODO: This is not correct but works. Think later.
             check_function_returns(stmt, tenv)
         else
             check_stmt(stmt, tenv, nil)

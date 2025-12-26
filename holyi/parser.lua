@@ -75,7 +75,6 @@ function Parser:decl()
     self:consume(TT.IDENT, "expect identifier")
     local name = self:prevv()
 
-    -- check if next is LParen
     if self:match(TT.LPAREN) then
         -- This is function declaration.
         local params = {}
@@ -98,6 +97,49 @@ function Parser:decl()
         self:consume(TT.LBRACE, "expect '{' after function body")
         local body = self:block()
         return make(NT.FUNDECL, {rettype = type, name = name, params = params, body = body})
+
+    -- TODO: Clean up!!!
+    elseif self:match(TT.LESS) then
+        -- This is generic function declaration.
+        local tparams = {}
+        if not self:check(TT.GREATER) then
+            repeat
+                if #tparams > 10 then
+                    error("too much param")
+                end
+
+                self:consume(TT.TYPE, "expect generic type")
+                local t = self:type()
+
+                table.insert(tparams, t)
+            until not self:match(TT.COMMA)
+        end
+
+        self:consume(TT.GREATER, "expect '>' after generic type")
+
+        self:consume(TT.LPAREN, "expect '(' after generic list")
+
+        local params = {}
+        if not self:check(TT.RPAREN) then
+            repeat
+                if #params > 10 then
+                    error("too much param")
+                end
+
+                self:consume(TT.TYPE, "expect param type")
+                local t = self:type()
+                self:consume(TT.IDENT, "expect param name")
+                local n = self:prevv()
+
+                table.insert(params, {type = t, name = n})
+            until not self:match(TT.COMMA)
+        end
+
+        self:consume(TT.RPAREN, "expect ')' after arg list")
+        self:consume(TT.LBRACE, "expect '{' after function body")
+        local body = self:block()
+        return make(NT.GENFUNDECL, {rettype = type, name = name, tparams = tparams, params = params, body = body})
+
     else
         -- This is variable declaration.
         local init = nil

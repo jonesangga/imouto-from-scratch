@@ -35,7 +35,7 @@ local TokenTypes = Enum{
 local NodeTags = Enum{
     "SHOW", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL", "UNIT", "ARRAY",
-    "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "ASSIGN",
+    "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "GENFUNDECL", "ASSIGN",
     "IF", "WHILE", "INDEX", "CALL", "RETURN",
 }
 

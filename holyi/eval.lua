@@ -42,6 +42,10 @@ function eval_stmt(node, env)
         local fn = Function(node)
         env:define(node.name, fn)
 
+    elseif tag == NT.GENFUNDECL then
+        local fn = Function(node)  -- TODO: This is not correct but works for now.
+        env:define(node.name, fn)
+
     elseif tag == NT.RETURN then
         local val = node.expr and eval_expr(node.expr, env) or unit
         error({_return = val})
@@ -129,7 +133,7 @@ function eval_expr(node, env)
         elseif node.op == TT.NOT then
             return Bool.new(not r)
         elseif node.op == TT.HASH then
-            return #r
+            return Int.new(#r)
         end
 
     elseif tag == NT.BINARY then

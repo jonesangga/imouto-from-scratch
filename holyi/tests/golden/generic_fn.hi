@@ -1,0 +1,9 @@
+Bool is_even_len<T>(T[] arr) {
+    return #arr % 2 == 0;
+}
+
+Int[] a = [1, 2, 3, 4];
+show a;
+show is_even_len(a);
+show is_even_len([1, 2, 3]);
+show is_even_len([]);
