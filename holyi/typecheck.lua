@@ -56,6 +56,15 @@ local function check_expr(node, tenv)
     elseif t == NT.GROUP then
         return check_expr(node.expr, tenv)
 
+    elseif t == NT.INDEX then
+        local it = check_expr(node.index, tenv)
+        assert_eq(it, primitives.Int, "index type")
+        local bt = check_expr(node.base, tenv)
+        if bt.tag ~= InternalTags.ARRAY then
+            TypeCheckError("can only index array")
+        end
+        return bt.eltype
+
     elseif t == NT.CALL then
         local fty = check_expr(node.callee, tenv)
         if not fty then

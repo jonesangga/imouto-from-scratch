@@ -150,6 +150,14 @@ function eval_expr(node, env)
         elseif op == TT.DOT2       then return String.new(l.val .. r.val)
         end
 
+    elseif tag == NT.INDEX then
+        local array = eval_expr(node.base, env).val
+        local index = eval_expr(node.index, env).val
+        if index > #array then
+            error("RuntimeError: out of bound index")
+        end
+        return array[index]
+
     elseif tag == NT.CALL then
         local callee = eval_expr(node.callee, env)
 

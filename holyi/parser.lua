@@ -363,16 +363,19 @@ function Parser:unary()
         left = make(NT.UNARY, {op = op, right = right})
     end
 
-    return self:call()
+    return self:postfix()
 end
 
-function Parser:call()
+function Parser:postfix()
     local expr = self:primary()
 
-    -- NOTE: Don't simplify. It is to handle properties later.
     while true do
         if self:match(TT.LPAREN) then
             expr = self:finish_call(expr)
+        elseif self:match(TT.LSQUARE) then
+            local index_expr = self:expr()
+            self:consume(TT.RSQUARE, "expect ']' after indexing")
+            expr = make(NT.INDEX, {base = expr, index = index_expr})
         else
             break
         end

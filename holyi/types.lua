@@ -36,7 +36,7 @@ local NodeTags = Enum{
     "SHOW", "EXPR_STMT", "BLOCK",
     "INT", "BOOL", "STRING", "NULL", "UNIT", "ARRAY",
     "BINARY", "UNARY", "GROUP", "VAR", "VARDECL", "FUNDECL", "ASSIGN",
-    "IF", "WHILE", "CALL", "RETURN",
+    "IF", "WHILE", "INDEX", "CALL", "RETURN",
 }
 
 -- TODO: Think a better name.
