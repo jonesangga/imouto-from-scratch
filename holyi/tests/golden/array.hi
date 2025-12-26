@@ -3,3 +3,12 @@ show c;
 
 Int[] d = [];
 show d;
+
+Bool[] b = [true, false, false];
+show b;
+
+String[] s = ["so", "real", "Ada"];
+show s;
+
+Unit[] u = [(), ()];
+show u;

@@ -120,7 +120,7 @@ function Parser:type()
         return { kind = "array", name = type }
     end
 
-    return { kind = "primitive", name = type }
+    return type
 end
 
 -- TODO: This is only used by init statement in for loop. Refactor.

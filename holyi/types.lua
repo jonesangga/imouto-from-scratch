@@ -68,6 +68,9 @@ local function assert_eq(a, b, msg)
     if a.tag ~= b.tag then
         TypeCheckError(msg .. ", expect " .. InternalTags[b.tag] .. " got " .. InternalTags[a.tag])
     end
+    if a.tag == InternalTags.ARRAY then
+        assert_eq(a.eltype, b.eltype, "array element type mismatch")
+    end
 end
 
 

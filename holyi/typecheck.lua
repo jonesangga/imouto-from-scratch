@@ -14,13 +14,16 @@ local function check_expr(node, tenv)
     if t == NT.INT or t == NT.BOOL or t == NT.STRING or t == NT.UNIT then
         return node.type
 
-    -- TODO: Fix this later.
+    -- Only support array of primitive type.
+    -- TODO: support multidimensional array of primitive type.
     elseif t == NT.ARRAY then
-        -- local eltypes = {}
-        -- for _, el in ipairs(node.array) do
-            -- table.insert(eltypes, check_expr(el, tenv))
-        -- end
-        return ArrayType(primitives.Int)
+        local eltype = primitives.Any
+        for _, el in ipairs(node.array) do
+            local t = check_expr(el, tenv)
+            assert_eq(eltype, t)
+            eltype = t
+        end
+        return ArrayType(eltype)
 
     elseif t == NT.VAR then
         return tenv:get(node.name)
@@ -88,11 +91,11 @@ local function check_expr(node, tenv)
 end
 
 function resolve_type(t)
-    if t.kind == "primitive" then
-        if primitives[t.name] then
-            return primitives[t.name]
+    if type(t) == "string" then
+        if primitives[t] then
+            return primitives[t]
         end
-        TypeCheckError("unresolved type " .. t.name)
+        TypeCheckError("unresolved type " .. t)
     elseif t.kind == "array" then
         return ArrayType(resolve_type(t.name))
     end
@@ -130,7 +133,7 @@ local function check_stmt(node, tenv, ret_ty)
     elseif t == NT.VARDECL then
         local vartype = resolve_type(node.vartype)
         local et = check_expr(node.init, tenv)
-        assert_eq(vartype, et)
+        assert_eq(et, vartype)
         tenv:define(node.name, et)
 
     elseif t == NT.RETURN then
