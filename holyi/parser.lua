@@ -96,7 +96,7 @@ function Parser:decl()
         self:consume(TT.RPAREN, "expect ')' after arg list")
         self:consume(TT.LBRACE, "expect '{' after function body")
         local body = self:block()
-        return make(NT.FUNDECL, {rettype = type, name = name, params = params, body = body})
+        return make(NT.FUNDECL, {return_type = type, name = name, params = params, body = body})
 
     -- TODO: Clean up!!!
     elseif self:match(TT.LESS) then
@@ -138,7 +138,7 @@ function Parser:decl()
         self:consume(TT.RPAREN, "expect ')' after arg list")
         self:consume(TT.LBRACE, "expect '{' after function body")
         local body = self:block()
-        return make(NT.GENFUNDECL, {rettype = type, name = name, tparams = tparams, params = params, body = body})
+        return make(NT.GENFUNDECL, {return_type = type, name = name, tparams = tparams, params = params, body = body})
 
     else
         -- This is variable declaration.
@@ -148,7 +148,7 @@ function Parser:decl()
         end
 
         self:consume(TT.SEMICOLON, "expect ';' after var decl")
-        return make(NT.VARDECL, {vartype = type, name = name, init = init})
+        return make(NT.VARDECL, {var_type = type, name = name, init = init})
     end
 end
 
@@ -178,7 +178,7 @@ function Parser:vardecl()
     end
 
     self:consume(TT.SEMICOLON, "expect ';' after var decl")
-    return make(NT.VARDECL, {vartype = type, name = name, init = init})
+    return make(NT.VARDECL, {var_type = type, name = name, init = init})
 end
 
 function Parser:stmt()
